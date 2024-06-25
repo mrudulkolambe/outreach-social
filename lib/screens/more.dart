@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/help_support.dart';
-import 'package:outreach/screens/onboarding.dart';
 import 'package:outreach/widgets/navbar.dart';
 
 class MoreScreen extends StatelessWidget {
@@ -23,8 +22,8 @@ class MoreScreen extends StatelessWidget {
           child: Column(
             children: [
               InkWell(
-                onTap: () => Get.to(() => HelpAndSupport()),
-                child: ListTile(
+                onTap: () => Get.to(() => const HelpAndSupport()),
+                child: const ListTile(
                   title: Text("Help and Support"),
                   trailing: Icon(Icons.chevron_right_rounded),
                 ),
