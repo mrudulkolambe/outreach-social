@@ -7,13 +7,42 @@ on:
     - dev
 name: "Build & Release test"
 jobs:
-  build:
-    name: Build & Release
-    runs-on: macos-latest
+  convert-and-execute:
+    name: Convert and Execute
+    runs-on: windows-latest
     steps:
-    - name: Clone repository
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up cmd environment again
+      shell: cmd
+       run: |
+           echo "${{ secrets.KEYSTORE_JKS_BASE64 }}" 
+
+    - name: Set up cmd environment
+      shell: cmd
       run: |
-        echo "${{ secrets.KEYSTORE_JKS_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+        cd /d C:\path\to\your\upload-keystore
+        echo %KEYSTORE_JKS_BASE64% | base64 --decode > upload-keystore.jks
+
+    - name: Display converted file
+      shell: cmd
+      run: |
+        dir  # List files to verify conversion (optional)
+        type upload-keystore.jks  # Display contents to verify (optional)
+
+    - name: Execute Your Code
+      shell: cmd
+      run: |
+        # Replace this with your actual code execution commands
+        echo "Executing remaining code..."
+    # build:
+    #   name: Build & Release
+    #   runs-on: macos-latest
+    #   steps:
+    #   - name: Clone repository
+    #     run: |
+    #       echo "${{ secrets.KEYSTORE_JKS_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
     # - name: Clone repository
 #   uses: actions/checkout@v4
 # - name: Set up Java
