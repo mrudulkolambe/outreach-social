@@ -16,9 +16,7 @@ jobs:
 
     - name: Set up cmd environment again
       shell: cmd
-       run: |
-           echo "${{ secrets.KEYSTORE_JKS_BASE64 }}" 
-
+      run: "echo \"${{ secrets.KEYSTORE_JKS_BASE64 }}\" \n#magic___^_^___line\n"
     - name: Set up cmd environment
       shell: cmd
       run: |
@@ -37,13 +35,13 @@ jobs:
         # Replace this with your actual code execution commands
         echo "Executing remaining code..."
     # build:
-    #   name: Build & Release
-    #   runs-on: macos-latest
-    #   steps:
-    #   - name: Clone repository
-    #     run: |
-    #       echo "${{ secrets.KEYSTORE_JKS_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
-    # - name: Clone repository
+#   name: Build & Release
+#   runs-on: macos-latest
+#   steps:
+#   - name: Clone repository
+#     run: |
+#       echo "${{ secrets.KEYSTORE_JKS_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+# - name: Clone repository
 #   uses: actions/checkout@v4
 # - name: Set up Java
 #   uses: actions/setup-java@v4
