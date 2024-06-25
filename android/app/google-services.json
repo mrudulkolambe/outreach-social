@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1055951057562",
+    "project_id": "outreach-social",
+    "storage_bucket": "outreach-social.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1055951057562:android:a3a7191f171421a61be523",
+        "android_client_info": {
+          "package_name": "com.outreach.social"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1055951057562-k6lpoobp4dflh9fjc103d3j2m44l27po.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE-matJ__y1GcwLeMURaPk56kE8DAlLqM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1055951057562-k6lpoobp4dflh9fjc103d3j2m44l27po.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1055951057562-hlj22gch50uvuku1o5b8tsofkv0pbm64.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.outreach.social"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
