@@ -14,9 +14,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up cmd environment again
-      shell: cmd
-      run: "echo \"${{ secrets.KEYSTORE_JKS_BASE64 }}\" \n#magic___^_^___line\n"
+    # - name: Set up cmd environment again
+    #   shell: cmd
+    #   run: "echo \"${{ secrets.KEYSTORE_JKS_BASE64 }}\" \n#magic___^_^___line\n"
     - name: Set up cmd environment
       shell: cmd
       run: |
