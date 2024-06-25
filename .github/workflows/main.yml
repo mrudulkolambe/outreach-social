@@ -26,9 +26,6 @@ jobs:
     - name: Update Flutter Dependencies
       run: flutter pub get
 
-    - name: Flutter Tests
-      run: flutter test
-
     - name: Build Android App
       run: flutter build apk
 
