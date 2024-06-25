@@ -20,7 +20,6 @@ jobs:
     - name: Set up cmd environment
       shell: cmd
       run: |
-        cd /d C:\path\to\your\upload-keystore
         echo %KEYSTORE_JKS_BASE64% | base64 --decode > upload-keystore.jks
 
     - name: Display converted file
