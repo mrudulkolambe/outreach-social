@@ -5,7 +5,7 @@ on:
   push:
     branches:
     - dev
-name: "Build & Release"
+name: "Build & Release test"
 jobs:
   build:
     name: Build & Release
@@ -13,7 +13,7 @@ jobs:
     steps:
     - name: Clone repository
       run: |
-        echo "${{ secrets.KEYSTORE_JKS_BASE64 }}" | base64 --decode > android/app/keystore.jks
+        echo "${{ secrets.KEYSTORE_JKS_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
     # - name: Clone repository
 #   uses: actions/checkout@v4
 # - name: Set up Java
