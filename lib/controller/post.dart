@@ -9,8 +9,15 @@ class PostController extends GetxController {
     update();
   }
   void addAllPosts(List<Post> data) {
+    print(posts.length + data.length);
+    posts.addAll(data);
+    update();
+  }
+
+  void initAddPosts(List<Post> data) {
     posts = [];
     posts.addAll(data);
     update();
   }
+
 }

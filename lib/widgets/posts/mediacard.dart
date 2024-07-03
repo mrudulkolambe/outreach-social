@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:outreach/api/models/upload.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/models/post.dart';
 import 'package:outreach/widgets/shimmer_image.dart';
 import 'package:video_player/video_player.dart';
-
 
 class MediaCarousel extends StatefulWidget {
   final List<Media> mediaPosts;
@@ -62,7 +62,8 @@ class _MediaCarouselState extends State<MediaCarousel> {
             enlargeCenterPage: false,
             enableInfiniteScroll: false,
             autoPlay: false,
-            aspectRatio: 16 / 9, // Adjust aspect ratio as per your requirement
+            aspectRatio: 16 / 9,
+            // Adjust aspect ratio as per your requirement
             onPageChanged: (index, _) {
               setState(() {
                 _currentIndex = index;
@@ -72,7 +73,9 @@ class _MediaCarouselState extends State<MediaCarousel> {
           items: widget.mediaPosts.map((post) {
             return Builder(
               builder: (BuildContext context) {
-                if (post.type == 'jpg' || post.type == 'jpeg' || post.type == 'png') {
+                if (post.type == 'jpg' ||
+                    post.type == 'jpeg' ||
+                    post.type == 'png') {
                   return ShimmerImage(
                     imageUrl: post.url,
                     width: double.infinity,
@@ -92,32 +95,31 @@ class _MediaCarouselState extends State<MediaCarousel> {
             );
           }).toList(),
         ),
-        if(widget.mediaPosts.length > 1) Positioned(
-          bottom: 10,
-          left: 0,
-          right: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: widget.mediaPosts.map((post) {
-              int index = widget.mediaPosts.indexOf(post);
-              return Container(
-                width: 8,
-                height: 8,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _currentIndex == index ? accent : Colors.grey,
-                ),
-              );
-            }).toList(),
+        if (widget.mediaPosts.length > 1)
+          Positioned(
+            bottom: 10,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: widget.mediaPosts.map((post) {
+                int index = widget.mediaPosts.indexOf(post);
+                return Container(
+                  width: 8,
+                  height: 8,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _currentIndex == index ? accent : Colors.grey,
+                  ),
+                );
+              }).toList(),
+            ),
           ),
-        ),
       ],
     );
   }
 }
-
-
 
 class VideoPlayerWidget extends StatefulWidget {
   final VideoPlayerController controller;

@@ -27,10 +27,29 @@ class _ProfilePostsState extends State<ProfilePosts> {
         children: [
           Row(
             children: [
-              CircularImage(
-                size: 45,
-                path: widget.post.user.imageUrl,
-              ),
+              widget.post.user.imageUrl == null
+                  ? Container(
+                      height: 45,
+                      width: 45,
+                      decoration: BoxDecoration(
+                        color: accent,
+                        borderRadius: BorderRadius.circular(45 / 2),
+                      ),
+                      child: Center(
+                        child: Text(
+                          widget.post.public
+                              ? widget.post.user.name.substring(0, 1)
+                              : "A",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    )
+                  : CircularImage(
+                      size: 45,
+                      path: widget.post.user.imageUrl!,
+                    ),
               const SizedBox(
                 width: 10,
               ),

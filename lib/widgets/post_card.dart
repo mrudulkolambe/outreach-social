@@ -11,8 +11,9 @@ import 'package:outreach/widgets/posts/mediacard.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
+  final int index;
 
-  const PostCard({super.key, required this.post});
+  const PostCard({super.key, required this.post, required this.index});
 
   @override
   _PostCardState createState() => _PostCardState();
@@ -92,8 +93,29 @@ class _PostCardState extends State<PostCard> {
           Row(
             children: [
               widget.post.public
-                  ? CircularShimmerImage(
-                      imageUrl: widget.post.user.imageUrl, size: 40)
+                  ? widget.post.user.imageUrl == null
+                      ? Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: accent,
+                            borderRadius: BorderRadius.circular(40 / 2),
+                          ),
+                          child: Center(
+                            child: Text(
+                              widget.post.public
+                                  ? widget.post.user.name.substring(0, 1)
+                                  : "A",
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        )
+                      : CircularShimmerImage(
+                          imageUrl: widget.post.user.imageUrl!,
+                          size: 40,
+                        )
                   : Container(
                       height: 40,
                       width: 40,
@@ -124,8 +146,8 @@ class _PostCardState extends State<PostCard> {
                     ),
                     Text(
                       widget.post.public
-                          ? "@${widget.post.user.username}"
-                          : "@anonymous",
+                          ? "@${widget.post.user.username} ${widget.index + 1}"
+                          : "@anonymous ${widget.index + 1}",
                       style: const TextStyle(
                         color: grey,
                       ),

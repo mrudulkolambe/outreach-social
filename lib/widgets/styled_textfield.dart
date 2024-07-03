@@ -44,7 +44,12 @@ class _StyledTextFieldState extends State<StyledTextField> {
         if (widget.label != null) ...[
           Row(
             children: [
-              Text("${widget.label}:"),
+              Text(
+                "${widget.label}:",
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 4),
@@ -73,7 +78,7 @@ class _StyledTextFieldState extends State<StyledTextField> {
                 Radius.circular(10),
               ),
               borderSide: BorderSide(
-                  color: Colors.red,
+                color: Colors.red,
                 width: 2,
               ),
             ),
@@ -82,7 +87,7 @@ class _StyledTextFieldState extends State<StyledTextField> {
                 Radius.circular(10),
               ),
               borderSide: BorderSide(
-                  color: Colors.red,
+                color: Colors.red,
                 width: 2,
               ),
             ),

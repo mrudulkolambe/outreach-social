@@ -10,7 +10,6 @@ import 'package:outreach/controller/user.dart';
 import 'package:outreach/utils/toast_manager.dart';
 
 class UserService {
-
   UserController userController = Get.put(UserController());
 
   Future<void> blockedUser() async {
@@ -20,24 +19,26 @@ class UserService {
 
   Future<UserData?> currentUser() async {
     final response = await ApiService().get(currentUserAPI);
-    if (response.statusCode == 200) {
-      final data = UserResponse.fromJson(jsonDecode(response.body));
-      userController.updateUser(data.user);
-      return data.user;
-    } else {
-      blockedUser();
-    }
+    if (response != null) {
+      if (response.statusCode == 200) {
+        final data = UserResponse.fromJson(jsonDecode(response.body));
+        userController.updateUser(data.user);
+        return data.user;
+      } else {
+        blockedUser();
+      }
+    } else {}
     return null;
   }
 
   Future<int> updateUser(Map<String, dynamic> body) async {
     final response = await ApiService().patch(updateUserAPI, body);
-    if (response.statusCode == 200) {
+    if (response != null && response.statusCode == 200) {
       final data = UserResponse.fromJson(jsonDecode(response.body));
       userController.updateUser(data.user);
       return 200;
     } else {
-      final error = ErrorState.fromJson(jsonDecode(response.body));
+      final error = ErrorState.fromJson(jsonDecode(response!.body));
       ToastManager.showToastApp(error.message);
     }
     return 500;
@@ -45,9 +46,9 @@ class UserService {
 
   Future<void> createSupportRequest(Map<String, dynamic> body) async {
     final response = await ApiService().post(createSupportAPI, body);
-    if (response.statusCode == 200) {
+    if (response != null && response.statusCode == 200) {
     } else {
-      final error = ErrorState.fromJson(jsonDecode(response.body));
+      final error = ErrorState.fromJson(jsonDecode(response!.body));
       ToastManager.showToastApp(error.message);
     }
   }

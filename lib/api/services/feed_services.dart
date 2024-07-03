@@ -10,6 +10,7 @@ import 'package:outreach/utils/toast_manager.dart';
 
 class FeedService {
   PostController postController = Get.put(PostController());
+
   Future<void> blockedUser() async {
     await FirebaseAuth.instance.signOut();
     ToastManager.showToastApp("User blocked");
@@ -17,12 +18,11 @@ class FeedService {
 
   Future<Post?> createFeed(Map<String, dynamic> body) async {
     final response = await ApiService().post(createFeedAPI, body);
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final posts = await getFeed();
-      postController.addAllPosts(posts);
-      // final postData = PostResponse.fromJson(jsonDecode(response.body));
-      // postController.addPosts(postData.post);
-      // return postData.post;
+    print(response);
+    if (response != null && response.statusCode == 200 ||
+        response != null && response.statusCode == 201) {
+      final posts = await getFeed(page: 1, limit: 10);
+      postController.initAddPosts(posts);
       return null;
     } else {
       ToastManager.showToastApp("Something went wrong");
@@ -30,10 +30,12 @@ class FeedService {
     return null;
   }
 
-  Future<List<Post>> getFeed() async {
-    // Future<void> getFeed() async {
-    final response = await ApiService().get(getFeedAPI);
-    if (response.statusCode == 200 || response.statusCode == 201) {
+  Future<List<Post>> getFeed({int page = 1, int limit = 10}) async {
+    print("From Get Feed Page $page $limit");
+    final response =
+        await ApiService().get('$getFeedAPI?page=$page&limit=$limit');
+    if (response != null && response.statusCode == 200 ||
+        response != null && response.statusCode == 201) {
       final postsData = PostsResponse.fromJson(jsonDecode(response.body));
       return postsData.posts;
     } else {

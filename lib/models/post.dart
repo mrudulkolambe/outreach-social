@@ -1,3 +1,5 @@
+import 'package:outreach/api/models/upload.dart';
+
 class PostResponse {
   String message;
   Post post;
@@ -6,6 +8,7 @@ class PostResponse {
     required this.message,
     required this.post,
   });
+
   factory PostResponse.fromJson(dynamic json) {
     final message = json["message"] as String;
     final post = Post.fromJson(json["response"]);
@@ -17,6 +20,8 @@ class PostResponse {
   }
 }
 
+List<Post> emptyPost = [];
+
 class PostsResponse {
   bool success;
   String message;
@@ -27,11 +32,13 @@ class PostsResponse {
     required this.message,
     required this.posts,
   });
+
   factory PostsResponse.fromJson(dynamic json) {
     final success = json["success"] as bool;
     final message = json["message"] as String;
-    final posts =
-        List.from(json["response"]).map((e) => Post.fromJson(e)).toList();
+    final posts = json["response"] == [] || json["response"] == null
+        ? emptyPost
+        : List.from(json["response"]).map((e) => Post.fromJson(e)).toList();
 
     return PostsResponse(
       success: success,
@@ -42,6 +49,7 @@ class PostsResponse {
 }
 
 final List<String> emptyTagList = [];
+
 class Post {
   String content;
   List<Media> media;
@@ -63,7 +71,9 @@ class Post {
         List.from(json["media"]).map((e) => Media.fromJson(e)).toList();
     final public = json["public"] as bool;
     final user = PostUser.fromJson(json["userId"]);
-    final tags = json["tags"] == null ? emptyTagList : List.from(json["tags"]).map((e) => e as String).toList();
+    final tags = json["tags"] == null
+        ? emptyTagList
+        : List.from(json["tags"]).map((e) => e as String).toList();
 
     return Post(
       content: content,
@@ -75,41 +85,21 @@ class Post {
   }
 }
 
-class Media {
-  String url;
-  String type;
-
-  Media({
-    required this.url,
-    required this.type,
-  });
-
-  factory Media.fromJson(dynamic json) {
-    final type = json["type"] as String;
-    final url = json["url"] as String;
-
-    return Media(
-      url: url,
-      type: type,
-    );
-  }
-}
-
 class PostUser {
   String name;
   String username;
-  String imageUrl;
+  String? imageUrl;
 
   PostUser({
     required this.name,
     required this.username,
-    required this.imageUrl,
+    this.imageUrl,
   });
 
   factory PostUser.fromJson(dynamic json) {
     final name = json["name"] as String;
     final username = json["username"] as String;
-    final imageUrl = json["imageUrl"] as String;
+    final imageUrl = json["imageUrl"];
 
     return PostUser(
       name: name,

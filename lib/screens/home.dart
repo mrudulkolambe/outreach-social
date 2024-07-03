@@ -5,14 +5,18 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:outreach/api/models/upload.dart';
 import 'package:outreach/api/services/feed_services.dart';
+import 'package:outreach/api/services/upload_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/post.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/models/post.dart';
+import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/navbar.dart';
 import 'package:outreach/widgets/platform_constraints/media_preview_mobile.dart';
@@ -32,6 +36,8 @@ class HomePage extends StatefulWidget {
 
 enum MediaType { image, video }
 
+enum SavingState { no, uploading, uploaded }
+
 class MediaItem {
   final File file;
   final MediaType type;
@@ -43,58 +49,38 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   bool private = false;
   List<Post> postsList = [];
-  bool _saving = false;
+
+  SavingState _saving = SavingState.no;
 
   final List<File> _mediaFiles = [];
-  final List<WebMediaFiles> _mediaFilesWeb = [];
   final List<UploadTask> _uploadTasks = [];
-  double _overallProgress = 0.0;
   final List<VideoPlayerController> _videoControllers = [];
   FeedService feedService = FeedService();
 
   TextEditingController descriptionController = TextEditingController();
   UserController userController = Get.put(UserController());
   PostController postController = Get.put(PostController());
+  final ScrollController _scrollController = ScrollController();
 
   Future<List<Map<String, String>>> _uploadMedia() async {
     setState(() {
-      _saving = true;
+      _saving = SavingState.uploading;
     });
 
     List<Map<String, String>> downloadUrls = [];
-    int totalBytes =
-        _mediaFiles.fold(0, (sum, file) => sum + file.lengthSync());
-    int totalBytesTransferred = 0;
-
-    for (var file in _mediaFiles) {
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('uploads/${file.path.split('/').last}');
-      final uploadTask = storageRef.putFile(file);
-
-      _uploadTasks.add(uploadTask);
-
-      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        if (snapshot.state == TaskState.running) {
-          setState(() {
-            int bytesTransferred = snapshot.bytesTransferred;
-            totalBytesTransferred += bytesTransferred -
-                (totalBytesTransferred % snapshot.totalBytes);
-            _overallProgress = totalBytesTransferred / totalBytes;
-          });
-        }
-      });
-
-      TaskSnapshot snapshot = await uploadTask;
-      String downloadUrl = await snapshot.ref.getDownloadURL();
-
-      String fileType = file.path.split('.').last;
-      downloadUrls.add({'url': downloadUrl, 'type': fileType});
-    }
-
+    final uploadData =
+        await UploadServices().uploadMultipleFiles(_mediaFiles, "posts");
+    List<Map<String, String>> urls = [];
+    urls = uploadData!.media.map((item) => item.toJson()).toList();
+    downloadUrls.addAll(urls);
     setState(() {
-      _saving = false;
+      _saving = SavingState.uploaded;
       _tags = [];
+    });
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        _saving = SavingState.no;
+      });
     });
 
     return downloadUrls;
@@ -102,22 +88,50 @@ class _HomePageState extends State<HomePage>
 
   @override
   void dispose() {
+    _scrollController.dispose();
     for (var controller in _videoControllers) {
       controller.dispose();
     }
     super.dispose();
   }
 
+  int _currentPage = 1;
+  bool _isLoadingMore = false;
+
   @override
   void initState() {
-    initializeState();
     super.initState();
+    initializeState();
+    _scrollController.addListener(morePost);
+  }
+
+  Future<void> morePost() async {
+    if (_scrollController.position.maxScrollExtent ==
+        _scrollController.position.pixels) {
+      _loadMorePosts();
+    }
+  }
+
+  Future<void> _loadMorePosts() async {
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    _currentPage++;
+    final morePosts = await feedService.getFeed(page: _currentPage);
+    setState(() {
+      postsList.addAll(morePosts);
+      postController.addAllPosts(morePosts);
+      _isLoadingMore = false;
+    });
   }
 
   Future<void> initializeState() async {
-    final listPosts = await feedService.getFeed();
+    final listPosts = await feedService.getFeed(page: 1);
     setState(() {
-      postController.addAllPosts(listPosts);
+      _currentPage = 1;
+      postsList = listPosts;
+      postController.initAddPosts(listPosts);
     });
   }
 
@@ -135,330 +149,320 @@ class _HomePageState extends State<HomePage>
 
   void _openBottomSheet() {
     showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-                void extractTags(String text) {
-                  final matches = _tagRegExp.allMatches(text);
-                  setState(() {
-                    _tags.clear();
-                    for (Match match in matches) {
-                      _tags.add(match.group(0)!);
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          void extractTags(String text) {
+            final matches = _tagRegExp.allMatches(text);
+            setState(() {
+              _tags.clear();
+              for (Match match in matches) {
+                _tags.add(match.group(0)!);
+              }
+            });
+          }
+
+          void createPost() async {
+            List<Map<String, String>> urls = [];
+            if (_mediaFiles.isNotEmpty) {
+              urls = await _uploadMedia();
+            }
+            final body = {
+              "public": !private,
+              "content": descriptionController.text,
+              "media": urls,
+              "tags": _tags
+            };
+            print(body);
+            feedService.createFeed(body);
+          }
+
+          Future<void> pickMedia() async {
+            FilePickerResult? result = await FilePicker.platform.pickFiles(
+              type: FileType.custom,
+              allowedExtensions: ['jpg', 'jpeg', 'png', 'mp4', 'mov'],
+              allowMultiple: true,
+            );
+
+            if (result != null) {
+              setState(() {
+                List<File> newFiles = result.paths.map((path) {
+                  return File(path!);
+                }).toList();
+                _mediaFiles.addAll(newFiles);
+              });
+            }
+          }
+
+          return Scaffold(
+            backgroundColor: Colors.white,
+            appBar: AppBar(
+              surfaceTintColor: Colors.transparent,
+              backgroundColor: Colors.white,
+              title: const Text(
+                "Create Post",
+                style: TextStyle(fontSize: 20),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    if (descriptionController.text.isNotEmpty ||
+                        _mediaFiles.isNotEmpty) {
+                      Get.back();
+                      createPost();
+                    } else {
+                      ToastManager.showToast(
+                        "No media selected",
+                        context,
+                      );
                     }
-                  });
-                }
-
-                void createPost() async {
-                  dynamic urls = [];
-                  urls = await _uploadMedia();
-                  final body = {
-                    "public": !private,
-                    "content": descriptionController.text,
-                    "media": urls,
-                    "tags": _tags
-                  };
-                  feedService.createFeed(body);
-                }
-
-                Future<void> pickMedia() async {
-                  FilePickerResult? result =
-                      await FilePicker.platform.pickFiles(
-                    type: FileType.custom,
-                    allowedExtensions: ['jpg', 'jpeg', 'png', 'mp4', 'mov'],
-                    allowMultiple: true,
-                  );
-
-                  if (result != null) {
-                    setState(() {
-                      List<File> newFiles = result.paths.map((path) {
-                        return File(path!);
-                      }).toList();
-                      _mediaFiles.addAll(newFiles);
-                    });
-                  }
-                }
-
-                return Scaffold(
-                  backgroundColor: Colors.white,
-                  appBar: AppBar(
-                    surfaceTintColor: Colors.transparent,
-                    backgroundColor: Colors.white,
-                    title: const Text(
-                      "Create Post",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          if (_mediaFiles.isNotEmpty ||
-                              _mediaFilesWeb.isNotEmpty) {
-                            // Get.back();
-                            createPost();
-                          } else {}
-                        },
-                        child: const Text(
-                          "Post",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: accent,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  body: SafeArea(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: horizontal_p,
-                      ),
-                      child: Column(
-                        children: [
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Row(
-                            children: [
-                              userController.userData!.imageUrl == null
-                                  ? Container(
-                                      height: 70,
-                                      width: 70,
-                                      decoration: BoxDecoration(
-                                        color: accent,
-                                        borderRadius:
-                                            BorderRadius.circular(70 / 2),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          userController.userData!.name!
-                                              .substring(0, 1)
-                                              .toUpperCase(),
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                    )
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(40),
-                                      child: Image.network(
-                                        userController.userData!.imageUrl!,
-                                        height: 70,
-                                        width: 70,
-                                      ),
-                                    ),
-                              const SizedBox(
-                                width: 15,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    userController.userData!.name!,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            private = false;
-                                          });
-                                        },
-                                        child: Container(
-                                          width: 70,
-                                          height: 30,
-                                          decoration: BoxDecoration(
-                                            color: private != true
-                                                ? accent
-                                                : accent.withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              "Public",
-                                              style: TextStyle(
-                                                color: private != true
-                                                    ? Colors.white
-                                                    : accent,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            private = true;
-                                          });
-                                        },
-                                        child: Container(
-                                          width: 70,
-                                          height: 30,
-                                          decoration: BoxDecoration(
-                                            color: private == true
-                                                ? accent
-                                                : accent.withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              "Private",
-                                              style: TextStyle(
-                                                color: private == true
-                                                    ? Colors.white
-                                                    : accent,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextFormField(
-                            onChanged: extractTags,
-                            controller: descriptionController,
-                            maxLength: 500,
-                            minLines: null,
-                            maxLines: null,
-                            keyboardType: TextInputType.multiline,
-                            style: const TextStyle(fontSize: 16),
-                            decoration: const InputDecoration(
-                              hintText: "What's on your mind?",
-                              enabledBorder: InputBorder.none,
-                              counterText: '',
-                              hintStyle: TextStyle(color: accent, fontSize: 16),
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                            ),
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width -
-                                2 * horizontal_p,
-                            child: Wrap(
-                              alignment: WrapAlignment.spaceBetween,
-                              children: [
-                                if (!kIsWeb)
-                                  for (int i = 0; i < _mediaFiles.length; i++)
-                                    Stack(
-                                      children: [
-                                        MediaPreviewMobile(
-                                          mediaFile: _mediaFiles[i],
-                                          fileName: _mediaFiles[i]
-                                              .path
-                                              .split("/")
-                                              .last,
-                                        ),
-                                        Positioned(
-                                          top: 0,
-                                          right: 0,
-                                          child: IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                _mediaFiles.removeAt(i);
-                                              });
-                                            },
-                                            icon: const Icon(
-                                              Icons.close,
-                                              color: Colors.black,
-                                              size: 20,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
+                  },
+                  child: const Text(
+                    "Post",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: accent,
+                      fontSize: 16,
                     ),
                   ),
-                  bottomNavigationBar: SizedBox(
-                    height: 70,
-                    width: MediaQuery.of(context).size.width,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                ),
+              ],
+            ),
+            body: SafeArea(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: horizontal_p,
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
                       children: [
-                        GestureDetector(
-                          onTap: pickMedia,
-                          child: Container(
-                            height: 35,
-                            decoration: BoxDecoration(
-                              color: accent.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                            ),
-                            child: Center(
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.upload_file,
-                                    size: 18,
-                                    color: accent,
+                        userController.userData!.imageUrl == null
+                            ? Container(
+                                height: 70,
+                                width: 70,
+                                decoration: BoxDecoration(
+                                  color: accent,
+                                  borderRadius: BorderRadius.circular(70 / 2),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    userController.userData!.name!
+                                        .substring(0, 1)
+                                        .toUpperCase(),
+                                    style: TextStyle(color: Colors.white),
                                   ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    _mediaFiles.isNotEmpty
-                                        ? "Add more Photos/Videos"
-                                        : "Upload Photos/Videos",
-                                    style: const TextStyle(
-                                      color: accent,
-                                    ),
-                                  )
-                                ],
+                                ),
+                              )
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(40),
+                                child: Image.network(
+                                  userController.userData!.imageUrl!,
+                                  height: 70,
+                                  width: 70,
+                                ),
+                              ),
+                        const SizedBox(
+                          width: 15,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              userController.userData!.name!,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                          ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      private = false;
+                                    });
+                                  },
+                                  child: Container(
+                                    width: 70,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      color: private != true
+                                          ? accent
+                                          : accent.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Public",
+                                        style: TextStyle(
+                                          color: private != true
+                                              ? Colors.white
+                                              : accent,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      private = true;
+                                    });
+                                  },
+                                  child: Container(
+                                    width: 70,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      color: private == true
+                                          ? accent
+                                          : accent.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Private",
+                                        style: TextStyle(
+                                          color: private == true
+                                              ? Colors.white
+                                              : accent,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
                         )
                       ],
                     ),
-                  ),
-                );
-              },
-            ));
-    // showModalBottomSheet(
-    //   context: context,
-    //   isDismissible: false,
-    //   enableDrag: false,
-    //   useSafeArea: true,
-    //   transitionAnimationController: AnimationController(
-    //     vsync: Navigator.of(context),
-    //     duration: const Duration(milliseconds: 100),
-    //   ),
-    //   isScrollControlled: true,
-    //   shape: const BeveledRectangleBorder(),
-    //   builder: (context) {
-    //     return
-    //   },
-    // );
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      onChanged: extractTags,
+                      controller: descriptionController,
+                      maxLength: 500,
+                      minLines: null,
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      style: const TextStyle(fontSize: 16),
+                      decoration: const InputDecoration(
+                        hintText: "What's on your mind?",
+                        enabledBorder: InputBorder.none,
+                        counterText: '',
+                        hintStyle: TextStyle(color: accent, fontSize: 16),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                      ),
+                    ),
+                    SizedBox(
+                      width:
+                          MediaQuery.of(context).size.width - 2 * horizontal_p,
+                      child: Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        children: [
+                          if (!kIsWeb)
+                            for (int i = 0; i < _mediaFiles.length; i++)
+                              Stack(
+                                children: [
+                                  MediaPreviewMobile(
+                                    mediaFile: _mediaFiles[i],
+                                    fileName:
+                                        _mediaFiles[i].path.split("/").last,
+                                  ),
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _mediaFiles.removeAt(i);
+                                        });
+                                      },
+                                      icon: const Icon(
+                                        Icons.close,
+                                        color: Colors.black,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            bottomNavigationBar: SizedBox(
+              height: 70,
+              width: MediaQuery.of(context).size.width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  InkWell(
+                    onTap: pickMedia,
+                    child: Container(
+                      height: 35,
+                      decoration: BoxDecoration(
+                        color: accent.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                      ),
+                      child: Center(
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.upload_file,
+                              size: 18,
+                              color: accent,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              _mediaFiles.isNotEmpty
+                                  ? "Add more Photos/Videos"
+                                  : "Upload Photos/Videos",
+                              style: const TextStyle(
+                                color: accent,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         toolbarHeight: 80,
         leadingWidth: 160,
@@ -536,6 +540,7 @@ class _HomePageState extends State<HomePage>
             return initializeState();
           },
           child: SingleChildScrollView(
+            controller: _scrollController,
             child: Column(
               children: [
                 SizedBox(
@@ -614,12 +619,10 @@ class _HomePageState extends State<HomePage>
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: _saving != SavingState.no ? 20 : 10,
                 ),
-                if (_saving &&
-                    _overallProgress != 100 &&
-                    _overallProgress != 100.0)
+                if (_saving == SavingState.uploading)
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: horizontal_p,
@@ -627,7 +630,6 @@ class _HomePageState extends State<HomePage>
                     child: Column(
                       children: [
                         LinearProgressIndicator(
-                          value: _overallProgress,
                           borderRadius: BorderRadius.circular(5),
                         ),
                         const SizedBox(
@@ -641,7 +643,7 @@ class _HomePageState extends State<HomePage>
                       ],
                     ),
                   ),
-                if (_overallProgress == 100 && _overallProgress == 100.0)
+                if (_saving == SavingState.uploaded)
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: horizontal_p,
@@ -657,24 +659,34 @@ class _HomePageState extends State<HomePage>
                     ),
                   ),
                 GetBuilder<PostController>(
-                    init: PostController(),
-                    builder: (postController) {
-                      return Column(
-                        children: [
-                          ...postController.posts.reversed.map((post) {
-                            return PostCard(
-                              post: post,
-                            );
-                          })
-                        ],
-                      );
-                    })
+                  init: PostController(),
+                  builder: (postController) {
+                    return Column(
+                      children: [
+                        ...postController.posts.reversed
+                            .toList()
+                            .asMap()
+                            .entries
+                            .map((entry) =>
+                                PostCard(post: entry.value, index: entry.key))
+                      ],
+                    );
+                  },
+                )
               ],
             ),
           ),
         ),
       ),
       bottomNavigationBar: Navbar(
+        homeClick: () {
+          print("object");
+          _scrollController.animateTo(
+            0,
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        },
         openBottomSheet: _openBottomSheet,
       ),
     );

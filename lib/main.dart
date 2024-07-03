@@ -12,6 +12,8 @@ import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/controller/post.dart';
+import 'package:outreach/injection/dependency_injection.dart';
+import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/auth/username.dart';
 import 'package:outreach/screens/home.dart';
 import 'package:outreach/screens/onboarding.dart';
@@ -21,23 +23,8 @@ import 'package:permission_handler/permission_handler.dart';
 void main() async {
   BindingBase.debugZoneErrorsAreFatal = true;
   WidgetsFlutterBinding.ensureInitialized();
-  if (kIsWeb) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: "AIzaSyB0CLfKW9mg5xKtPrlGAUmBp8QM9SOXFM0",
-        appId: "1:1055951057562:web:0e6d85df8ce9f8371be523",
-        messagingSenderId: "1055951057562",
-        projectId: "outreach-social",
-        authDomain: "outreach-social.firebaseapp.com",
-        storageBucket: "outreach-social.appspot.com",
-      ),
-    );
-  } else {
-    await Firebase.initializeApp();
-  }
-
-// Ideal time to initialize
-  // await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  await Firebase.initializeApp();
+  DependencyInjection.init();
   runApp(const MyApp());
 }
 
@@ -53,7 +40,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-       debugShowMaterialGrid: false,
+      debugShowMaterialGrid: false,
       title: 'Outreach',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: accent),
@@ -82,29 +69,34 @@ class _SplashScreenState extends State<SplashScreen>
   StreamSubscription<User?>? _authSubscription;
 
   Future<void> _isAuthed() async {
-    _authSubscription =
-        FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-      if (!mounted) return;
-
-      if (user != null) {
-        final UserData? userData = await userService.currentUser();
+    try {
+      _authSubscription =
+          FirebaseAuth.instance.authStateChanges().listen((User? user) async {
         if (!mounted) return;
 
-        if (userData == null) {
-          userService.blockedUser();
-        } else if (userData.username == "" ||
-            userData.username == null ||
-            userData.name == null ||
-            userData.name == "") {
-          ToastManager.showToast("Please fill the form first", context);
-          Get.offAll(() => const Username());
+        if (user != null) {
+          final UserData? userData = await userService.currentUser();
+          if (!mounted) return;
+
+          if (userData == null) {
+            userService.blockedUser();
+          } else if (userData.username == "" ||
+              userData.username == null ||
+              userData.name == null ||
+              userData.name == "") {
+            ToastManager.showToast("Please fill the form first", context);
+            Get.offAll(() => const Username());
+          } else {
+            Get.offAll(() => const HomePage());
+          }
         } else {
-          Get.offAll(() => const HomePage());
+          Get.offAll(() => const OnBoarding());
         }
-      } else {
-        Get.offAll(() => const OnBoarding());
-      }
-    });
+      });
+    } catch (e) {
+      await FirebaseAuth.instance.signOut();
+      Get.offAll(() => const Login());
+    }
   }
 
   @override
@@ -120,8 +112,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _authSubscription
-        ?.cancel();
+    _authSubscription?.cancel();
     super.dispose();
   }
 

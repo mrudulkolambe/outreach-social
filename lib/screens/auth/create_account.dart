@@ -66,6 +66,7 @@ class _CreateAccountState extends State<CreateAccount> {
           password: passwordController.text,
         );
         final token = await credential.user!.getIdToken();
+        print(token);
         registerUserDB(token!);
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {

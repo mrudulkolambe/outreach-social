@@ -37,12 +37,12 @@ class _LoginState extends State<Login> {
       loading = true;
     });
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
       );
+      print(credential.credential);
       final UserData? userData = await userService.currentUser();
-
       if (!mounted) return;
 
       if (userData == null) {
@@ -56,6 +56,7 @@ class _LoginState extends State<Login> {
         Get.offAll(() => const HomePage());
       }
     } on FirebaseAuthException catch (e) {
+      print(e);
       if (e.code == 'user-not-found') {
         ToastManager.showToast(
           'No user found for that email.',
@@ -83,6 +84,7 @@ class _LoginState extends State<Login> {
         );
       }
     } catch (e) {
+      print(e);
       ToastManager.showToast(
         e.toString(),
         context,
@@ -94,10 +96,11 @@ class _LoginState extends State<Login> {
   }
 
   void resetPass() async {
-    if(emailController.text.isEmpty || !emailController.text.isEmail){
+    if (emailController.text.isEmpty || !emailController.text.isEmail) {
       ToastManager.showToast("Invalid email", context);
-    }else{
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: emailController.text);
+    } else {
+      await FirebaseAuth.instance
+          .sendPasswordResetEmail(email: emailController.text);
       ToastManager.showToast("Password reset link sent to email", context);
     }
   }
@@ -259,7 +262,7 @@ class _LoginState extends State<Login> {
                       Column(
                         children: [
                           SizedBox(
-                            width: MediaQuery.of(context).size.width* 0.75,
+                            width: MediaQuery.of(context).size.width * 0.75,
                             child: Row(
                               children: [
                                 Expanded(
