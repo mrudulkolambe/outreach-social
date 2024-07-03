@@ -21,10 +21,9 @@ import 'package:outreach/utils/toast_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
-  BindingBase.debugZoneErrorsAreFatal = true;
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  DependencyInjection.init();
+  // DependencyInjection.init(); // Uncomment if using dependency injection
   runApp(const MyApp());
 }
 
@@ -94,6 +93,7 @@ class _SplashScreenState extends State<SplashScreen>
         }
       });
     } catch (e) {
+      if (!mounted) return;
       await FirebaseAuth.instance.signOut();
       Get.offAll(() => const Login());
     }
@@ -129,7 +129,7 @@ class _SplashScreenState extends State<SplashScreen>
                 "assets/main.gif",
                 width: MediaQuery.of(context).size.width * 0.8,
               ),
-            )
+            ),
           ],
         ),
       ),

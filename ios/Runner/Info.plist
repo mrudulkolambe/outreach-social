@@ -28,6 +28,24 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.1055951057562-hlj22gch50uvuku1o5b8tsofkv0pbm64</string>
+			</array>
+		</dict>
+	</array>
+	<key>GoogleService-Info</key>
+	<dict>
+		<key>CLIENT_ID</key>
+		<string>com.googleusercontent.apps.1055951057562-hlj22gch50uvuku1o5b8tsofkv0pbm64</string>
+	</dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to upload photos.</string>
+	<key>NSDocumentDirectoryUsageDescription</key>
+	<string>We need access to your documents to upload files.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1055951057562-hlj22gch50uvuku1o5b8tsofkv0pbm64.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1055951057562-hlj22gch50uvuku1o5b8tsofkv0pbm64</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1055951057562-24cu5g0cant70uei4mm6facicjnm8knc.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBLnXDJX8lVJeHV2e3zf4VTxyEnT-lQzjQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1055951057562</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.outreach.social</string>
+	<key>PROJECT_ID</key>
+	<string>outreach-social</string>
+	<key>STORAGE_BUCKET</key>
+	<string>outreach-social.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1055951057562:ios:710ba3a1f79dc4711be523</string>
+</dict>
+</plist>
