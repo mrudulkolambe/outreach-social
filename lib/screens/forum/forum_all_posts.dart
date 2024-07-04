@@ -1,19 +1,41 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:outreach/api/models/forum.dart';
+import 'package:outreach/api/services/forum_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/models/post.dart';
+import 'package:outreach/widgets/forum/forum_card.dart';
 import 'package:outreach/widgets/navbar.dart';
 import 'package:outreach/widgets/post_card.dart';
 
 class ForumAllPosts extends StatefulWidget {
-  const ForumAllPosts({super.key});
+  final Forum forum;
+
+  const ForumAllPosts({super.key, required this.forum});
 
   @override
   State<ForumAllPosts> createState() => _ForumAllPostsState();
 }
 
 class _ForumAllPostsState extends State<ForumAllPosts> {
+  List<ForumPost> forumPosts = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    initializeState();
+    super.initState();
+  }
+
+  void initializeState() async {
+    final forumPostsFetched =
+        await ForumServices().getForumPosts(widget.forum.id);
+    setState(() {
+      forumPosts = forumPostsFetched ?? [];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +50,7 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
             ClipRRect(
               borderRadius: BorderRadius.circular(25),
               child: Image.network(
-                "https://s3-alpha-sig.figma.com/img/2dcb/7a01/54ad9a01326b0b499d4f7b0b7957ac26?Expires=1720396800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=iWulHRkxK3bgSCncjTGOMZNBHy5HNWap4DeoVvHncq86ZU7NPy1jSCp35Bgx8zcUJMwNu9v-f60jFUuMXOHxGzJ6t0bloF5KWognoSvrGva8~LtVQZtlAcimBo75Mtc2eq4zuPzW9k0NyyLaoOj~hj~Gk3u3kTJSgpZQ4M8Kc~XKtfaVf-ztOnOlQXZNpXAnhwEdJbr0PkzBYCCaswVq8ZiERdod~biPSWlv8heg4P~oUkKNeUdWwDBYytfGG2zdgFvbeKCrVgAIYamo-se2xILfJ35SCqpy7txJ6C1DU6oe0u6-O13zPg31ZLzfm91DSWtj9QCjzqvaNaEAITAUDw__",
+                widget.forum.image,
                 height: 45,
                 width: 45,
                 fit: BoxFit.cover,
@@ -37,17 +59,17 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
             const SizedBox(
               width: 15,
             ),
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Women's Health",
+                  widget.forum.name,
                   style: TextStyle(
                     fontSize: 20,
                   ),
                 ),
                 Text(
-                  "126 members",
+                  "${widget.forum.joined.length} members",
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -60,39 +82,67 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Stack(
-            children: [
-              const Column(
-                children: [],
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ...forumPosts.map((forumPost) {
+                      return ForumCard(
+                          forum: widget.forum, forumPost: forumPost);
+                    }).toList(),
+                  ],
+                ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: horizontal_p,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: horizontal_p,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(width: 2, color: grey.withOpacity(0.2)),
+                    bottom: BorderSide(width: 2, color: grey.withOpacity(0.2)),
+                  ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.add_rounded),
-                        SizedBox(
-                          width: 10,
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.add_rounded),
                         ),
-                        Text("Post"),
+                        Text(
+                          'Post',
+                        )
                       ],
                     ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.arrow_upward,
+                    InkWell(
+                      onTap: () {},
+                      child: Container(
+                        height: 30,
+                        width: 30,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          color: accent,
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.arrow_upward,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     )
                   ],
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
       bottomNavigationBar: const Navbar(),

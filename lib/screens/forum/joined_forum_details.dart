@@ -1,19 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outreach/api/models/forum.dart';
+import 'package:outreach/api/services/forum_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
+import 'package:outreach/screens/forum/forum.dart';
 import 'package:outreach/screens/forum/forum_all_posts.dart';
+import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/navbar.dart';
 
 class JoinedForumDetails extends StatefulWidget {
-  const JoinedForumDetails({super.key});
+  final Forum forum;
+
+  const JoinedForumDetails({super.key, required this.forum});
 
   @override
   State<JoinedForumDetails> createState() => _JoinedForumDetailsState();
 }
 
 class _JoinedForumDetailsState extends State<JoinedForumDetails> {
+  void leaveForum() async {
+    final result = await ForumServices().leaveForum(widget.forum.id);
+    if (result == 200) {
+      ToastManager.showToast("Success", context);
+      Get.offAll(() => const ForumScreen());
+    } else {
+      ToastManager.showToast("Something went wrong!", context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +44,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
             ClipRRect(
               borderRadius: BorderRadius.circular(25),
               child: Image.network(
-                "https://s3-alpha-sig.figma.com/img/2dcb/7a01/54ad9a01326b0b499d4f7b0b7957ac26?Expires=1720396800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=iWulHRkxK3bgSCncjTGOMZNBHy5HNWap4DeoVvHncq86ZU7NPy1jSCp35Bgx8zcUJMwNu9v-f60jFUuMXOHxGzJ6t0bloF5KWognoSvrGva8~LtVQZtlAcimBo75Mtc2eq4zuPzW9k0NyyLaoOj~hj~Gk3u3kTJSgpZQ4M8Kc~XKtfaVf-ztOnOlQXZNpXAnhwEdJbr0PkzBYCCaswVq8ZiERdod~biPSWlv8heg4P~oUkKNeUdWwDBYytfGG2zdgFvbeKCrVgAIYamo-se2xILfJ35SCqpy7txJ6C1DU6oe0u6-O13zPg31ZLzfm91DSWtj9QCjzqvaNaEAITAUDw__",
+                widget.forum.image,
                 height: 45,
                 width: 45,
                 fit: BoxFit.cover,
@@ -40,14 +56,14 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Women's Health",
+                Text(
+                  widget.forum.name,
                   style: TextStyle(
                     fontSize: 20,
                   ),
                 ),
-                const Text(
-                  "126 members",
+                Text(
+                  "${widget.forum.joined.length} members",
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -67,7 +83,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
           ),
           child: Column(
             children: [
-              const Row(
+              Row(
                 children: [
                   Text(
                     'Created by',
@@ -77,8 +93,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                     width: 5,
                   ),
                   CircularShimmerImage(
-                    imageUrl:
-                        "https://s3-alpha-sig.figma.com/img/7e3b/a4fa/4ba8d958b31942e64de879a7d7e4146a?Expires=1720396800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=qf4L5rrqnOW8paVNhj-yqAMRA3I-mQl3jKYiW9fbNUommV~9P0bwUQSUga7dhWZ~bk2Ksmu2kudd2zaWAJdMMpj~BwCIkdP6A0ZZKkV~Iu3Rs1zLJcpTluRb0YL1pqXkl3KvnvqAomkq3MZeff9oCBmsgXZk3~pZ9ZKRMcexPPiTuDL-JeEfIh56PGZa1pPma-WX6MP~9PmXM5qoSbvWoCs~~S1lziFRzVoo9SycSCCd3SAGvue0UQ-5xHb7Wr00tN1jCNq6vmPQy3NNGZmUsu4f6hNxlSPuTtrgI97wx3Ik7XqfdQJWPOCxkvJsdds73ERhdJY2YKr~PUmdv7xnZA__",
+                    imageUrl: widget.forum.userId.imageUrl!,
                     size: 24,
                   ),
                   SizedBox(
@@ -86,7 +101,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                   ),
                   Expanded(
                       child: Text(
-                    "@chineduok",
+                    "@${widget.forum.userId.username}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontWeight: FontWeight.w600),
@@ -99,7 +114,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
               Row(
                 children: [
                   Text(
-                    "16 members",
+                    '${widget.forum.joined.length.toString()} members',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
@@ -168,7 +183,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                 children: [
                   Expanded(
                     child: Text(
-                      "One of the most stunning and essential treks in India's north is the. You should go on the relatively simple but rewarding trek to Parashar Lake before the tourist crowds arrive. The floating island in the lake is well-known.",
+                      widget.forum.description,
                       style: TextStyle(
                         fontSize: 16,
                         color: grey,
@@ -181,11 +196,13 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                 height: 30,
               ),
               InkWell(
-                onTap: () => Get.to(() => const ForumAllPosts()),
+                onTap: () => Get.to(() => ForumAllPosts(
+                      forum: widget.forum,
+                    )),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                   decoration: BoxDecoration(
-                    color: grey.withOpacity(0.3),
+                    color: grey.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -211,31 +228,34 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
               SizedBox(
                 height: 10,
               ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                decoration: BoxDecoration(
-                  color: grey.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Leave forum",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.red,
+              InkWell(
+                onTap: leaveForum,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: grey.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Leave forum",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.red,
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.logout_rounded,
-                        color: Colors.red,
-                      ),
-                    )
-                  ],
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.logout_rounded,
+                          color: Colors.red,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ],

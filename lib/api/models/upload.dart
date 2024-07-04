@@ -27,6 +27,33 @@ class MultiUploadResponse {
   }
 }
 
+class SingleUploadResponse {
+  String status;
+  Media media;
+
+  SingleUploadResponse({
+    required this.status,
+    required this.media,
+  });
+
+  factory SingleUploadResponse.fromJson(dynamic json) {
+    final status = json["status"] as String;
+    final media = Media.fromJson(json["media"]);
+
+    return SingleUploadResponse(
+      status: status,
+      media: media,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "status": status,
+      "media": media.toJson(),
+    };
+  }
+}
+
 class Media {
   String url;
   String type;

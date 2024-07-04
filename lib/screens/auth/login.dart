@@ -339,7 +339,7 @@ class _LoginState extends State<Login> {
                               const SizedBox(
                                 width: 3,
                               ),
-                              GestureDetector(
+                              InkWell(
                                 onTap: () =>
                                     Get.to(() => const CreateAccount()),
                                 child: const Text(

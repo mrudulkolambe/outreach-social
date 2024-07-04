@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outreach/api/services/forum_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
+import 'package:outreach/controller/forum.dart';
+import 'package:outreach/controller/user.dart';
 import 'package:outreach/screens/forum/create_forum.dart';
 import 'package:outreach/screens/forum/joined_forum.dart';
 import 'package:outreach/widgets/forum/forum_card_primary.dart';
@@ -16,6 +19,21 @@ class ForumScreen extends StatefulWidget {
 }
 
 class _ForumScreenState extends State<ForumScreen> {
+  final ForumController forumController = Get.put(ForumController());
+  final UserController userController = Get.put(UserController());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    initializeState();
+    super.initState();
+  }
+
+  void initializeState() async {
+    final forums = await ForumServices().getForums();
+    forumController.initAddForums(forums ?? []);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,145 +48,169 @@ class _ForumScreenState extends State<ForumScreen> {
       ),
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
-                child: SizedBox(
-                  height: 45,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      hintText: "Search...",
-                      prefixIcon: Icon(
-                        Icons.search_rounded,
-                        size: 20,
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-                      fillColor: Color.fromRGBO(239, 239, 240, 1),
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Divider(
-                thickness: 5,
-                color: Color.fromRGBO(239, 239, 240, 1),
-              ),
-              SizedBox(
-                height: 145,
+        child: GetBuilder<ForumController>(
+            init: ForumController(),
+            builder: (forumController) {
+              return SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Padding(
                       padding:
                           const EdgeInsets.symmetric(horizontal: horizontal_p),
+                      child: SizedBox(
+                        height: 45,
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                            hintText: "Search...",
+                            prefixIcon: Icon(
+                              Icons.search_rounded,
+                              size: 20,
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 20),
+                            fillColor: Color.fromRGBO(239, 239, 240, 1),
+                            filled: true,
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    if (forumController.forums
+                        .where((forum) =>
+                            forum.userId.id == userController.userData!.id ||
+                            forum.joined.contains(userController.userData!.id))
+                        .isNotEmpty)
+                      const Divider(
+                        thickness: 5,
+                        color: Color.fromRGBO(239, 239, 240, 1),
+                      ),
+                    if (forumController.forums
+                        .where((forum) =>
+                            forum.userId.id == userController.userData!.id ||
+                            forum.joined.contains(userController.userData!.id))
+                        .isNotEmpty)
+                      SizedBox(
+                        height: 145,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: horizontal_p),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    "List of forum joined",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Get.to(() => const JoinedForum()),
+                                    child: const Text(
+                                      "View all",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: accent,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (forumController.forums
+                                .where((forum) =>
+                                    forum.userId.id ==
+                                        userController.userData!.id ||
+                                    forum.joined
+                                        .contains(userController.userData!.id))
+                                .isNotEmpty)
+                              SizedBox(
+                                height: 95,
+                                width: MediaQuery.of(context).size.width -
+                                    horizontal_p,
+                                child: ListView.separated(
+                                  physics: const BouncingScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    return ForumListCard(
+                                      forum: forumController.forums
+                                          .where((forum) =>
+                                              forum.userId.id ==
+                                                  userController.userData!.id ||
+                                              forum.joined.contains(
+                                                  userController.userData!.id))
+                                          .toList()[index],
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) {
+                                    return const SizedBox(width: 15);
+                                  },
+                                  itemCount: forumController.forums
+                                      .where((forum) =>
+                                          forum.userId.id ==
+                                              userController.userData!.id ||
+                                          forum.joined.contains(
+                                              userController.userData!.id))
+                                      .length,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    const Divider(
+                      thickness: 5,
+                      color: Color.fromRGBO(239, 239, 240, 1),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: horizontal_p),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            "List of forum joined",
+                          Text(
+                            "Explore new forum",
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () => Get.to(() => const JoinedForum()),
-                            child: const Text(
-                              "View all",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: accent,
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 95,
-                      width: MediaQuery.of(context).size.width - horizontal_p,
-                      child: ListView.separated(
-                        physics: const BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return const ForumListCard(title: "Basic Yoga");
-                        },
-                        separatorBuilder: (context, index) {
-                          return const SizedBox(width: 15);
-                        },
-                        itemCount: 10,
-                      ),
-                    ),
+                    Column(
+                      children: [
+                        ...forumController.forums
+                            .where(
+                              (forum) =>
+                                  forum.public &&
+                                  forum.userId.id !=
+                                      userController.userData!.id &&
+                                  !forum.joined
+                                      .contains(userController.userData!.id),
+                            )
+                            .map(
+                              (forum) => ForumCardPrimary(
+                                joined: false,
+                                forum: forum,
+                              ),
+                            )
+                      ],
+                    )
                   ],
                 ),
-              ),
-              const Divider(
-                thickness: 5,
-                color: Color.fromRGBO(239, 239, 240, 1),
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: horizontal_p),
-                child: Row(
-                  children: [
-                    Text(
-                      "Explore new forum",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Column(
-                children: [
-                  ForumCardPrimary(
-                    joined: false,
-                  ),
-                  ForumCardPrimary(
-                    joined: false,
-                  ),
-                  ForumCardPrimary(
-                    joined: false,
-                  ),
-                  ForumCardPrimary(
-                    joined: false,
-                  ),
-                  ForumCardPrimary(
-                    joined: false,
-                  ),
-                  ForumCardPrimary(
-                    joined: false,
-                  ),
-                  ForumCardPrimary(
-                    joined: false,
-                  ),
-                  ForumCardPrimary(
-                    joined: false,
-                  ),
-                  ForumCardPrimary(
-                    joined: false,
-                  ),
-                  ForumCardPrimary(
-                    joined: false,
-                  ),
-                ],
-              )
-            ],
-          ),
-        ),
+              );
+            }),
       ),
       bottomNavigationBar: const Navbar(),
       floatingActionButton: FloatingActionButton.extended(

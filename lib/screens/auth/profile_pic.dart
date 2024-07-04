@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:outreach/api/services/upload_services.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
@@ -30,25 +31,19 @@ class _ProfilePicState extends State<ProfilePic> {
   bool _uploading = false;
   final ImagePicker _picker = ImagePicker();
 
-  Future<String?> uploadImageToFirebase(XFile image) async {
+  Future<String?> uploadImage(XFile image) async {
     try {
       setState(() {
         _uploading = true;
       });
       final file = File(image.path);
       final userID = FirebaseAuth.instance.currentUser!.uid;
-      final storageRef = FirebaseStorage.instance.ref();
-      final filename = file.path.split("/").last;
-      final uploadRef = storageRef.child("$userID/uploads/$userID-$filename");
-      if (kIsWeb) {
-        await uploadRef.putData(await file.readAsBytes());
-      } else {
-        await uploadRef.putFile(file);
-      }
-
-      final imgUrl = await uploadRef.getDownloadURL();
+      final mediaData =
+          await UploadServices().uploadSingleFile(file, "profile/$userID");
       final responseStatus = await userService.updateUser({
-        "updateData": {"imageUrl": imgUrl}
+        "updateData": {
+          "imageUrl": mediaData!.media.url,
+        }
       });
       if (responseStatus == 200 || responseStatus == 201) {
         ToastManager.showToast("Profile updated", context);
@@ -129,7 +124,16 @@ class _ProfilePicState extends State<ProfilePic> {
                             ),
                           ),
                         ),
-                          TextButton(onPressed: () => Get.to(() => const Bio(update: false, bio: "",)), child: const Text("Skip", style: TextStyle(color: grey, fontWeight: FontWeight.w400),))
+                        TextButton(
+                            onPressed: () => Get.to(() => const Bio(
+                                  update: false,
+                                  bio: "",
+                                )),
+                            child: const Text(
+                              "Skip",
+                              style: TextStyle(
+                                  color: grey, fontWeight: FontWeight.w400),
+                            ))
                       ],
                     ),
                     const SizedBox(
@@ -222,7 +226,7 @@ class _ProfilePicState extends State<ProfilePic> {
                         borderRadius: BorderRadius.circular(230 / 2),
                         onTap: () {
                           if (pickedImage != null) {
-                            uploadImageToFirebase(pickedImage!);
+                            uploadImage(pickedImage!);
                           } else {
                             ToastManager.showToast("Pick the image", context);
                           }

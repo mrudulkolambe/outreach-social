@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:outreach/constants/spacing.dart';
+import 'package:outreach/controller/forum.dart';
+import 'package:outreach/controller/user.dart';
 import 'package:outreach/widgets/forum/forum_card_primary.dart';
 import 'package:outreach/widgets/navbar.dart';
 
@@ -11,6 +14,9 @@ class JoinedForum extends StatefulWidget {
 }
 
 class _JoinedForumState extends State<JoinedForum> {
+  final ForumController forumController = Get.put(ForumController());
+  final UserController userController = Get.put(UserController());
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -59,22 +65,15 @@ class _JoinedForumState extends State<JoinedForum> {
               const SizedBox(
                 height: 8,
               ),
-              const Column(
+              Column(
                 children: [
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
-                  ForumCardPrimary(joined: true,),
+                  ...forumController.forums
+                      .where((forum) =>
+                          forum.joined.contains(userController.userData!.id) ||
+                          forum.userId.id == userController.userData!.id)
+                      .map((forum) {
+                    return ForumCardPrimary(joined: true, forum: forum);
+                  })
                 ],
               )
             ],

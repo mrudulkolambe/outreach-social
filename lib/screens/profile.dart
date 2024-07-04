@@ -3,6 +3,7 @@
 
 import 'dart:io';
 
+import 'package:cross_file/cross_file.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:outreach/api/services/upload_services.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
@@ -40,19 +42,20 @@ class _MyProfileState extends State<MyProfile> {
   PostController postController = Get.put(PostController());
   bool _uploading = false;
 
-  Future<String?> uploadImageToFirebase(File image) async {
+  Future<String?> uploadImage(File image) async {
     try {
       setState(() {
         _uploading = true;
       });
+      print(image.path);
       final userID = FirebaseAuth.instance.currentUser!.uid;
-      final storageRef = FirebaseStorage.instance.ref();
-      final filename = image.path.split("/").last;
-      final uploadRef = storageRef.child("$userID/uploads/$userID-$filename");
-      await uploadRef.putFile(image);
-      final imgUrl = await uploadRef.getDownloadURL();
+      final mediaData =
+          await UploadServices().uploadSingleFile(image, "profile/$userID");
+      print("url: ${mediaData!.media.url}");
       final responseStatus = await userService.updateUser({
-        "updateData": {"imageUrl": imgUrl}
+        "updateData": {
+          "imageUrl": mediaData!.media.url,
+        }
       });
       if (responseStatus == 200 || responseStatus == 201) {
         ToastManager.showToast("Profile updated", context);
@@ -77,18 +80,14 @@ class _MyProfileState extends State<MyProfile> {
   }
 
   Future<void> _pickMedia() async {
-    if (kIsWeb) {
-      uploadToFirebaseWebProfile();
-    } else {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['jpg', 'jpeg', 'png'],
-        allowMultiple: false,
-      );
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png'],
+      allowMultiple: false,
+    );
 
-      if (result != null) {
-        uploadImageToFirebase(File(result.paths.first!));
-      }
+    if (result != null) {
+      uploadImage(File(result.paths.first!));
     }
   }
 
@@ -142,7 +141,11 @@ class _MyProfileState extends State<MyProfile> {
                                           userController.userData!.name!
                                               .substring(0, 1)
                                               .toUpperCase(),
-                                          style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700,),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 28,
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                         ),
                                       ),
                                     )
