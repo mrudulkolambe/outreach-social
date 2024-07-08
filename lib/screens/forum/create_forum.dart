@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -150,7 +152,8 @@ class _CreateForumState extends State<CreateForum> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: appbarColor,
+        backgroundColor: appbarColor,
         title: const Text(
           "Create Forum",
           style: TextStyle(

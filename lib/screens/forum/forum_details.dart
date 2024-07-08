@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -22,6 +24,7 @@ class ForumDetails extends StatefulWidget {
 }
 
 class _ForumDetailsState extends State<ForumDetails> {
+  // ignore: unused_field
   final DraggableScrollableController _controller =
       DraggableScrollableController();
   final UserController userController = Get.put(UserController());
@@ -33,7 +36,6 @@ class _ForumDetailsState extends State<ForumDetails> {
 
   void joinedForum() async {
     final result = await ForumServices().joinForum(widget.forum.id);
-    print(result);
     if (result == 200) {
       Get.dialog(
         Dialog(
@@ -124,10 +126,11 @@ class _ForumDetailsState extends State<ForumDetails> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: appbarColor,
+        backgroundColor: appbarColor,
         title: Text(
           widget.forum.name,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
           ),
         ),
@@ -148,11 +151,11 @@ class _ForumDetailsState extends State<ForumDetails> {
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
                 height: MediaQuery.of(context).size.height * 0.7,
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: horizontal_p,
                   vertical: 20,
                 ),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
@@ -166,18 +169,18 @@ class _ForumDetailsState extends State<ForumDetails> {
                         children: [
                           Row(
                             children: [
-                              Text(
+                              const Text(
                                 'Created by',
                                 style: TextStyle(color: grey),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                               CircularShimmerImage(
-                                imageUrl: widget.forum.userId.imageUrl!,
+                                imageUrl: widget.forum.userId.imageUrl,
                                 size: 24,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                               Expanded(
@@ -185,18 +188,18 @@ class _ForumDetailsState extends State<ForumDetails> {
                                 "@${widget.forum.userId.username}",
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontWeight: FontWeight.w600),
+                                style: const TextStyle(fontWeight: FontWeight.w600),
                               ))
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 8,
                           ),
                           Row(
                             children: [
                               Text(
                                 "${widget.forum.joined.length} members",
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,
                                   color: grey,
@@ -204,10 +207,10 @@ class _ForumDetailsState extends State<ForumDetails> {
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
-                          Row(
+                          const Row(
                             children: [
                               CircularShimmerImage(
                                 imageUrl:
@@ -243,10 +246,10 @@ class _ForumDetailsState extends State<ForumDetails> {
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
-                          Row(
+                          const Row(
                             children: [
                               Text(
                                 "Description",
@@ -257,7 +260,7 @@ class _ForumDetailsState extends State<ForumDetails> {
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 5,
                           ),
                           Row(
@@ -265,7 +268,7 @@ class _ForumDetailsState extends State<ForumDetails> {
                               Expanded(
                                 child: Text(
                                   widget.forum.description,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
                                   ),
                                 ),
@@ -277,7 +280,7 @@ class _ForumDetailsState extends State<ForumDetails> {
                     ),
                     InkWell(
                       onTap: joinedForum,
-                      child: StyledButton(
+                      child: const StyledButton(
                         loading: false,
                         text: "Join now",
                       ),

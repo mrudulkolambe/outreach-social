@@ -115,15 +115,40 @@ final List<ForumPost> emptyForumPostList = [];
 class ForumPostResponse {
   bool success;
   String message;
-  List<ForumPost> forumPosts;
+  ForumPost? forumPost;
 
   ForumPostResponse({
+    required this.success,
+    required this.message,
+    this.forumPost,
+  });
+
+  factory ForumPostResponse.fromJson(dynamic json) {
+    final success = json["success"] as bool;
+    final message = json["message"] as String;
+    final forumPost = json["response"] == null
+        ? null
+        : ForumPost.fromJson(json["response"]);
+
+    return ForumPostResponse(
+      success: success,
+      message: message,
+      forumPost: forumPost,
+    );
+  }
+}
+class ForumPostsResponse {
+  bool success;
+  String message;
+  List<ForumPost> forumPosts;
+
+  ForumPostsResponse({
     required this.success,
     required this.message,
     required this.forumPosts,
   });
 
-  factory ForumPostResponse.fromJson(dynamic json) {
+  factory ForumPostsResponse.fromJson(dynamic json) {
     final success = json["success"] as bool;
     final message = json["message"] as String;
     final forumPosts = json["response"] == [] || json["response"] == null
@@ -132,7 +157,7 @@ class ForumPostResponse {
             .map((e) => ForumPost.fromJson(e))
             .toList();
 
-    return ForumPostResponse(
+    return ForumPostsResponse(
       success: success,
       message: message,
       forumPosts: forumPosts,

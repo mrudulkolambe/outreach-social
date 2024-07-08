@@ -1,21 +1,19 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class CreatePost extends StatefulWidget {
-  const CreatePost({super.key});
+class CreateForumPost extends StatefulWidget {
+  const CreateForumPost({super.key});
 
   @override
-  State<CreatePost> createState() => _CreatePostState();
+  State<CreateForumPost> createState() => _CreateForumPost();
 }
 
-class _CreatePostState extends State<CreatePost> {
+class _CreateForumPost extends State<CreateForumPost> {
   bool private = false;
   List<File> postImgList = [];
 
@@ -52,9 +50,10 @@ class _CreatePostState extends State<CreatePost> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        surfaceTintColor: appbarColor,
+        backgroundColor: appbarColor,
         title: const Text(
-          "Create Post",
+          "Share Post",
           style: TextStyle(fontSize: 20),
         ),
         actions: [

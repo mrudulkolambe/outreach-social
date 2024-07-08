@@ -38,7 +38,8 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
         toolbarHeight: 80,
         leadingWidth: 30,
         elevation: 5,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: appbarColor,
+        backgroundColor: appbarColor,
         title: Row(
           children: [
             ClipRRect(
@@ -93,7 +94,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                     width: 5,
                   ),
                   CircularShimmerImage(
-                    imageUrl: widget.forum.userId.imageUrl!,
+                    imageUrl: widget.forum.userId.imageUrl,
                     size: 24,
                   ),
                   SizedBox(

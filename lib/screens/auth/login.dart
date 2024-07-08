@@ -56,7 +56,9 @@ class _LoginState extends State<Login> {
         Get.offAll(() => const HomePage());
       }
     } on FirebaseAuthException catch (e) {
-      print(e);
+      print("message");
+       print('Error code: ${e.code}');
+    print('Error message: ${e.message}');
       if (e.code == 'user-not-found') {
         ToastManager.showToast(
           'No user found for that email.',

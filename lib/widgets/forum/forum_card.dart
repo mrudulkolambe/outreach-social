@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:outreach/api/models/forum.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
-import 'package:outreach/models/post.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/posts/mediacard.dart';
 
@@ -111,7 +110,7 @@ class _ForumCardState extends State<ForumCard> {
                               widget.forum.public
                                   ? widget.forum.userId.name!.substring(0, 1)
                                   : "A",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                               ),
                             ),
@@ -210,7 +209,7 @@ class _ForumCardState extends State<ForumCard> {
                       _isExpanded = true;
                     });
                   },
-                  child: Text(
+                  child: const Text(
                     "Read more",
                     style: TextStyle(
                       color: accent,

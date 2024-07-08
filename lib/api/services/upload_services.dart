@@ -13,6 +13,7 @@ class UploadServices {
       request.files.add(await http.MultipartFile.fromPath('file', file.path));
     }
     http.StreamedResponse response = await request.send();
+    print(response.statusCode);
     if (response.statusCode == 200) {
       final result = await response.stream.bytesToString();
       final data = MultiUploadResponse.fromJson(jsonDecode(result));

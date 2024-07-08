@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/models/forum.dart';
-import 'package:outreach/screens/forum/forum_details.dart';
 import 'package:outreach/screens/forum/joined_forum_details.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 

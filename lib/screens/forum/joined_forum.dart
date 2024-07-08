@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/forum.dart';
 import 'package:outreach/controller/user.dart';
@@ -20,7 +21,8 @@ class _JoinedForumState extends State<JoinedForum> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: appbarColor,
+        backgroundColor: appbarColor,
         title: const Text(
           "List of forum joined",
           style: TextStyle(

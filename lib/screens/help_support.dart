@@ -51,6 +51,8 @@ class _HelpAndSupportState extends State<HelpAndSupport> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: appbarColor,
+        backgroundColor: appbarColor,
         title: const Text(
           "Help and Support",
           style: TextStyle(

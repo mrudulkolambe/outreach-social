@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outreach/constants/colors.dart';
 import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/help_support.dart';
 import 'package:outreach/widgets/navbar.dart';
@@ -12,6 +13,8 @@ class MoreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: appbarColor,
+        backgroundColor: appbarColor,
         title: const Text(
           "More",
           style: TextStyle(fontSize: 20),

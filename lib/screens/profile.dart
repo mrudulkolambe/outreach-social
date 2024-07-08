@@ -3,11 +3,8 @@
 
 import 'dart:io';
 
-import 'package:cross_file/cross_file.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -28,7 +25,6 @@ import 'package:outreach/widgets/navbar.dart';
 import 'package:outreach/widgets/posts/profile.dart';
 import 'package:outreach/widgets/profile/details_elem.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../platform_constraints/profile_web/upload.dart';
 
 class MyProfile extends StatefulWidget {
   const MyProfile({super.key});
@@ -47,11 +43,9 @@ class _MyProfileState extends State<MyProfile> {
       setState(() {
         _uploading = true;
       });
-      print(image.path);
       final userID = FirebaseAuth.instance.currentUser!.uid;
       final mediaData =
           await UploadServices().uploadSingleFile(image, "profile/$userID");
-      print("url: ${mediaData!.media.url}");
       final responseStatus = await userService.updateUser({
         "updateData": {
           "imageUrl": mediaData!.media.url,
@@ -95,7 +89,8 @@ class _MyProfileState extends State<MyProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: appbarColor,
+        backgroundColor: appbarColor,
         title: const Text(
           "Profile",
           style: TextStyle(fontSize: 20),
@@ -141,7 +136,7 @@ class _MyProfileState extends State<MyProfile> {
                                           userController.userData!.name!
                                               .substring(0, 1)
                                               .toUpperCase(),
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 28,
                                             fontWeight: FontWeight.w700,

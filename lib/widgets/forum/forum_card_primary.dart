@@ -6,6 +6,7 @@ import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/screens/forum/forum_details.dart';
 import 'package:outreach/screens/forum/joined_forum_details.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
+import 'package:outreach/widgets/shimmer_image.dart';
 
 class ForumCardPrimary extends StatelessWidget {
   final bool joined;
@@ -46,11 +47,10 @@ class ForumCardPrimary extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(24),
-                    child: Image.network(
-                      forum.image,
+                    child: ShimmerImage(
+                      imageUrl: forum.image,
                       height: 110,
                       width: 165,
-                      fit: BoxFit.cover,
                     ),
                   ),
                   const SizedBox(
@@ -68,7 +68,7 @@ class ForumCardPrimary extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   forum.name,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -83,18 +83,18 @@ class ForumCardPrimary extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              Text(
+                              const Text(
                                 'Created by',
                                 style: TextStyle(color: grey),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                               CircularShimmerImage(
-                                imageUrl: forum.userId.imageUrl!,
+                                imageUrl: forum.userId.imageUrl,
                                 size: 18,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                               Expanded(
@@ -102,7 +102,7 @@ class ForumCardPrimary extends StatelessWidget {
                                 "@${forum.userId.username}",
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontWeight: FontWeight.w600),
+                                style: const TextStyle(fontWeight: FontWeight.w600),
                               ))
                             ],
                           ),
@@ -112,10 +112,10 @@ class ForumCardPrimary extends StatelessWidget {
                           Row(
                             children: [
                               Text('${forum.joined.length} joined'),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
-                              CircularShimmerImage(
+                              const CircularShimmerImage(
                                 imageUrl:
                                     "https://s3-alpha-sig.figma.com/img/7e3b/a4fa/4ba8d958b31942e64de879a7d7e4146a?Expires=1720396800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=qf4L5rrqnOW8paVNhj-yqAMRA3I-mQl3jKYiW9fbNUommV~9P0bwUQSUga7dhWZ~bk2Ksmu2kudd2zaWAJdMMpj~BwCIkdP6A0ZZKkV~Iu3Rs1zLJcpTluRb0YL1pqXkl3KvnvqAomkq3MZeff9oCBmsgXZk3~pZ9ZKRMcexPPiTuDL-JeEfIh56PGZa1pPma-WX6MP~9PmXM5qoSbvWoCs~~S1lziFRzVoo9SycSCCd3SAGvue0UQ-5xHb7Wr00tN1jCNq6vmPQy3NNGZmUsu4f6hNxlSPuTtrgI97wx3Ik7XqfdQJWPOCxkvJsdds73ERhdJY2YKr~PUmdv7xnZA__",
                                 size: 18,

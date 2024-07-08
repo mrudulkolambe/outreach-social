@@ -1,14 +1,11 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:outreach/api/models/upload.dart';
 import 'package:outreach/api/services/feed_services.dart';
 import 'package:outreach/api/services/upload_services.dart';
 import 'package:outreach/constants/colors.dart';
@@ -25,7 +22,6 @@ import 'package:outreach/widgets/story_card.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 import 'package:outreach/screens/profile.dart';
-import '../platform_constraints/post_web/upload.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -53,7 +49,6 @@ class _HomePageState extends State<HomePage>
   SavingState _saving = SavingState.no;
 
   final List<File> _mediaFiles = [];
-  final List<UploadTask> _uploadTasks = [];
   final List<VideoPlayerController> _videoControllers = [];
   FeedService feedService = FeedService();
 
@@ -77,7 +72,7 @@ class _HomePageState extends State<HomePage>
       _saving = SavingState.uploaded;
       _tags = [];
     });
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _saving = SavingState.no;
       });
@@ -96,7 +91,6 @@ class _HomePageState extends State<HomePage>
   }
 
   int _currentPage = 1;
-  bool _isLoadingMore = false;
 
   @override
   void initState() {
@@ -113,16 +107,12 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> _loadMorePosts() async {
-    setState(() {
-      _isLoadingMore = true;
-    });
 
     _currentPage++;
     final morePosts = await feedService.getFeed(page: _currentPage);
     setState(() {
       postsList.addAll(morePosts);
       postController.addAllPosts(morePosts);
-      _isLoadingMore = false;
     });
   }
 
@@ -174,7 +164,6 @@ class _HomePageState extends State<HomePage>
               "media": urls,
               "tags": _tags
             };
-            print(body);
             feedService.createFeed(body);
           }
 
@@ -198,8 +187,8 @@ class _HomePageState extends State<HomePage>
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
-              surfaceTintColor: Colors.transparent,
-              backgroundColor: Colors.white,
+              surfaceTintColor: appbarColor,
+              backgroundColor: appbarColor,
               title: const Text(
                 "Create Post",
                 style: TextStyle(fontSize: 20),
@@ -255,7 +244,7 @@ class _HomePageState extends State<HomePage>
                                     userController.userData!.name!
                                         .substring(0, 1)
                                         .toUpperCase(),
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 ),
                               )
@@ -488,7 +477,7 @@ class _HomePageState extends State<HomePage>
                                     userController.userData!.name!
                                         .substring(0, 1)
                                         .toUpperCase(),
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 ),
                               )
@@ -680,10 +669,9 @@ class _HomePageState extends State<HomePage>
       ),
       bottomNavigationBar: Navbar(
         homeClick: () {
-          print("object");
           _scrollController.animateTo(
             0,
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             curve: Curves.easeInOut,
           );
         },

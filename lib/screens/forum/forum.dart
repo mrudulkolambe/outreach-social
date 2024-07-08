@@ -38,7 +38,8 @@ class _ForumScreenState extends State<ForumScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: appbarColor,
+        backgroundColor: appbarColor,
         title: const Text(
           "Forum",
           style: TextStyle(
@@ -101,7 +102,8 @@ class _ForumScreenState extends State<ForumScreen> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: horizontal_p),
+                                horizontal: horizontal_p,
+                              ),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -114,8 +116,9 @@ class _ForumScreenState extends State<ForumScreen> {
                                     ),
                                   ),
                                   TextButton(
-                                    onPressed: () =>
-                                        Get.to(() => const JoinedForum()),
+                                    onPressed: () => Get.to(
+                                      () => const JoinedForum(),
+                                    ),
                                     child: const Text(
                                       "View all",
                                       style: TextStyle(

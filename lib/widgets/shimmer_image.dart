@@ -2,7 +2,6 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:outreach/constants/colors.dart';
 
 class ShimmerImage extends StatelessWidget {
   final String imageUrl;
@@ -25,15 +24,6 @@ class ShimmerImage extends StatelessWidget {
             height: height,
             decoration: BoxDecoration(
               color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        if (kIsWeb)
-          Container(
-            width: width,
-            height: height,
-            decoration: BoxDecoration(
-              color: grey.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
           ),

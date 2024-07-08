@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:outreach/api/models/upload.dart';
 import 'package:outreach/constants/colors.dart';
-import 'package:outreach/models/post.dart';
 import 'package:outreach/widgets/shimmer_image.dart';
 import 'package:video_player/video_player.dart';
 

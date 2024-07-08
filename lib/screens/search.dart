@@ -16,7 +16,8 @@ class _SearchUsersState extends State<SearchUsers> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: appbarColor,
+        backgroundColor: appbarColor,
         title: Text(
           "Search",
           style: TextStyle(

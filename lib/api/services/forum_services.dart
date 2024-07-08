@@ -50,12 +50,23 @@ class ForumServices {
   }
 
   Future<List<ForumPost>?> getForumPosts(String forumID) async {
-    print(('$getForumPostAPI/$forumID'));
     final response = await ApiService().get('$getForumPostAPI/$forumID');
     if (response != null && response.statusCode == 200 ||
         response != null && response.statusCode == 201) {
-      final results = ForumPostResponse.fromJson(jsonDecode(response.body));
+      final results = ForumPostsResponse.fromJson(jsonDecode(response.body));
       return results.forumPosts;
+    } else {
+      print(response!.reasonPhrase);
+      return null;
+    }
+  }
+
+  Future<ForumPost?> createForumPost(String forumID, Map<String, dynamic> body) async {
+    final response = await ApiService().post('$createForumPostAPI/$forumID', body);
+    if (response != null && response.statusCode == 200 ||
+        response != null && response.statusCode == 201) {
+      final results = ForumPostResponse.fromJson(jsonDecode(response.body));
+      return results.forumPost;
     } else {
       print(response!.reasonPhrase);
       return null;
