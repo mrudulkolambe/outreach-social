@@ -45,10 +45,10 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   bool private = false;
   List<Post> postsList = [];
-
+  bool hasMorePost = false;
   SavingState _saving = SavingState.no;
 
-  final List<File> _mediaFiles = [];
+  List<File> _mediaFiles = [];
   final List<VideoPlayerController> _videoControllers = [];
   FeedService feedService = FeedService();
 
@@ -95,6 +95,7 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
+    print("initstate");
     initializeState();
     _scrollController.addListener(morePost);
   }
@@ -107,22 +108,43 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> _loadMorePosts() async {
-
-    _currentPage++;
-    final morePosts = await feedService.getFeed(page: _currentPage);
-    setState(() {
-      postsList.addAll(morePosts);
-      postController.addAllPosts(morePosts);
-    });
+    print("Load More Posts");
+    if (hasMorePost) {
+      _currentPage++;
+      final morePostsResponse = await feedService.getFeed(page: _currentPage);
+      setState(() {
+        print(morePostsResponse!.totalFeeds);
+        print(morePostsResponse.totalPages);
+        print(morePostsResponse.currentPage);
+        hasMorePost =
+            morePostsResponse.totalPages > morePostsResponse.currentPage;
+        print(morePostsResponse.totalPages > morePostsResponse.currentPage);
+        postsList.addAll(morePostsResponse!.posts);
+        postController.addAllPosts(morePostsResponse.posts);
+      });
+    } else {
+      print("Else Load More Posts");
+    }
   }
 
   Future<void> initializeState() async {
-    final listPosts = await feedService.getFeed(page: 1);
-    setState(() {
-      _currentPage = 1;
-      postsList = listPosts;
-      postController.initAddPosts(listPosts);
-    });
+    try {
+      print("test");
+      final listPostsResponse = await feedService.getFeed(page: 1);
+      setState(() {
+        _currentPage = 1;
+        postsList = listPostsResponse!.posts;
+        postController.initAddPosts(listPostsResponse.posts);
+        print(listPostsResponse.totalFeeds);
+        print(listPostsResponse.totalPages);
+        print(listPostsResponse.currentPage);
+        hasMorePost =
+            listPostsResponse.totalPages > listPostsResponse.currentPage;
+        print(listPostsResponse.totalPages > listPostsResponse.currentPage);
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   List<String> _tags = [];
@@ -165,6 +187,12 @@ class _HomePageState extends State<HomePage>
               "tags": _tags
             };
             feedService.createFeed(body);
+            if (mounted) {
+              setState(() {
+                _mediaFiles = [];
+                descriptionController.text = "";
+              });
+            }
           }
 
           Future<void> pickMedia() async {
@@ -363,33 +391,31 @@ class _HomePageState extends State<HomePage>
                       child: Wrap(
                         alignment: WrapAlignment.spaceBetween,
                         children: [
-                          if (!kIsWeb)
-                            for (int i = 0; i < _mediaFiles.length; i++)
-                              Stack(
-                                children: [
-                                  MediaPreviewMobile(
-                                    mediaFile: _mediaFiles[i],
-                                    fileName:
-                                        _mediaFiles[i].path.split("/").last,
-                                  ),
-                                  Positioned(
-                                    top: 0,
-                                    right: 0,
-                                    child: IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          _mediaFiles.removeAt(i);
-                                        });
-                                      },
-                                      icon: const Icon(
-                                        Icons.close,
-                                        color: Colors.black,
-                                        size: 20,
-                                      ),
+                          for (int i = 0; i < _mediaFiles.length; i++)
+                            Stack(
+                              children: [
+                                MediaPreviewMobile(
+                                  mediaFile: _mediaFiles[i],
+                                  fileName: _mediaFiles[i].path.split("/").last,
+                                ),
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _mediaFiles.removeAt(i);
+                                      });
+                                    },
+                                    icon: const Icon(
+                                      Icons.close,
+                                      color: Colors.black,
+                                      size: 20,
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
+                            ),
                         ],
                       ),
                     )
@@ -652,11 +678,8 @@ class _HomePageState extends State<HomePage>
                   builder: (postController) {
                     return Column(
                       children: [
-                        ...postController.posts.reversed
-                            .toList()
-                            .asMap()
-                            .entries
-                            .map((entry) =>
+                        ...postController.posts.toList().asMap().entries.map(
+                            (entry) =>
                                 PostCard(post: entry.value, index: entry.key))
                       ],
                     );

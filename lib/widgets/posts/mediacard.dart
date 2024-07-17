@@ -2,54 +2,35 @@
 
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:outreach/api/models/upload.dart';
 import 'package:outreach/constants/colors.dart';
+import 'package:outreach/widgets/hls/hls_videoplayer.dart';
 import 'package:outreach/widgets/shimmer_image.dart';
 import 'package:video_player/video_player.dart';
 
 class MediaCarousel extends StatefulWidget {
   final List<Media> mediaPosts;
 
-  const MediaCarousel({super.key, required this.mediaPosts});
+  const MediaCarousel(
+      {super.key, required this.mediaPosts});
 
   @override
   _MediaCarouselState createState() => _MediaCarouselState();
 }
 
 class _MediaCarouselState extends State<MediaCarousel> {
-  final Map<String, VideoPlayerController> _videoControllers = {};
-
   @override
   void initState() {
     super.initState();
-    for (var post in widget.mediaPosts) {
-      if (post.type == 'mp4' || post.type == 'mov') {
-        _initializeVideoController(post);
-      }
-    }
   }
 
   @override
   void dispose() {
-    for (var controller in _videoControllers.values) {
-      controller.dispose();
-    }
     super.dispose();
   }
 
   int _currentIndex = 0;
-
-  void _initializeVideoController(Media post) {
-    if (!_videoControllers.containsKey(post.url)) {
-      _videoControllers[post.url] = VideoPlayerController.network(post.url)
-        ..initialize().then((_) {
-          if (mounted) {
-            setState(() {});
-            _videoControllers[post.url]?.setLooping(true);
-          }
-        });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,21 +53,14 @@ class _MediaCarouselState extends State<MediaCarousel> {
           items: widget.mediaPosts.map((post) {
             return Builder(
               builder: (BuildContext context) {
-                if (post.type == 'jpg' ||
-                    post.type == 'jpeg' ||
-                    post.type == 'png') {
+                if (post.type == 'image') {
                   return ShimmerImage(
                     imageUrl: post.url,
                     width: double.infinity,
                     height: double.infinity,
                   );
-                } else if (post.type == 'mp4' || post.type == 'mov') {
-                  final controller = _videoControllers[post.url];
-                  if (controller != null && controller.value.isInitialized) {
-                    return VideoPlayerWidget(controller: controller);
-                  } else {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+                } else if (post.type == 'video') {
+                  return HLSVideoPlayer(url: post.url);
                 } else {
                   return const Center(child: Text('Unsupported media type'));
                 }

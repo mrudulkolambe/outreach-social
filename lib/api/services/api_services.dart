@@ -6,7 +6,6 @@ class ApiService {
   Future<http.Response?> get(String endpoint) async {
     final url = Uri.parse(endpoint);
     final token = 'Bearer ${await FirebaseAuth.instance.currentUser!.getIdToken(true)}';
-    print(token);
     final response = await http.get(
       url,
       headers: {'Authorization': token},

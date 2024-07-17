@@ -24,7 +24,6 @@ class _ForumScreenState extends State<ForumScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     initializeState();
     super.initState();
   }

@@ -30,6 +30,13 @@ class CircularShimmerImage extends StatelessWidget {
                   width: size,
                   height: size,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return SvgPicture.asset(
+                      "assets/image_placeholder.svg",
+                      width: size,
+                      height: size,
+                    );
+                  },
                   frameBuilder: (BuildContext context, Widget child, int? frame,
                       bool wasSynchronouslyLoaded) {
                     if (wasSynchronouslyLoaded) {

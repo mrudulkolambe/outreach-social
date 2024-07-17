@@ -6,7 +6,6 @@ class UserController extends GetxController {
   UserData? userData;
 
   void updateUser(UserData user){
-    print(user);
     userData = user;
     update();
   }

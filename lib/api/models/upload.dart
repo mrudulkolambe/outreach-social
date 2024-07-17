@@ -9,7 +9,7 @@ class MultiUploadResponse {
 
   factory MultiUploadResponse.fromJson(dynamic json) {
     final status = json["status"] as String;
-    final media = List.from(json["media"]).map((item) {
+    final media = List.from(json["results"]).map((item) {
       return Media.fromJson(item);
     }).toList();
 

@@ -1,12 +1,17 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:outreach/api/services/feed_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/models/post.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
+import 'package:outreach/widgets/bottomsheet/post_comment.dart';
+import 'package:outreach/widgets/hls/hls_videoplayer.dart';
 import 'package:outreach/widgets/posts/mediacard.dart';
 
 class PostCard extends StatefulWidget {
@@ -22,6 +27,23 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   bool _isExpanded = false;
   static const int _maxLines = 2;
+  bool showHeart = false;
+
+  void _openCommentBottomsheet() {
+    showDialog(
+      useSafeArea: true,
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return Container(
+            height: 400,
+            width: MediaQuery.of(context).size.width,
+            color: Colors.amber,
+          );
+        });
+      },
+    );
+  }
 
   String _getTruncatedText(String text) {
     final words = text.split(' ');
@@ -106,7 +128,7 @@ class _PostCardState extends State<PostCard> {
                               widget.post.public
                                   ? widget.post.user.name.substring(0, 1)
                                   : "A",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                               ),
                             ),
@@ -157,10 +179,27 @@ class _PostCardState extends State<PostCard> {
               ),
             ],
           ),
-          const SizedBox(
-            height: 10,
-          ),
-          MediaCarousel(mediaPosts: widget.post.media),
+          if (widget.post.media.isNotEmpty)
+            const SizedBox(
+              height: 10,
+            ),
+          if (widget.post.media.isNotEmpty)
+            InkWell(
+              onDoubleTap: () {
+                if (!widget.post.liked) {
+                  FeedService().likeOnPost(widget.post.id);
+                  setState(() {
+                    showHeart = true;
+                  });
+                  Timer(const Duration(milliseconds: 400), () {
+                    setState(() {
+                      showHeart = false;
+                    });
+                  });
+                }
+              },
+              child: MediaCarousel(mediaPosts: widget.post.media),
+            ),
           const SizedBox(
             height: 10,
           ),
@@ -203,7 +242,7 @@ class _PostCardState extends State<PostCard> {
                       _isExpanded = true;
                     });
                   },
-                  child: Text(
+                  child: const Text(
                     "Read more",
                     style: TextStyle(
                       color: accent,
@@ -217,26 +256,40 @@ class _PostCardState extends State<PostCard> {
           ),
           Row(
             children: [
-              Row(
-                children: [
-                  SvgPicture.asset("assets/icons/like.svg"),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  const Text("55k")
-                ],
+              InkWell(
+                onTap: () {
+                  FeedService().likeOnPost(widget.post.id);
+                },
+                child: Row(
+                  children: [
+                    widget.post.liked
+                        ? SvgPicture.asset(
+                            "assets/icons/like-filled.svg",
+                          )
+                        : SvgPicture.asset(
+                            "assets/icons/like.svg",
+                          ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(widget.post.likesCount.toString())
+                  ],
+                ),
               ),
               const SizedBox(
                 width: 15,
               ),
-              Row(
-                children: [
-                  SvgPicture.asset("assets/icons/comment.svg"),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  const Text("50")
-                ],
+              InkWell(
+                onTap: _openCommentBottomsheet,
+                child: Row(
+                  children: [
+                    SvgPicture.asset("assets/icons/comment.svg"),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Text("50")
+                  ],
+                ),
               ),
             ],
           ),

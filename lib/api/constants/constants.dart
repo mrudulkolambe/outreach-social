@@ -1,5 +1,7 @@
 // const String baseUrl = 'https://outreach-backend.vercel.app';
-const String baseUrl = 'http://192.168.0.104:2000';
+const String baseUrl = 'http://localhost:2000';
+const String uploadBaseURL = "http://13.233.246.217:8080";
+
 const String userEndpoint = '$baseUrl/user';
 
 const String registerUser = '$userEndpoint/register';
@@ -14,6 +16,7 @@ const String feedEndpoint = '$baseUrl/feed';
 
 const String createFeedAPI = '$feedEndpoint/create';
 const String getFeedAPI = '$feedEndpoint/get';
+const String likeStatusFeedAPI = '$feedEndpoint/like';
 
 const String forumEndpoint = '$baseUrl/forum';
 
@@ -26,5 +29,5 @@ const String forumPostEndpoint = '$forumEndpoint/forum-post';
 const String getForumPostAPI = forumPostEndpoint;
 const String createForumPostAPI = forumPostEndpoint;
 
-const String singlefileUpload = '$baseUrl/upload';
-const String multifileUpload = '$baseUrl/multi-upload';
+const String singlefileUpload = '$uploadBaseURL/upload';
+const String multifileUpload = '$uploadBaseURL/multi-upload';

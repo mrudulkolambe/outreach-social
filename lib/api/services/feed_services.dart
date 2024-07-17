@@ -18,11 +18,10 @@ class FeedService {
 
   Future<Post?> createFeed(Map<String, dynamic> body) async {
     final response = await ApiService().post(createFeedAPI, body);
-    print(response);
     if (response != null && response.statusCode == 200 ||
         response != null && response.statusCode == 201) {
-      final posts = await getFeed(page: 1, limit: 10);
-      postController.initAddPosts(posts);
+      final postsResponse = await getFeed(page: 1, limit: 10);
+      postController.initAddPosts(postsResponse!.posts);
       return null;
     } else {
       ToastManager.showToastApp("Something went wrong");
@@ -30,17 +29,28 @@ class FeedService {
     return null;
   }
 
-  Future<List<Post>> getFeed({int page = 1, int limit = 10}) async {
-    print("From Get Feed Page $page $limit");
+  Future<PostsResponse?> getFeed({int page = 1, int limit = 10}) async {
     final response =
         await ApiService().get('$getFeedAPI?page=$page&limit=$limit');
     if (response != null && response.statusCode == 200 ||
         response != null && response.statusCode == 201) {
       final postsData = PostsResponse.fromJson(jsonDecode(response.body));
-      return postsData.posts;
+      return postsData;
     } else {
       ToastManager.showToastApp("Something went wrong");
     }
-    return [];
+    return null;
+  }
+
+  Future<int> likeOnPost(String postId) async {
+    final updatedPost = await ApiService().patch('$likeStatusFeedAPI/$postId', {});
+    if (updatedPost != null) {
+      final updatedPostData = PostResponse.fromJson(jsonDecode(updatedPost.body));
+      postController.updatePost(updatedPostData.post);
+      return 200;
+    }else{
+      ToastManager.showToastApp("Something went wrong");
+      return 500;
+    }
   }
 }

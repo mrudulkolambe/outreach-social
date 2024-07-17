@@ -19,7 +19,6 @@ class UserService {
 
   Future<UserData?> currentUser() async {
     final response = await ApiService().get(currentUserAPI);
-    print(response!.body);
     if (response != null) {
       if (response.statusCode == 200) {
         final data = UserResponse.fromJson(jsonDecode(response.body));

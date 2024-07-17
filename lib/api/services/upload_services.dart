@@ -10,7 +10,7 @@ class UploadServices {
     var request = http.MultipartRequest('POST', Uri.parse(multifileUpload));
     request.fields.addAll({'path': path});
     for (var file in files) {
-      request.files.add(await http.MultipartFile.fromPath('file', file.path));
+      request.files.add(await http.MultipartFile.fromPath('files', file.path));
     }
     http.StreamedResponse response = await request.send();
     print(response.statusCode);
@@ -27,7 +27,7 @@ class UploadServices {
   Future<SingleUploadResponse?> uploadSingleFile(File file, String path) async {
     var request = http.MultipartRequest('POST', Uri.parse(singlefileUpload));
     request.fields.addAll({'path': path});
-    request.files.add(await http.MultipartFile.fromPath('file', file.path));
+    request.files.add(await http.MultipartFile.fromPath('files', file.path));
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       final result = await response.stream.bytesToString();

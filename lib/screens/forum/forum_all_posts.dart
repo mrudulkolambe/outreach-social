@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/models/forum.dart';
 import 'package:outreach/api/services/forum_services.dart';
@@ -53,33 +54,27 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
   UserController userController = Get.put(UserController());
   final ScrollController _scrollController = ScrollController();
 
-  Future<List<Map<String, String>>?> _uploadMedia() async {
+  Future<List<Map<String, String>>> _uploadMedia() async {
     setState(() {
       _saving = SavingState.uploading;
     });
 
     List<Map<String, String>> downloadUrls = [];
     final uploadData =
-        await UploadServices().uploadMultipleFiles(_mediaFiles, "forum/posts");
-    print(uploadData!.media);
+        await UploadServices().uploadMultipleFiles(_mediaFiles, "forum");
     List<Map<String, String>> urls = [];
-    if (uploadData != null) {
-      urls = uploadData!.media.map((item) => item.toJson()).toList();
-      downloadUrls.addAll(urls);
+    urls = uploadData!.media.map((item) => item.toJson()).toList();
+    downloadUrls.addAll(urls);
+    setState(() {
+      _saving = SavingState.uploaded;
+    });
+    Future.delayed(const Duration(seconds: 2), () {
       setState(() {
-        _saving = SavingState.uploaded;
+        _saving = SavingState.no;
       });
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _saving = SavingState.no;
-        });
-      });
+    });
 
-      return downloadUrls;
-    } else {
-      ToastManager.showToast("Entity Too large", context);
-      return null;
-    }
+    return downloadUrls;
   }
 
   @override
@@ -110,16 +105,19 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
             List<Map<String, String>> urls = [];
             if (_mediaFiles.isNotEmpty) {
               final uploadedData = await _uploadMedia();
-              if(uploadedData == null){
+              print(uploadedData);
+              if (uploadedData == null) {
                 ToastManager.showToast("Upload failed", context);
                 return;
               }
+              urls = uploadedData;
             }
-             final body = {
+            final body = {
               "public": !private,
               "content": descriptionController.text,
               "media": urls,
             };
+            print(body);
             ForumServices().createForumPost(widget.forum.id, body);
           }
 
@@ -453,6 +451,42 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
+                    if (_saving == SavingState.uploading)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: horizontal_p,
+                        ),
+                        child: Column(
+                          children: [
+                            LinearProgressIndicator(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            const Row(
+                              children: [
+                                Text("Your post is publishing... "),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (_saving == SavingState.uploaded)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: horizontal_p,
+                        ),
+                        child: Row(
+                          children: [
+                            SvgPicture.asset("assets/icons/published.svg"),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            const Text("Your post is published"),
+                          ],
+                        ),
+                      ),
                     ...forumPosts.map((forumPost) {
                       return ForumCard(
                           forum: widget.forum, forumPost: forumPost);

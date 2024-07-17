@@ -9,7 +9,6 @@ class PostController extends GetxController {
     update();
   }
   void addAllPosts(List<Post> data) {
-    print(posts.length + data.length);
     posts.addAll(data);
     update();
   }
@@ -18,6 +17,14 @@ class PostController extends GetxController {
     posts = [];
     posts.addAll(data);
     update();
+  }
+
+  void updatePost(Post data) {
+    int index = posts.indexWhere((post) => post.id == data.id);
+    if (index != -1) {
+      posts[index] = data;
+      update();
+    }
   }
 
 }

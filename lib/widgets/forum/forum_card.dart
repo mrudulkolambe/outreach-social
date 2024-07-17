@@ -52,34 +52,27 @@ class _ForumCardState extends State<ForumCard> {
     final contentText = _isExpanded || !isTextLong
         ? widget.forum.description
         : _getTruncatedText(widget.forum.description);
-
-    // Define a regular expression to match #tags
     final RegExp tagRegExp = RegExp(r'\B#\w+');
     final matches = tagRegExp.allMatches(contentText);
-
-    // Split content text into parts: regular text and #tags
     final List<TextSpan> textSpans = [];
     int lastMatchEnd = 0;
     for (var match in matches) {
       if (match.start > lastMatchEnd) {
-        // Add regular text before the tag
         textSpans.add(TextSpan(
           text: contentText.substring(lastMatchEnd, match.start),
-          style: const TextStyle(fontSize: 16, color: Colors.grey),
+          style: const TextStyle(fontSize: 16, color: Colors.black54),
         ));
       }
-      // Add the #tag with different style
       textSpans.add(TextSpan(
         text: contentText.substring(match.start, match.end),
         style: const TextStyle(fontSize: 16, color: accent),
       ));
       lastMatchEnd = match.end;
     }
-    // Add any remaining regular text after the last #tag
     if (lastMatchEnd < contentText.length) {
       textSpans.add(TextSpan(
         text: contentText.substring(lastMatchEnd),
-        style: const TextStyle(fontSize: 16, color: Colors.grey),
+        style: const TextStyle(fontSize: 16, color: Colors.black54),
       ));
     }
 
@@ -163,10 +156,10 @@ class _ForumCardState extends State<ForumCard> {
               ),
             ],
           ),
-          const SizedBox(
+          if(widget.forumPost.media.isNotEmpty) const SizedBox(
             height: 10,
           ),
-          MediaCarousel(mediaPosts: widget.forumPost.media),
+          if(widget.forumPost.media.isNotEmpty) MediaCarousel(mediaPosts: widget.forumPost.media),
           const SizedBox(
             height: 10,
           ),
@@ -175,7 +168,9 @@ class _ForumCardState extends State<ForumCard> {
               Expanded(
                 child: RichText(
                   text: TextSpan(
-                    style: GoogleFonts.mulish(),
+                    style: GoogleFonts.mulish(
+                      color: Colors.black
+                    ),
                     children: textSpans,
                   ),
                 ),
