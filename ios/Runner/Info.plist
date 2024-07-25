@@ -33,14 +33,14 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.1055951057562-hlj22gch50uvuku1o5b8tsofkv0pbm64</string>
+				<string>com.googleusercontent.apps.497882681132-kdpucpjagq99osgo3r3fus8tcfguqlpl</string>
 			</array>
 		</dict>
 	</array>
 	<key>GoogleService-Info</key>
 	<dict>
 		<key>CLIENT_ID</key>
-		<string>com.googleusercontent.apps.1055951057562-hlj22gch50uvuku1o5b8tsofkv0pbm64</string>
+		<string>com.googleusercontent.apps.497882681132-kdpucpjagq99osgo3r3fus8tcfguqlpl</string>
 	</dict>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your photo library to upload photos.</string>
