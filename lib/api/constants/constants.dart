@@ -29,5 +29,9 @@ const String forumPostEndpoint = '$forumEndpoint/forum-post';
 const String getForumPostAPI = forumPostEndpoint;
 const String createForumPostAPI = forumPostEndpoint;
 
+
+const String feedCommentEndpoint = '$baseUrl/feed-comment';
+const String createFeedCommentAPI = feedCommentEndpoint;
+
 const String singlefileUpload = '$uploadBaseURL/upload';
 const String multifileUpload = '$uploadBaseURL/multi-upload';

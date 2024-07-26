@@ -159,6 +159,26 @@ class _HomePageState extends State<HomePage>
     }
   }
 
+  void createPost() async {
+    List<Map<String, String>> urls = [];
+    if (_mediaFiles.isNotEmpty) {
+      urls = await _uploadMedia();
+    }
+    final body = {
+      "public": !private,
+      "content": descriptionController.text,
+      "media": urls,
+      "tags": _tags
+    };
+    feedService.createFeed(body);
+    if (mounted) {
+      setState(() {
+        _mediaFiles = [];
+        descriptionController.text = "";
+      });
+    }
+  }
+
   void _openBottomSheet() {
     showDialog(
       context: context,
@@ -173,26 +193,6 @@ class _HomePageState extends State<HomePage>
                 _tags.add(match.group(0)!);
               }
             });
-          }
-
-          void createPost() async {
-            List<Map<String, String>> urls = [];
-            if (_mediaFiles.isNotEmpty) {
-              urls = await _uploadMedia();
-            }
-            final body = {
-              "public": !private,
-              "content": descriptionController.text,
-              "media": urls,
-              "tags": _tags
-            };
-            feedService.createFeed(body);
-            if (mounted) {
-              setState(() {
-                _mediaFiles = [];
-                descriptionController.text = "";
-              });
-            }
           }
 
           Future<void> pickMedia() async {
@@ -680,7 +680,7 @@ class _HomePageState extends State<HomePage>
                       children: [
                         ...postController.posts.toList().asMap().entries.map(
                             (entry) =>
-                                PostCard(post: entry.value, index: entry.key))
+                                PostCard(post: entry.value, index: entry.key, user: userController.userData!))
                       ],
                     );
                   },
