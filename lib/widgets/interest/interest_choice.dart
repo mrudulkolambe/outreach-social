@@ -20,7 +20,9 @@ class InterestChoice extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: selected.contains(interestType.interest) ? accent : grey.withOpacity(0.1),
+          color: selected.contains(interestType.interest)
+              ? accent
+              : grey.withOpacity(0.1),
           width: 2,
         ),
       ),
@@ -32,7 +34,7 @@ class InterestChoice extends StatelessWidget {
         children: [
           SvgPicture.asset(
             interestType.icon,
-            height: interestType.icon == "Fitness & Exercise" ? 10 : 18,
+            height: 18,
           ),
           const SizedBox(
             width: 5,

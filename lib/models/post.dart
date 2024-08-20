@@ -30,14 +30,14 @@ class PostsResponse {
   int totalPages;
   int currentPage;
 
-  PostsResponse(
-      {required this.success,
-      required this.message,
-      required this.posts,
-      required this.totalFeeds,
-      required this.currentPage,
-      required this.totalPages,
-      });
+  PostsResponse({
+    required this.success,
+    required this.message,
+    required this.posts,
+    required this.totalFeeds,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   factory PostsResponse.fromJson(dynamic json) {
     print(json);
@@ -59,7 +59,7 @@ class PostsResponse {
       posts: posts,
       totalFeeds: totalFeeds,
       totalPages: totalPages,
-      currentPage: currentPage
+      currentPage: currentPage,
     );
   }
 }
@@ -74,6 +74,7 @@ class Post {
   PostUser user;
   List<String> tags;
   int likesCount;
+  int commentCount;
   bool liked;
 
   Post(
@@ -84,9 +85,11 @@ class Post {
       required this.user,
       required this.tags,
       required this.liked,
-      required this.likesCount});
+      required this.likesCount,
+      required this.commentCount});
 
   factory Post.fromJson(dynamic json) {
+    print(json);
     final id = json["_id"] as String;
     final content = json["content"] as String;
     final media =
@@ -95,19 +98,36 @@ class Post {
     final user = PostUser.fromJson(json["user"]);
     final liked = json["liked"];
     final likesCount = json["likesCount"];
+    final commentCount = json["commentCount"];
     final tags = json["tags"] == null
         ? emptyTagList
         : List.from(json["tags"]).map((e) => e as String).toList();
 
     return Post(
-        id: id,
-        content: content,
-        media: media,
-        public: public,
-        tags: tags,
-        user: user,
-        liked: liked,
-        likesCount: likesCount);
+      id: id,
+      content: content,
+      media: media,
+      public: public,
+      tags: tags,
+      user: user,
+      liked: liked,
+      likesCount: likesCount,
+      commentCount: commentCount,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "content": content,
+      "media": media,
+      "public": public,
+      "tags": tags,
+      "user": user,
+      "liked": liked,
+      "likesCount": likesCount,
+      "commentCount": commentCount,
+    };
   }
 }
 
@@ -123,8 +143,6 @@ class PostUser {
   });
 
   factory PostUser.fromJson(dynamic json) {
-    print("POST USER");
-    print(json);
     final name = json["name"] as String;
     final username = json["username"] as String;
     final imageUrl = json["imageUrl"];
@@ -134,5 +152,13 @@ class PostUser {
       username: username,
       imageUrl: imageUrl,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "name": name,
+      "username": username,
+      "imageUrl": imageUrl,
+    };
   }
 }

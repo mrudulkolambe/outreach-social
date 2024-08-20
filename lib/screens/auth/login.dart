@@ -13,6 +13,7 @@ import 'package:outreach/screens/auth/create_account.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:outreach/screens/auth/username.dart';
 import 'package:outreach/screens/home.dart';
+import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/styled_button.dart';
 import 'package:outreach/widgets/styled_textfield.dart';
@@ -57,8 +58,8 @@ class _LoginState extends State<Login> {
       }
     } on FirebaseAuthException catch (e) {
       print("message");
-       print('Error code: ${e.code}');
-    print('Error message: ${e.message}');
+      print('Error code: ${e.code}');
+      print('Error message: ${e.message}');
       if (e.code == 'user-not-found') {
         ToastManager.showToast(
           'No user found for that email.',
@@ -125,7 +126,7 @@ class _LoginState extends State<Login> {
             userData.name == "") {
           Get.offAll(() => const Username());
         } else {
-          Get.offAll(() => const HomePage());
+          Get.offAll(() => const MainStack());
         }
       } catch (e) {
         ToastManager.showToast(

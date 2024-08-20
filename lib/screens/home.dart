@@ -11,8 +11,11 @@ import 'package:outreach/api/services/upload_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/post.dart';
+import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/models/post.dart';
+import 'package:outreach/screens/chats/home.dart';
+import 'package:outreach/screens/chats/list.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/navbar.dart';
@@ -22,6 +25,7 @@ import 'package:outreach/widgets/story_card.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 import 'package:outreach/screens/profile.dart';
+import 'package:zego_zimkit/zego_zimkit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,8 +35,6 @@ class HomePage extends StatefulWidget {
 }
 
 enum MediaType { image, video }
-
-enum SavingState { no, uploading, uploaded }
 
 class MediaItem {
   final File file;
@@ -46,40 +48,13 @@ class _HomePageState extends State<HomePage>
   bool private = false;
   List<Post> postsList = [];
   bool hasMorePost = false;
-  SavingState _saving = SavingState.no;
 
-  List<File> _mediaFiles = [];
   final List<VideoPlayerController> _videoControllers = [];
   FeedService feedService = FeedService();
-
   TextEditingController descriptionController = TextEditingController();
   UserController userController = Get.put(UserController());
   PostController postController = Get.put(PostController());
   final ScrollController _scrollController = ScrollController();
-
-  Future<List<Map<String, String>>> _uploadMedia() async {
-    setState(() {
-      _saving = SavingState.uploading;
-    });
-
-    List<Map<String, String>> downloadUrls = [];
-    final uploadData =
-        await UploadServices().uploadMultipleFiles(_mediaFiles, "posts");
-    List<Map<String, String>> urls = [];
-    urls = uploadData!.media.map((item) => item.toJson()).toList();
-    downloadUrls.addAll(urls);
-    setState(() {
-      _saving = SavingState.uploaded;
-      _tags = [];
-    });
-    Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        _saving = SavingState.no;
-      });
-    });
-
-    return downloadUrls;
-  }
 
   @override
   void dispose() {
@@ -135,9 +110,6 @@ class _HomePageState extends State<HomePage>
         _currentPage = 1;
         postsList = listPostsResponse!.posts;
         postController.initAddPosts(listPostsResponse.posts);
-        print(listPostsResponse.totalFeeds);
-        print(listPostsResponse.totalPages);
-        print(listPostsResponse.currentPage);
         hasMorePost =
             listPostsResponse.totalPages > listPostsResponse.currentPage;
         print(listPostsResponse.totalPages > listPostsResponse.currentPage);
@@ -145,332 +117,6 @@ class _HomePageState extends State<HomePage>
     } catch (e) {
       print(e);
     }
-  }
-
-  List<String> _tags = [];
-  final RegExp _tagRegExp = RegExp(r'\B#\w+');
-
-  Future<bool> requestGalleryPermission() async {
-    var status = await Permission.storage.request();
-    if (status.isGranted) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  void createPost() async {
-    List<Map<String, String>> urls = [];
-    if (_mediaFiles.isNotEmpty) {
-      urls = await _uploadMedia();
-    }
-    final body = {
-      "public": !private,
-      "content": descriptionController.text,
-      "media": urls,
-      "tags": _tags
-    };
-    feedService.createFeed(body);
-    if (mounted) {
-      setState(() {
-        _mediaFiles = [];
-        descriptionController.text = "";
-      });
-    }
-  }
-
-  void _openBottomSheet() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          void extractTags(String text) {
-            final matches = _tagRegExp.allMatches(text);
-            setState(() {
-              _tags.clear();
-              for (Match match in matches) {
-                _tags.add(match.group(0)!);
-              }
-            });
-          }
-
-          Future<void> pickMedia() async {
-            FilePickerResult? result = await FilePicker.platform.pickFiles(
-              type: FileType.custom,
-              allowedExtensions: ['jpg', 'jpeg', 'png', 'mp4', 'mov'],
-              allowMultiple: true,
-            );
-
-            if (result != null) {
-              setState(() {
-                List<File> newFiles = result.paths.map((path) {
-                  return File(path!);
-                }).toList();
-                _mediaFiles.addAll(newFiles);
-              });
-            }
-          }
-
-          return Scaffold(
-            backgroundColor: Colors.white,
-            appBar: AppBar(
-              surfaceTintColor: appbarColor,
-              backgroundColor: appbarColor,
-              title: const Text(
-                "Create Post",
-                style: TextStyle(fontSize: 20),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    if (descriptionController.text.isNotEmpty ||
-                        _mediaFiles.isNotEmpty) {
-                      Get.back();
-                      createPost();
-                    } else {
-                      ToastManager.showToast(
-                        "No media selected",
-                        context,
-                      );
-                    }
-                  },
-                  child: const Text(
-                    "Post",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: accent,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            body: SafeArea(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: horizontal_p,
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      children: [
-                        userController.userData!.imageUrl == null
-                            ? Container(
-                                height: 70,
-                                width: 70,
-                                decoration: BoxDecoration(
-                                  color: accent,
-                                  borderRadius: BorderRadius.circular(70 / 2),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    userController.userData!.name!
-                                        .substring(0, 1)
-                                        .toUpperCase(),
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              )
-                            : ClipRRect(
-                                borderRadius: BorderRadius.circular(40),
-                                child: Image.network(
-                                  userController.userData!.imageUrl!,
-                                  height: 70,
-                                  width: 70,
-                                ),
-                              ),
-                        const SizedBox(
-                          width: 15,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              userController.userData!.name!,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      private = false;
-                                    });
-                                  },
-                                  child: Container(
-                                    width: 70,
-                                    height: 30,
-                                    decoration: BoxDecoration(
-                                      color: private != true
-                                          ? accent
-                                          : accent.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "Public",
-                                        style: TextStyle(
-                                          color: private != true
-                                              ? Colors.white
-                                              : accent,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      private = true;
-                                    });
-                                  },
-                                  child: Container(
-                                    width: 70,
-                                    height: 30,
-                                    decoration: BoxDecoration(
-                                      color: private == true
-                                          ? accent
-                                          : accent.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "Private",
-                                        style: TextStyle(
-                                          color: private == true
-                                              ? Colors.white
-                                              : accent,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      onChanged: extractTags,
-                      controller: descriptionController,
-                      maxLength: 500,
-                      minLines: null,
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                      style: const TextStyle(fontSize: 16),
-                      decoration: const InputDecoration(
-                        hintText: "What's on your mind?",
-                        enabledBorder: InputBorder.none,
-                        counterText: '',
-                        hintStyle: TextStyle(color: accent, fontSize: 16),
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                      ),
-                    ),
-                    SizedBox(
-                      width:
-                          MediaQuery.of(context).size.width - 2 * horizontal_p,
-                      child: Wrap(
-                        alignment: WrapAlignment.spaceBetween,
-                        children: [
-                          for (int i = 0; i < _mediaFiles.length; i++)
-                            Stack(
-                              children: [
-                                MediaPreviewMobile(
-                                  mediaFile: _mediaFiles[i],
-                                  fileName: _mediaFiles[i].path.split("/").last,
-                                ),
-                                Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _mediaFiles.removeAt(i);
-                                      });
-                                    },
-                                    icon: const Icon(
-                                      Icons.close,
-                                      color: Colors.black,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            bottomNavigationBar: SizedBox(
-              height: 70,
-              width: MediaQuery.of(context).size.width,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  InkWell(
-                    onTap: pickMedia,
-                    child: Container(
-                      height: 35,
-                      decoration: BoxDecoration(
-                        color: accent.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                      ),
-                      child: Center(
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.upload_file,
-                              size: 18,
-                              color: accent,
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              _mediaFiles.isNotEmpty
-                                  ? "Add more Photos/Videos"
-                                  : "Upload Photos/Videos",
-                              style: const TextStyle(
-                                color: accent,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
   }
 
   @override
@@ -538,7 +184,7 @@ class _HomePageState extends State<HomePage>
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () => Get.to(() => ZIMKitDemoHomePage()),
             icon: SvgPicture.asset(
               "assets/icons/message.svg",
             ),
@@ -598,7 +244,6 @@ class _HomePageState extends State<HomePage>
                                 height: 5,
                               ),
                               GestureDetector(
-                                onTap: () => _openBottomSheet(),
                                 child: const Text(
                                   "Add your\nstory",
                                   textAlign: TextAlign.center,
@@ -634,53 +279,68 @@ class _HomePageState extends State<HomePage>
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: _saving != SavingState.no ? 20 : 10,
+                GetBuilder(
+                  init: SavingController(),
+                  builder: (savingController) {
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: savingController.savingState != SavingState.no
+                              ? 20
+                              : 10,
+                        ),
+                        if (savingController.savingState ==
+                            SavingState.uploading)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: horizontal_p,
+                            ),
+                            child: Column(
+                              children: [
+                                LinearProgressIndicator(
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                const Row(
+                                  children: [
+                                    Text("Your post is publishing... "),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        if (savingController.savingState ==
+                            SavingState.uploaded)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: horizontal_p,
+                            ),
+                            child: Row(
+                              children: [
+                                SvgPicture.asset("assets/icons/published.svg"),
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                const Text("Your post is published"),
+                              ],
+                            ),
+                          ),
+                      ],
+                    );
+                  },
                 ),
-                if (_saving == SavingState.uploading)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: horizontal_p,
-                    ),
-                    child: Column(
-                      children: [
-                        LinearProgressIndicator(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        const Row(
-                          children: [
-                            Text("Your post is publishing... "),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                if (_saving == SavingState.uploaded)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: horizontal_p,
-                    ),
-                    child: Row(
-                      children: [
-                        SvgPicture.asset("assets/icons/published.svg"),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        const Text("Your post is published"),
-                      ],
-                    ),
-                  ),
                 GetBuilder<PostController>(
                   init: PostController(),
                   builder: (postController) {
                     return Column(
                       children: [
                         ...postController.posts.toList().asMap().entries.map(
-                            (entry) =>
-                                PostCard(post: entry.value, index: entry.key, user: userController.userData!))
+                            (entry) => PostCard(
+                                post: entry.value,
+                                index: entry.key,
+                                user: userController.userData!))
                       ],
                     );
                   },
@@ -690,16 +350,16 @@ class _HomePageState extends State<HomePage>
           ),
         ),
       ),
-      bottomNavigationBar: Navbar(
-        homeClick: () {
-          _scrollController.animateTo(
-            0,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeInOut,
-          );
-        },
-        openBottomSheet: _openBottomSheet,
-      ),
+      // bottomNavigationBar: Navbar(
+      //   homeClick: () {
+      //     _scrollController.animateTo(
+      //       0,
+      //       duration: const Duration(milliseconds: 500),
+      //       curve: Curves.easeInOut,
+      //     );
+      //   },
+      //   openBottomSheet: _openBottomSheet,
+      // ),
     );
   }
 }

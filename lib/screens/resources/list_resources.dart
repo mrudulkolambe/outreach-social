@@ -129,7 +129,6 @@ class _ListResourcesState extends State<ListResources> {
           ),
         ),
       ),
-      bottomNavigationBar: const Navbar(),
     );
   }
 }

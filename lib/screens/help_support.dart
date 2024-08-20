@@ -6,6 +6,7 @@ import 'package:outreach/api/services/help_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/screens/home.dart';
+import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/styled_button.dart';
 import 'package:outreach/widgets/styled_textfield.dart';
@@ -38,7 +39,7 @@ class _HelpAndSupportState extends State<HelpAndSupport> {
     final statusCode = await helpService.createSupportRequest(body);
     if (statusCode == 200) {
       ToastManager.showToast("Request submitted", context);
-      Get.offAll(() => HomePage());
+      Get.offAll(() => MainStack());
     } else {
       ToastManager.showToast("Something went wrong!", context);
     }
@@ -50,6 +51,7 @@ class _HelpAndSupportState extends State<HelpAndSupport> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         surfaceTintColor: appbarColor,
         backgroundColor: appbarColor,

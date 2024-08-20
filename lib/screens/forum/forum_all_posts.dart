@@ -9,6 +9,8 @@ import 'package:outreach/api/services/forum_services.dart';
 import 'package:outreach/api/services/upload_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
+import 'package:outreach/controller/forum_post.dart';
+import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/screens/home.dart';
 import 'package:outreach/utils/toast_manager.dart';
@@ -30,6 +32,11 @@ class ForumAllPosts extends StatefulWidget {
 class _ForumAllPostsState extends State<ForumAllPosts> {
   List<ForumPost> forumPosts = [];
   bool private = false;
+  int _currentPage = 1;
+  bool hasMorePost = false;
+  final ScrollController _scrollController = ScrollController();
+  final ForumServices forumServices = ForumServices();
+  ForumPostController postController = Get.put(ForumPostController());
 
   SavingState _saving = SavingState.no;
 
@@ -39,20 +46,62 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
   @override
   void initState() {
     initializeState();
+    _scrollController.addListener(morePost);
     super.initState();
   }
 
-  void initializeState() async {
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    for (var controller in _videoControllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<void> initializeState() async {
     final forumPostsFetched =
-        await ForumServices().getForumPosts(widget.forum.id);
+        await forumServices.getForumPosts(page: 1, forumID: widget.forum.id);
     setState(() {
-      forumPosts = forumPostsFetched ?? [];
+      _currentPage = 1;
+      forumPosts = forumPostsFetched!.forumPosts ?? [];
+      postController.initAddPosts(forumPostsFetched.forumPosts);
+      hasMorePost =
+          forumPostsFetched.totalPages > forumPostsFetched.currentPage;
+      print("hasMorePost: $hasMorePost");
     });
+  }
+
+  Future<void> morePost() async {
+    if (_scrollController.position.maxScrollExtent ==
+        _scrollController.position.pixels) {
+      _loadMorePosts();
+    }
+  }
+
+  Future<void> _loadMorePosts() async {
+    print("Load More Posts");
+    if (hasMorePost) {
+      _currentPage++;
+      final morePostsResponse = await forumServices.getForumPosts(
+          page: _currentPage, forumID: widget.forum.id);
+      setState(() {
+        print(morePostsResponse!.totalFeeds);
+        print(morePostsResponse.totalPages);
+        print(morePostsResponse.currentPage);
+        hasMorePost =
+            morePostsResponse.totalPages > morePostsResponse.currentPage;
+        print(morePostsResponse.totalPages > morePostsResponse.currentPage);
+        forumPosts.addAll(morePostsResponse.forumPosts);
+        postController.addAllPosts(morePostsResponse.forumPosts);
+      });
+    } else {
+      print("Else Load More Posts");
+    }
   }
 
   TextEditingController descriptionController = TextEditingController();
   UserController userController = Get.put(UserController());
-  final ScrollController _scrollController = ScrollController();
 
   Future<List<Map<String, String>>> _uploadMedia() async {
     setState(() {
@@ -75,15 +124,6 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
     });
 
     return downloadUrls;
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    for (var controller in _videoControllers) {
-      controller.dispose();
-    }
-    super.dispose();
   }
 
   Future<bool> requestGalleryPermission() async {
@@ -174,7 +214,6 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
             ),
             body: SafeArea(
               child: SingleChildScrollView(
-                controller: _scrollController,
                 padding: const EdgeInsets.symmetric(
                   horizontal: horizontal_p,
                 ),
@@ -445,102 +484,117 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    if (_saving == SavingState.uploading)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: horizontal_p,
-                        ),
-                        child: Column(
+        child: RefreshIndicator(
+          onRefresh: () {
+            return initializeState();
+          },
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: GetBuilder<ForumPostController>(
+                      init: ForumPostController(),
+                      builder: (forumController) {
+                        return Column(
                           children: [
-                            LinearProgressIndicator(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            const Row(
-                              children: [
-                                Text("Your post is publishing... "),
-                              ],
-                            ),
+                            if (_saving == SavingState.uploading)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: horizontal_p,
+                                ),
+                                child: Column(
+                                  children: [
+                                    LinearProgressIndicator(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    const Row(
+                                      children: [
+                                        Text("Your post is publishing... "),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            if (_saving == SavingState.uploaded)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: horizontal_p,
+                                ),
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                        "assets/icons/published.svg"),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    const Text("Your post is published"),
+                                  ],
+                                ),
+                              ),
+                            ...forumController.posts.map((forumPost) {
+                              return ForumCard(
+                                forum: widget.forum,
+                                forumPost: forumPost,
+                                type: "primary",
+                              );
+                            }),
                           ],
-                        ),
-                      ),
-                    if (_saving == SavingState.uploaded)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: horizontal_p,
-                        ),
-                        child: Row(
-                          children: [
-                            SvgPicture.asset("assets/icons/published.svg"),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            const Text("Your post is published"),
-                          ],
-                        ),
-                      ),
-                    ...forumPosts.map((forumPost) {
-                      return ForumCard(
-                          forum: widget.forum, forumPost: forumPost);
-                    }),
-                  ],
+                        );
+                      }),
                 ),
               ),
-            ),
-            InkWell(
-              onTap: _openBottomSheet,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(width: 2, color: grey.withOpacity(0.2)),
-                    bottom: BorderSide(width: 2, color: grey.withOpacity(0.2)),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.add_rounded),
-                        ),
-                        const Text(
-                          'Post',
-                        )
-                      ],
+              InkWell(
+                onTap: _openBottomSheet,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(width: 2, color: grey.withOpacity(0.2)),
+                      bottom:
+                          BorderSide(width: 2, color: grey.withOpacity(0.2)),
                     ),
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: accent,
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.arrow_upward,
-                            color: Colors.white,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.add_rounded),
+                          ),
+                          const Text(
+                            'Post',
+                          )
+                        ],
+                      ),
+                      InkWell(
+                        onTap: () {},
+                        child: Container(
+                          height: 30,
+                          width: 30,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: accent,
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.arrow_upward,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: const Navbar(),

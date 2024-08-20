@@ -12,6 +12,7 @@ class MoreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         surfaceTintColor: appbarColor,
         backgroundColor: appbarColor,
@@ -63,7 +64,6 @@ class MoreScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const Navbar(),
     );
   }
 }

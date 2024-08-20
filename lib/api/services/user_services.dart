@@ -52,4 +52,30 @@ class UserService {
       ToastManager.showToastApp(error.message);
     }
   }
+
+  Future<List<UserData>?> getAllUsers() async {
+    final response = await ApiService().get(allUsers);
+    if (response != null && response.statusCode == 200) {
+      final data = UsersResponse.fromJson(jsonDecode(response.body));
+      return data.users;
+    } else {
+      final error = ErrorState.fromJson(jsonDecode(response!.body));
+      ToastManager.showToastApp(error.message);
+      return null;
+    }
+  }
+
+  Future<List<UserData>?> searchUsers(String query) async {
+    print("$queryUsers?query=$query");
+    final response = await ApiService().get("$queryUsers?query=$query");
+    if (response != null && response.statusCode == 200) {
+      final data = UsersResponse.fromJson(jsonDecode(response.body));
+      print(data.users);
+      return data.users;
+    } else {
+      final error = ErrorState.fromJson(jsonDecode(response!.body));
+      ToastManager.showToastApp(error.message);
+      return null;
+    }
+  }
 }

@@ -62,6 +62,10 @@ dependencies:
     infinite_scroll_pagination: ^4.0.0
     chewie: ^1.8.1
     visibility_detector: ^0.4.0+2
+    cached_network_image: ^3.3.1
+    heroicons: ^0.10.0
+    zego_zimkit: ^1.18.10
+    date_format: ^2.0.7
 
 dev_dependencies:
     flutter_test:

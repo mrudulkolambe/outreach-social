@@ -112,7 +112,7 @@ class _InterestedInState extends State<InterestedIn> {
                         ),
                         if (!widget.update)
                           TextButton(
-                            onPressed: () => Get.to(() => const Congo()),
+                            onPressed: () => Get.offAll(() => const Congo()),
                             child: const Text(
                               "Skip",
                               style: TextStyle(
@@ -127,7 +127,6 @@ class _InterestedInState extends State<InterestedIn> {
                       height: 15,
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.5,
                       child: GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),

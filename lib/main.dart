@@ -15,13 +15,19 @@ import 'package:outreach/firebase_options.dart';
 import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/auth/username.dart';
 import 'package:outreach/screens/home.dart';
+import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/onboarding.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:zego_zimkit/zego_zimkit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  ZIMKit().init(
+    appID: 1326692995,
+    appSign: "b692aa52fba5fcffb670e4f40af132ddc4668255866d687dfe8675bad2d19a2a",
+  );
   runApp(const MyApp());
 }
 
@@ -72,7 +78,14 @@ class _SplashScreenState extends State<SplashScreen>
         if (!mounted) return;
 
         if (user != null) {
+          await ZIMKit().requestPermission();
           final UserData? userData = await userService.currentUser();
+          final zegoResult = await ZIMKit().connectUser(
+            id: userData!.id,
+            name: userData.username!,
+            avatarUrl: userData.imageUrl!,
+          );
+          print("zegoResult, $zegoResult");
           if (!mounted) return;
 
           if (userData == null) {
@@ -84,7 +97,7 @@ class _SplashScreenState extends State<SplashScreen>
             ToastManager.showToast("Please fill the form first", context);
             Get.offAll(() => const Username());
           } else {
-            Get.offAll(() => const HomePage());
+            Get.offAll(() => MainStack());
           }
         } else {
           Get.offAll(() => const OnBoarding());

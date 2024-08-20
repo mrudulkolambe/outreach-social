@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:outreach/models/post.dart';
 
 class UserResponse {
@@ -22,6 +23,35 @@ class UserResponse {
       success: success,
       message: message,
       user: user,
+      error: error,
+    );
+  }
+}
+
+class UsersResponse {
+  bool success;
+  String message;
+  List<UserData> users;
+  bool? error;
+
+  UsersResponse({
+    required this.success,
+    required this.message,
+    required this.users,
+    this.error,
+  });
+
+  factory UsersResponse.fromJson(dynamic json) {
+    final bool success = json["success"];
+    final String message = json["message"];
+    final List<UserData> users = List.from(json["response"]).map((user) {
+      return UserData.fromJson(user);
+    }).toList();
+    final bool? error = json["error"];
+    return UsersResponse(
+      success: success,
+      message: message,
+      users: users,
       error: error,
     );
   }

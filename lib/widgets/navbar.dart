@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/screens/forum/forum.dart';
 import 'package:outreach/screens/home.dart';
+import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/more.dart';
 import 'package:outreach/screens/resources/list_resources.dart';
 import 'package:outreach/utils/breakpoints.dart';
@@ -36,7 +37,7 @@ class Navbar extends StatelessWidget {
               if (Get.currentRoute == "/HomePage") {
                 homeClick!();
               } else {
-                Get.to(() => const HomePage());
+                Get.to(() => const MainStack());
               }
             },
             child: Column(
@@ -66,7 +67,7 @@ class Navbar extends StatelessWidget {
               if (Get.currentRoute == "/HomePage") {
                 openBottomSheet!();
               } else {
-                Get.to(() => const HomePage());
+                Get.to(() => MainStack());
               }
             },
             child: const Column(

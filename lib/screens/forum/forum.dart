@@ -9,7 +9,6 @@ import 'package:outreach/screens/forum/create_forum.dart';
 import 'package:outreach/screens/forum/joined_forum.dart';
 import 'package:outreach/widgets/forum/forum_card_primary.dart';
 import 'package:outreach/widgets/forum/forum_list_card.dart';
-import 'package:outreach/widgets/navbar.dart';
 
 class ForumScreen extends StatefulWidget {
   const ForumScreen({super.key});
@@ -214,7 +213,6 @@ class _ForumScreenState extends State<ForumScreen> {
               );
             }),
       ),
-      bottomNavigationBar: const Navbar(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Get.to(() => const CreateForum()),
         label: const Text(

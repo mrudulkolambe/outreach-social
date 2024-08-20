@@ -1,22 +1,30 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outreach/api/models/forum.dart';
+import 'package:outreach/api/services/forum_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
+import 'package:outreach/screens/forum/forum_post_details.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
+import 'package:outreach/widgets/bottomsheet/forum_post_comment.dart';
 import 'package:outreach/widgets/posts/mediacard.dart';
 
 class ForumCard extends StatefulWidget {
   final Forum forum;
   final ForumPost forumPost;
+  final String type;
 
   const ForumCard({
     super.key,
     required this.forum,
     required this.forumPost,
+    required this.type,
   });
 
   @override
@@ -81,9 +89,14 @@ class _ForumCardState extends State<ForumCard> {
         horizontal: horizontal_p,
         vertical: 10,
       ),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(bottom: BorderSide(width: 2, color: lightgrey)),
+        border: Border(
+          bottom: BorderSide(
+            width: widget.type != "details" ? 2 : 0,
+            color: widget.type != "details" ? lightgrey : Colors.transparent,
+          ),
+        ),
       ),
       child: Column(
         children: [
@@ -117,8 +130,9 @@ class _ForumCardState extends State<ForumCard> {
                       height: 40,
                       width: 40,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(40 / 2),
-                          color: lightgrey),
+                        borderRadius: BorderRadius.circular(40 / 2),
+                        color: lightgrey,
+                      ),
                       child: Center(
                         child: SvgPicture.asset(
                           "assets/icons/user-placeholder.svg",
@@ -156,99 +170,117 @@ class _ForumCardState extends State<ForumCard> {
               ),
             ],
           ),
-          if(widget.forumPost.media.isNotEmpty) const SizedBox(
-            height: 10,
-          ),
-          if(widget.forumPost.media.isNotEmpty) MediaCarousel(mediaPosts: widget.forumPost.media),
-          const SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: RichText(
-                  text: TextSpan(
-                    style: GoogleFonts.mulish(
-                      color: Colors.black
-                    ),
-                    children: textSpans,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          if (_isExpanded && isTextLong)
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isExpanded = false;
-                });
-              },
-              child: const Row(
+          if (widget.type == "details")
+            SizedBox(
+              width: widget.type == "details"
+                  ? MediaQuery.of(context).size.width - 85 - 40
+                  : MediaQuery.of(context).size.width - 2 * horizontal_p,
+              child: Column(
                 children: [
-                  Text(
-                    "Show less",
-                    style: TextStyle(
-                      color: accent,
+                  SizedBox(
+                    height: 6,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.forumPost.content,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          if (widget.forumPost.media.isNotEmpty)
+            const SizedBox(
+              height: 10,
+            ),
+          if (widget.forumPost.media.isNotEmpty)
+            InkWell(
+              onTap: widget.type == "details"
+                  ? () {}
+                  : () => Get.to(
+                        () => ForumPostDetails(
+                          forumPost: widget.forumPost,
+                          forum: widget.forum,
+                        ),
+                      ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width: widget.type == "details"
+                        ? MediaQuery.of(context).size.width - 85
+                        : MediaQuery.of(context).size.width - 2 * horizontal_p,
+                    child: MediaCarousel(
+                      mediaPosts: widget.forumPost.media,
                     ),
                   ),
                 ],
               ),
             ),
-          if (!_isExpanded && isTextLong)
+          if (widget.forumPost.content.isNotEmpty)
+            const SizedBox(
+              height: 10,
+            ),
+          if (widget.type != "details")
+            Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.forumPost.content,
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+              ],
+            ),
+          if (widget.type != "details")
             Row(
               children: [
                 InkWell(
                   onTap: () {
-                    setState(() {
-                      _isExpanded = true;
-                    });
+                    print("object");
+                    ForumServices().likeOnPost(widget.forumPost);
                   },
-                  child: const Text(
-                    "Read more",
-                    style: TextStyle(
-                      color: accent,
-                    ),
+                  child: Row(
+                    children: [
+                      widget.forumPost.liked
+                          ? SvgPicture.asset(
+                              "assets/icons/like-filled.svg",
+                            )
+                          : SvgPicture.asset(
+                              "assets/icons/like.svg",
+                            ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Text(widget.forumPost.likesCount.toString())
+                    ],
                   ),
+                ),
+                const SizedBox(
+                  width: 15,
+                ),
+                Row(
+                  children: [
+                    const Text(
+                      "Reply",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          const SizedBox(
-            height: 8,
-          ),
-          Row(
-            children: [
-              Row(
-                children: [
-                  SvgPicture.asset("assets/icons/like.svg"),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  const Text("55k")
-                ],
-              ),
-              const SizedBox(
-                width: 15,
-              ),
-              Row(
-                children: [
-                  SvgPicture.asset("assets/icons/comment.svg"),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  const Text("50")
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          const Row(
-            children: [
-              Text("View all comments"),
-            ],
-          ),
           const SizedBox(
             height: 5,
           )

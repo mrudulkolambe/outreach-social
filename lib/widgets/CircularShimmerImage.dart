@@ -1,5 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -25,30 +26,12 @@ class CircularShimmerImage extends StatelessWidget {
                   width: size,
                   height: size,
                 )
-              : Image.network(
-                  imageUrl!,
+              : CachedNetworkImage(
+                  imageUrl: imageUrl!,
                   width: size,
                   height: size,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return SvgPicture.asset(
-                      "assets/image_placeholder.svg",
-                      width: size,
-                      height: size,
-                    );
-                  },
-                  frameBuilder: (BuildContext context, Widget child, int? frame,
-                      bool wasSynchronouslyLoaded) {
-                    if (wasSynchronouslyLoaded) {
-                      return child;
-                    }
-                    return AnimatedOpacity(
-                      opacity: frame == null ? 0 : 1,
-                      duration: const Duration(seconds: 1),
-                      curve: Curves.easeOut,
-                      child: child,
-                    );
-                  },
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
         ),
       ],

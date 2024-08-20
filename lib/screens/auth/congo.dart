@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/screens/home.dart';
+import 'package:outreach/screens/main.dart';
 
 class Congo extends StatefulWidget {
   const Congo({super.key});
@@ -12,9 +13,8 @@ class Congo extends StatefulWidget {
 }
 
 class _CongoState extends State<Congo> {
-
   void saveInfo() async {
-    Get.offAll(() => const HomePage());
+    Get.offAll(() => const MainStack());
   }
 
   @override

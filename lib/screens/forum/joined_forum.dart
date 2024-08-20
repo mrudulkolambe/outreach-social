@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outreach/api/models/forum.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/forum.dart';
@@ -17,6 +18,15 @@ class JoinedForum extends StatefulWidget {
 class _JoinedForumState extends State<JoinedForum> {
   final ForumController forumController = Get.put(ForumController());
   final UserController userController = Get.put(UserController());
+  List<Forum> joinedForums = [];
+
+  @override
+  void initState() {
+    forumController.forums.where((forum) =>
+        forum.joined.contains(userController.userData!.id) ||
+        forum.userId.id == userController.userData!.id);
+    super.initState();
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(

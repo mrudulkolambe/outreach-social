@@ -20,9 +20,9 @@ class FeedService {
     final response = await ApiService().post(createFeedAPI, body);
     if (response != null && response.statusCode == 200 ||
         response != null && response.statusCode == 201) {
-      final postsResponse = await getFeed(page: 1, limit: 10);
-      postController.initAddPosts(postsResponse!.posts);
-      return null;
+      final createdPost = PostResponse.fromJson(jsonDecode(response.body));
+      postController.addPosts(createdPost.post);
+      return createdPost.post;
     } else {
       ToastManager.showToastApp("Something went wrong");
     }
@@ -42,13 +42,26 @@ class FeedService {
     return null;
   }
 
-  Future<int> likeOnPost(String postId) async {
-    final updatedPost = await ApiService().patch('$likeStatusFeedAPI/$postId', {});
+  Future<int> likeOnPost(Post post) async {
+    final tempPost = Post(
+        id: post.id,
+        content: post.content,
+        public: post.public,
+        media: post.media,
+        user: post.user,
+        tags: post.tags,
+        liked: post.liked ? false : true,
+        likesCount: post.liked ? post.likesCount - 1 : post.likesCount + 1,
+        commentCount: post.commentCount);
+    postController.updatePost(tempPost);
+    final updatedPost =
+        await ApiService().patch('$likeStatusFeedAPI/${post.id}', {});
     if (updatedPost != null) {
-      final updatedPostData = PostResponse.fromJson(jsonDecode(updatedPost.body));
+      final updatedPostData =
+          PostResponse.fromJson(jsonDecode(updatedPost.body));
       postController.updatePost(updatedPostData.post);
       return 200;
-    }else{
+    } else {
       ToastManager.showToastApp("Something went wrong");
       return 500;
     }

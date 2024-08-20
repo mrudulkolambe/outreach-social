@@ -122,7 +122,7 @@ class _ProfilePicState extends State<ProfilePic> {
                           ),
                         ),
                         TextButton(
-                            onPressed: () => Get.to(() => const Bio(
+                            onPressed: () => Get.offAll(() => const Bio(
                                   update: false,
                                   bio: "",
                                 )),

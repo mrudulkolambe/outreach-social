@@ -1,11 +1,16 @@
 import 'dart:convert';
 
+import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:outreach/api/constants/constants.dart';
 import 'package:outreach/api/models/forum.dart';
 import 'package:outreach/api/services/api_services.dart';
+import 'package:outreach/controller/forum_post.dart';
+import 'package:outreach/utils/toast_manager.dart';
 
 class ForumServices {
+  ForumPostController forumPostController = Get.put(ForumPostController());
+
   Future<int> createForum(Map<String, dynamic> body) async {
     final response = await ApiService().post(createForumAPI, body);
     if (response != null && response.statusCode == 200 ||
@@ -49,20 +54,27 @@ class ForumServices {
     }
   }
 
-  Future<List<ForumPost>?> getForumPosts(String forumID) async {
-    final response = await ApiService().get('$getForumPostAPI/$forumID');
+  Future<ForumPostsResponse?> getForumPosts({
+    int page = 1,
+    int limit = 10,
+    String forumID = "",
+  }) async {
+    final response = await ApiService()
+        .get('$getForumPostAPI/$forumID?page=$page&limit=$limit');
     if (response != null && response.statusCode == 200 ||
         response != null && response.statusCode == 201) {
       final results = ForumPostsResponse.fromJson(jsonDecode(response.body));
-      return results.forumPosts;
+      return results;
     } else {
       print(response!.reasonPhrase);
       return null;
     }
   }
 
-  Future<ForumPost?> createForumPost(String forumID, Map<String, dynamic> body) async {
-    final response = await ApiService().post('$createForumPostAPI/$forumID', body);
+  Future<ForumPost?> createForumPost(
+      String forumID, Map<String, dynamic> body) async {
+    final response =
+        await ApiService().post('$createForumPostAPI/$forumID', body);
     if (response != null && response.statusCode == 200 ||
         response != null && response.statusCode == 201) {
       final results = ForumPostResponse.fromJson(jsonDecode(response.body));
@@ -70,6 +82,30 @@ class ForumServices {
     } else {
       print(response!.reasonPhrase);
       return null;
+    }
+  }
+
+  Future<int> likeOnPost(ForumPost post) async {
+    final tempPost = ForumPost(
+        id: post.id,
+        content: post.content,
+        public: post.public,
+        media: post.media,
+        user: post.user,
+        liked: post.liked ? false : true,
+        likesCount: post.liked ? post.likesCount - 1 : post.likesCount + 1,
+        commentCount: post.commentCount);
+    forumPostController.updatePost(tempPost);
+    final updatedPost =
+        await ApiService().patch('$likeStatusForumFeedAPI/${post.id}', {});
+    if (updatedPost != null) {
+      final updatedPostData =
+          ForumPostResponse.fromJson(jsonDecode(updatedPost.body));
+      forumPostController.updatePost(updatedPostData.forumPost!);
+      return 200;
+    } else {
+      ToastManager.showToastApp("Something went wrong");
+      return 500;
     }
   }
 }

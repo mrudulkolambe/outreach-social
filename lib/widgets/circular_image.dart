@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:path/path.dart';
 
 class CircularImage extends StatelessWidget {
   final double size;
@@ -14,9 +16,9 @@ class CircularImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(size / 2),
-      child: Image.network(
+      child: CachedNetworkImage(
         fit: BoxFit.cover,
-        path,
+        imageUrl: path,
         height: size,
         width: size,
       ),

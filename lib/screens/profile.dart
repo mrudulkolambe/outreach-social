@@ -36,6 +36,7 @@ class MyProfile extends StatefulWidget {
 class _MyProfileState extends State<MyProfile> {
   UserService userService = UserService();
   PostController postController = Get.put(PostController());
+  UserController userController = Get.put(UserController());
   bool _uploading = false;
 
   Future<String?> uploadImage(File image) async {
@@ -152,13 +153,22 @@ class _MyProfileState extends State<MyProfile> {
                                     ),
                         ),
                         const SizedBox(width: 30),
-                        const Expanded(
+                        Expanded(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              StatsElem(count: 20, title: "Posts"),
-                              StatsElem(count: 55500, title: "Followers"),
-                              StatsElem(count: 5000, title: "Following"),
+                              StatsElem(
+                                count: userController.userData!.feeds.length,
+                                title: "Posts",
+                              ),
+                              StatsElem(
+                                count: userController.userData!.followers ?? 0,
+                                title: "Followers",
+                              ),
+                              StatsElem(
+                                count: userController.userData!.following ?? 0,
+                                title: "Following",
+                              ),
                             ],
                           ),
                         )

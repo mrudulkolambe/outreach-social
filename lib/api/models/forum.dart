@@ -82,30 +82,46 @@ class Forum {
 }
 
 class ForumPost {
+  String id;
   String content;
   List<Media> media;
   bool public;
   PostUser user;
+  int likesCount;
+  int commentCount;
+  bool liked;
 
   ForumPost({
+    required this.id,
     required this.content,
     required this.public,
     required this.media,
     required this.user,
+    required this.liked,
+    required this.likesCount,
+    required this.commentCount,
   });
 
   factory ForumPost.fromJson(dynamic json) {
+    final id = json["_id"] as String;
     final content = json["content"] as String;
     final media =
         List.from(json["media"]).map((e) => Media.fromJson(e)).toList();
     final public = json["public"] as bool;
-    final user = PostUser.fromJson(json["userId"]);
+    final user = PostUser.fromJson(json["user"]);
+    final liked = json["liked"];
+    final likesCount = json["likesCount"];
+    final commentCount = json["commentCount"];
 
     return ForumPost(
+      id: id,
       content: content,
       media: media,
       public: public,
       user: user,
+      liked: liked,
+      likesCount: likesCount,
+      commentCount: commentCount,
     );
   }
 }
@@ -126,9 +142,8 @@ class ForumPostResponse {
   factory ForumPostResponse.fromJson(dynamic json) {
     final success = json["success"] as bool;
     final message = json["message"] as String;
-    final forumPost = json["response"] == null
-        ? null
-        : ForumPost.fromJson(json["response"]);
+    final forumPost =
+        json["response"] == null ? null : ForumPost.fromJson(json["response"]);
 
     return ForumPostResponse(
       success: success,
@@ -137,30 +152,45 @@ class ForumPostResponse {
     );
   }
 }
+
 class ForumPostsResponse {
   bool success;
   String message;
   List<ForumPost> forumPosts;
+  int totalFeeds;
+  int totalPages;
+  int currentPage;
 
   ForumPostsResponse({
     required this.success,
     required this.message,
     required this.forumPosts,
+    required this.totalFeeds,
+    required this.currentPage,
+    required this.totalPages,
   });
 
   factory ForumPostsResponse.fromJson(dynamic json) {
+    print(json["response"]["totalPosts"]);
     final success = json["success"] as bool;
     final message = json["message"] as String;
-    final forumPosts = json["response"] == [] || json["response"] == null
+    final forumPosts = json["response"]["forumPosts"] == [] ||
+            json["response"]["forumPosts"] == null
         ? emptyForumPostList
-        : List.from(json["response"])
+        : List.from(json["response"]["forumPosts"])
             .map((e) => ForumPost.fromJson(e))
             .toList();
+    final totalPages = json["response"]["totalPages"] as int;
+    final totalFeeds = json["response"]["totalPosts"] as int;
+    final currentPage = json["response"]["currentPage"] as int;
 
     return ForumPostsResponse(
       success: success,
       message: message,
       forumPosts: forumPosts,
+      totalFeeds: totalFeeds,
+      totalPages: totalPages,
+      currentPage: currentPage,
     );
   }
 }

@@ -12,8 +12,7 @@ import 'package:video_player/video_player.dart';
 class MediaCarousel extends StatefulWidget {
   final List<Media> mediaPosts;
 
-  const MediaCarousel(
-      {super.key, required this.mediaPosts});
+  const MediaCarousel({super.key, required this.mediaPosts});
 
   @override
   _MediaCarouselState createState() => _MediaCarouselState();
@@ -38,34 +37,30 @@ class _MediaCarouselState extends State<MediaCarousel> {
       children: [
         CarouselSlider(
           options: CarouselOptions(
+            onPageChanged: (index, reason) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
             viewportFraction: 1,
             enlargeCenterPage: false,
             enableInfiniteScroll: false,
             autoPlay: false,
             aspectRatio: 16 / 9,
-            // Adjust aspect ratio as per your requirement
-            onPageChanged: (index, _) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
           ),
           items: widget.mediaPosts.map((post) {
-            return Builder(
-              builder: (BuildContext context) {
-                if (post.type == 'image') {
-                  return ShimmerImage(
-                    imageUrl: post.url,
-                    width: double.infinity,
-                    height: double.infinity,
-                  );
-                } else if (post.type == 'video') {
-                  return HLSVideoPlayer(url: post.url);
-                } else {
-                  return const Center(child: Text('Unsupported media type'));
-                }
-              },
-            );
+            if (post.type == 'image') {
+              return ShimmerImage(
+                key: Key(post.url),
+                imageUrl: post.url,
+                width: double.infinity,
+                height: double.infinity,
+              );
+            } else if (post.type == 'video') {
+              return HLSVideoPlayer(url: post.url);
+            } else {
+              return const Center(child: Text('Unsupported media type'));
+            }
           }).toList(),
         ),
         if (widget.mediaPosts.length > 1)

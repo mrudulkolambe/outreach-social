@@ -42,7 +42,7 @@ class _BioState extends State<Bio> {
       if (widget.update) {
         Get.offAll(() => const MyProfile());
       } else {
-        Get.to(() => const InterestedIn(
+        Get.offAll(() => const InterestedIn(
               update: false,
               choosenInterest: [],
             ));
@@ -86,18 +86,22 @@ class _BioState extends State<Bio> {
                             ),
                           ),
                         ),
-                        if(!widget.update) TextButton(
-                          onPressed: () => Get.to(
-                            () => const InterestedIn(update: false, choosenInterest: [],),
-                          ),
-                          child: const Text(
-                            "Skip",
-                            style: TextStyle(
-                              color: grey,
-                              fontWeight: FontWeight.w400,
+                        if (!widget.update)
+                          TextButton(
+                            onPressed: () => Get.offAll(
+                              () => const InterestedIn(
+                                update: false,
+                                choosenInterest: [],
+                              ),
                             ),
-                          ),
-                        )
+                            child: const Text(
+                              "Skip",
+                              style: TextStyle(
+                                color: grey,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          )
                       ],
                     ),
                     const SizedBox(
