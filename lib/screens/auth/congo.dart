@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
-import 'package:outreach/screens/home.dart';
 import 'package:outreach/screens/main.dart';
 
 class Congo extends StatefulWidget {

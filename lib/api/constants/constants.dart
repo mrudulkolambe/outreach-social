@@ -6,7 +6,10 @@ const String userEndpoint = '$baseUrl/user';
 
 const String registerUser = '$userEndpoint/register';
 const String currentUserAPI = '$userEndpoint/current-user';
+const String getUserProfileAPI = '$userEndpoint/profile';
 const String updateUserAPI = '$userEndpoint/update';
+const String globalSearchAPI = '$userEndpoint/global/search';
+const String followUserAPI = '$baseUrl/follow';
 
 const String supportEndpoint = '$baseUrl/support';
 

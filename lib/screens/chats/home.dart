@@ -7,7 +7,6 @@ import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
-import 'package:outreach/controller/user.dart';
 import 'package:outreach/widgets/shimmer_image.dart';
 import 'package:zego_zimkit/zego_zimkit.dart';
 

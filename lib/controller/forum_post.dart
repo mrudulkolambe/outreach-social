@@ -1,6 +1,5 @@
 import 'package:get/state_manager.dart';
 import 'package:outreach/api/models/forum.dart';
-import 'package:outreach/models/post.dart';
 
 class ForumPostController extends GetxController {
   var posts = <ForumPost>[];

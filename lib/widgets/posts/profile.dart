@@ -126,10 +126,10 @@ class _ProfilePostsState extends State<ProfilePosts> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              widget.post.media.first.type == "mp4" ||
+            if(widget.post.media.isNotEmpty)  widget.post.media.first.type == "mp4" ||
                       widget.post.media.first.type == "mov"
-                  ? VideoPlayerScreenProfile(
-                      videoPath: widget.post.media.first.url,
+                  ? ProfileHLSVideoPlayer(
+                      url: widget.post.media.first.url,
                     )
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(20),

@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:outreach/api/services/help_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
-import 'package:outreach/screens/home.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/styled_button.dart';

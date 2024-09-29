@@ -54,7 +54,7 @@ class _LoginState extends State<Login> {
           userData.name == "") {
         Get.offAll(() => const Username());
       } else {
-        Get.offAll(() => const HomePage());
+        Get.offAll(() => const MainStack());
       }
     } on FirebaseAuthException catch (e) {
       print("message");
@@ -163,7 +163,7 @@ class _LoginState extends State<Login> {
           userData.name == "") {
         Get.offAll(() => const Username());
       } else {
-        Get.offAll(() => const HomePage());
+        Get.offAll(() => const MainStack());
       }
 
       setState(() {

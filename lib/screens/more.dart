@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/help_support.dart';
-import 'package:outreach/widgets/navbar.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});

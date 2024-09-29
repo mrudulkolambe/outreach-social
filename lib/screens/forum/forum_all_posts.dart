@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -12,7 +14,6 @@ import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/forum_post.dart';
 import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
-import 'package:outreach/screens/home.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/forum/forum_card.dart';
 import 'package:outreach/widgets/navbar.dart';
@@ -64,7 +65,7 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
         await forumServices.getForumPosts(page: 1, forumID: widget.forum.id);
     setState(() {
       _currentPage = 1;
-      forumPosts = forumPostsFetched!.forumPosts ?? [];
+      forumPosts = forumPostsFetched!.forumPosts;
       postController.initAddPosts(forumPostsFetched.forumPosts);
       hasMorePost =
           forumPostsFetched.totalPages > forumPostsFetched.currentPage;

@@ -135,22 +135,30 @@ class PostUser {
   String name;
   String username;
   String? imageUrl;
+  String? id;
+  int? followers;
 
   PostUser({
     required this.name,
     required this.username,
+    this.id,
     this.imageUrl,
+    this.followers,
   });
 
   factory PostUser.fromJson(dynamic json) {
     final name = json["name"] as String;
     final username = json["username"] as String;
     final imageUrl = json["imageUrl"];
+    final followers = json["followers"];
+    final id = json["_id"];
 
     return PostUser(
       name: name,
       username: username,
       imageUrl: imageUrl,
+      followers: followers,
+      id: id,
     );
   }
 
@@ -160,5 +168,32 @@ class PostUser {
       "username": username,
       "imageUrl": imageUrl,
     };
+  }
+}
+
+
+class PostUsersResponse {
+  String message;
+  bool success;
+  List<PostUser> response;
+
+  PostUsersResponse({
+    required this.message,
+    required this.success,
+    required this.response,
+  });
+
+  factory PostUsersResponse.fromJson(dynamic json) {
+    final message = json["message"] as String;
+    final success = json["success"] as bool;
+    final response = (json["response"] as List)
+        .map((postUser) => PostUser.fromJson(postUser))
+        .toList();
+
+    return PostUsersResponse(
+      message: message,
+      success: success,
+      response: response,
+    );
   }
 }

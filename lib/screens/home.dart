@@ -1,13 +1,10 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/services/feed_services.dart';
-import 'package:outreach/api/services/upload_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/post.dart';
@@ -15,17 +12,12 @@ import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/models/post.dart';
 import 'package:outreach/screens/chats/home.dart';
-import 'package:outreach/screens/chats/list.dart';
-import 'package:outreach/utils/toast_manager.dart';
+import 'package:outreach/screens/search.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
-import 'package:outreach/widgets/navbar.dart';
-import 'package:outreach/widgets/platform_constraints/media_preview_mobile.dart';
 import 'package:outreach/widgets/post_card.dart';
 import 'package:outreach/widgets/story_card.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 import 'package:outreach/screens/profile.dart';
-import 'package:zego_zimkit/zego_zimkit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -94,7 +86,7 @@ class _HomePageState extends State<HomePage>
         hasMorePost =
             morePostsResponse.totalPages > morePostsResponse.currentPage;
         print(morePostsResponse.totalPages > morePostsResponse.currentPage);
-        postsList.addAll(morePostsResponse!.posts);
+        postsList.addAll(morePostsResponse.posts);
         postController.addAllPosts(morePostsResponse.posts);
       });
     } else {
@@ -172,7 +164,7 @@ class _HomePageState extends State<HomePage>
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => Get.to(() => const SearchUsers()),
             icon: SvgPicture.asset(
               "assets/icons/search.svg",
             ),

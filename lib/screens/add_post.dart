@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/services/feed_services.dart';
@@ -10,7 +9,6 @@ import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
-import 'package:outreach/screens/home.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/platform_constraints/media_preview_mobile.dart';

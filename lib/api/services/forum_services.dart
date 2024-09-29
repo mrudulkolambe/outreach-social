@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
-import 'package:http/http.dart';
 import 'package:outreach/api/constants/constants.dart';
 import 'package:outreach/api/models/forum.dart';
 import 'package:outreach/api/services/api_services.dart';

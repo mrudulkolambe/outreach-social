@@ -9,7 +9,6 @@ import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/comment.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/bottomsheet/forum_post_comment.dart';
-import 'package:outreach/widgets/circular_image.dart';
 import 'package:outreach/widgets/forum/forum_card.dart';
 
 class ForumPostDetails extends StatefulWidget {
@@ -42,7 +41,6 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
   @override
   void initState() {
     super.initState();
-    print("initstate");
     initializeState();
     _scrollController.addListener(moreComments);
   }
@@ -204,7 +202,7 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
                                                   widget.forum.userId.imageUrl!,
                                               size: 40,
                                             ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                       Column(
@@ -246,12 +244,12 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
                                     MediaQuery.of(context).size.width - 85 - 40,
                                 child: Text(
                                   forumComment.text,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
                                   ),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               )
                             ],

@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison
 
 import 'dart:async';
 
@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/user_services.dart';
@@ -14,7 +15,6 @@ import 'package:outreach/controller/post.dart';
 import 'package:outreach/firebase_options.dart';
 import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/auth/username.dart';
-import 'package:outreach/screens/home.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/onboarding.dart';
 import 'package:outreach/utils/toast_manager.dart';
@@ -23,6 +23,7 @@ import 'package:zego_zimkit/zego_zimkit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   ZIMKit().init(
     appID: 1326692995,
@@ -97,7 +98,7 @@ class _SplashScreenState extends State<SplashScreen>
             ToastManager.showToast("Please fill the form first", context);
             Get.offAll(() => const Username());
           } else {
-            Get.offAll(() => MainStack());
+            Get.offAll(() => const MainStack());
           }
         } else {
           Get.offAll(() => const OnBoarding());

@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:outreach/models/post.dart';
 
 class UserResponse {
@@ -73,6 +72,7 @@ class UserData {
   List<Post> feeds;
   int? followers;
   int? following;
+  bool? isFollowing;
 
   UserData({
     required this.id,
@@ -90,6 +90,7 @@ class UserData {
     required this.feeds,
     this.followers,
     this.following,
+    this.isFollowing,
   });
 
   factory UserData.fromJson(dynamic json) {
@@ -102,6 +103,7 @@ class UserData {
     final String? username = json["username"];
     final String? imageUrl = json["imageUrl"];
     final String? bio = json["bio"];
+    final bool? isFollowing = json["isFollowing"];
     final List<String> interest =
         List.from(json["interest"]).map((e) => e.toString()).toList();
     final List<Post> feeds = json["feeds"] == null
@@ -116,6 +118,7 @@ class UserData {
       id: id,
       isProfileCompleted: isProfileCompleted,
       provider: provider,
+      isFollowing: isFollowing,
       login: login,
       name: name,
       email: email,

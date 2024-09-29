@@ -1,9 +1,8 @@
-import 'package:flutter/foundation.dart';
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:outreach/constants/colors.dart';
-import 'package:outreach/controller/saving.dart';
 import 'package:outreach/screens/add_post.dart';
 import 'package:outreach/screens/forum/forum.dart';
 import 'package:outreach/screens/home.dart';
@@ -25,11 +24,11 @@ class _MainStackState extends State<MainStack> {
   void initState() {
     super.initState();
     _pages = [
-      HomePage(key: PageStorageKey('FeedPage')),
-      ForumScreen(key: PageStorageKey('SearchPage')),
-      AddPost(key: PageStorageKey('AddPost')),
-      ListResources(key: PageStorageKey('ResourcesPage')),
-      MoreScreen(key: PageStorageKey('MorePage'))
+      const HomePage(key: PageStorageKey('FeedPage')),
+      const ForumScreen(key: PageStorageKey('SearchPage')),
+      const AddPost(key: PageStorageKey('AddPost')),
+      const ListResources(key: PageStorageKey('ResourcesPage')),
+      const MoreScreen(key: PageStorageKey('MorePage'))
     ];
   }
 
@@ -58,11 +57,11 @@ class _MainStackState extends State<MainStack> {
           selectedFontSize: 15,
           unselectedFontSize: 14,
           unselectedItemColor: Colors.black,
-          selectedLabelStyle: TextStyle(
+          selectedLabelStyle: const TextStyle(
             color: accent,
             fontWeight: FontWeight.w600,
           ),
-          unselectedLabelStyle: TextStyle(
+          unselectedLabelStyle: const TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w400,
           ),
@@ -75,7 +74,7 @@ class _MainStackState extends State<MainStack> {
           items: [
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
-                color: accent,
+                color: _currentIndex == 0 ? accent : Colors.black,
                 "assets/icons/home.svg",
                 height: 24,
                 width: 24,
@@ -84,6 +83,7 @@ class _MainStackState extends State<MainStack> {
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
+                color: _currentIndex == 1 ? accent : Colors.black,
                 "assets/icons/forum.svg",
                 height: 24,
                 width: 24,
@@ -92,12 +92,14 @@ class _MainStackState extends State<MainStack> {
             ),
             BottomNavigationBarItem(
               icon: Icon(
+                color: _currentIndex == 2 ? accent : Colors.black,
                 Icons.add_rounded,
               ),
               label: 'Post',
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
+                color: _currentIndex == 3 ? accent : Colors.black,
                 "assets/icons/resource.svg",
                 height: 24,
                 width: 24,
@@ -106,6 +108,7 @@ class _MainStackState extends State<MainStack> {
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
+                color: _currentIndex == 4 ? accent : Colors.black,
                 "assets/icons/menu.svg",
                 height: 24,
                 width: 24,

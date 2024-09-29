@@ -1,25 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:outreach/constants/colors.dart';
+import 'package:outreach/models/post.dart';
+import 'package:outreach/screens/user_profile.dart';
 import 'package:outreach/widgets/circular_image.dart';
 
 class SearchHistoryCard extends StatelessWidget {
-  const SearchHistoryCard({super.key});
+  final PostUser user;
+  const SearchHistoryCard({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         ListTile(
+          onTap: () => Get.to(
+            () => UserProfile(
+              userId: user.id!,
+            ),
+          ),
           contentPadding: const EdgeInsets.all(0),
-          leading: const CircularImage(
-              size: 45,
-              path:
-                  "https://s3-alpha-sig.figma.com/img/88fa/3f6d/84818e3416f59f0d4b4237202e7d2826?Expires=1717977600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=LSyygNEKHv7-uZb-tjSa4B3ali8HWHgRsyxBkFIQwqUz4MDQ0cDCsMlrdxzYE73fKAHZHkf-26J8DwLXCZPRoNQZIPDdOpU7CLRy42BazHarkSnlBemozQ~1M~1eMZB2ug~j-JXnGZfwpp~x2NYh4zWCr5eUctfTLF7BTrXKZm6EpstkG4x5Pk8~EkdY4bqZx5qI8GsgG3Pfc7W3QUbL4Dc37~GWyocSEeThdxoWgWRA7axfXqj2COlKmqolpSXtGxxUoU6cl540aEu0ti5j-erxUYarBgOvQsuCxIzBah8b4Yq-jaLVsLCxOkS7x5yAQCyx3fyFB9lAvzVtGADz9g__"),
-          title: const Column(
+          leading: user.imageUrl == null
+              ? Container(
+                  height: 45,
+                  width: 45,
+                  child: Center(
+                    child:
+                        SvgPicture.asset("assets/icons/user-placeholder.svg"),
+                  ),
+                )
+              : CircularImage(
+                  size: 45,
+                  path: user.imageUrl!,
+                ),
+          title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "swap_yi",
+                "@${user.username}",
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
               ),
               Text(

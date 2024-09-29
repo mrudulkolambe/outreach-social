@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:outreach/constants/spacing.dart';
-import 'package:outreach/widgets/navbar.dart';
 
 class ListResources extends StatefulWidget {
   const ListResources({super.key});

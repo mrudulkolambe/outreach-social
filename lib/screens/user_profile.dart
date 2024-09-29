@@ -1,22 +1,14 @@
 // main.dart
 // ignore_for_file: use_build_context_synchronously
-
-import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:outreach/api/services/upload_services.dart';
+import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
-import 'package:outreach/controller/post.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/models/interest.dart';
-import 'package:outreach/screens/auth/bio.dart';
-import 'package:outreach/screens/auth/interest.dart';
 import 'package:outreach/screens/your_posts.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
@@ -24,76 +16,53 @@ import 'package:outreach/widgets/interest/interest_choice.dart';
 import 'package:outreach/widgets/navbar.dart';
 import 'package:outreach/widgets/posts/profile.dart';
 import 'package:outreach/widgets/profile/details_elem.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:outreach/widgets/styled_button.dart';
 
-class MyProfile extends StatefulWidget {
-  const MyProfile({super.key});
+class UserProfile extends StatefulWidget {
+  final String userId;
+  const UserProfile({super.key, required this.userId});
 
   @override
-  State<MyProfile> createState() => _MyProfileState();
+  State<UserProfile> createState() => _UserProfileState();
 }
 
-class _MyProfileState extends State<MyProfile> {
+class _UserProfileState extends State<UserProfile> {
   UserService userService = UserService();
-  PostController postController = Get.put(PostController());
   UserController userController = Get.put(UserController());
-  bool _uploading = false;
-
-  Future<String?> uploadImage(File image) async {
-    try {
-      setState(() {
-        _uploading = true;
-      });
-      final userID = FirebaseAuth.instance.currentUser!.uid;
-      final mediaData =
-          await UploadServices().uploadSingleFile(image, "profile/$userID");
-      final responseStatus = await userService.updateUser({
-        "updateData": {
-          "imageUrl": mediaData!.media.url,
-        }
-      });
-      if (responseStatus == 200 || responseStatus == 201) {
-        ToastManager.showToast("Profile updated", context);
-      } else {
-        ToastManager.showToast("Something went wrong", context);
-      }
-      setState(() {
-        _uploading = false;
-      });
-      return "saved";
-    } catch (e) {
-      setState(() {
-        _uploading = false;
-      });
-      return "not saved";
-    }
-  }
-
-  Future<bool> requestGalleryPermission() async {
-    var status = await Permission.storage.request();
-    return status.isGranted;
-  }
-
-  Future<void> _pickMedia() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png'],
-      allowMultiple: false,
-    );
-
-    if (result != null) {
-      uploadImage(File(result.paths.first!));
-    }
-  }
+  UserData? userData;
+  bool followLoading = false;
 
   @override
   void initState() {
-    initUser();
+    getUserProfile();
     super.initState();
   }
 
-  void initUser() async {
-    await userService.currentUser();
+  void getUserProfile() async {
+    final response = await userService.getUserProfile(
+      widget.userId,
+      userController.userData!.id,
+    );
+    setState(() {
+      userData = response;
+      followLoading = false;
+    });
+  }
+
+  void handleFollowing() async {
+    setState(() {
+      followLoading = true;
+    });
+    final response = await userService.followUser(
+      widget.userId,
+      userController.userData!.id,
+    );
+    if (response == 200) {
+      getUserProfile();
+    } else {
+      ToastManager.showToast("Something went wrong", context);
+    }
+    print("Response: $response");
   }
 
   @override
@@ -109,10 +78,8 @@ class _MyProfileState extends State<MyProfile> {
         ),
       ),
       body: SafeArea(
-        child: GetBuilder(
-            init: UserController(),
-            builder: (userController) {
-              return SingleChildScrollView(
+        child: userData != null
+            ? SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
                 child: Column(
                   children: [
@@ -122,61 +89,52 @@ class _MyProfileState extends State<MyProfile> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        InkWell(
-                          borderRadius: BorderRadius.circular(80 / 2),
-                          onTap: _pickMedia,
-                          child: _uploading
-                              ? const SizedBox(
-                                  height: 80,
-                                  width: 80,
-                                  child: CircularProgressIndicator(
-                                    color: accent,
-                                    strokeCap: StrokeCap.round,
-                                  ),
-                                )
-                              : userController.userData!.imageUrl == null
-                                  ? Container(
-                                      decoration: BoxDecoration(
-                                        color: accent,
-                                        borderRadius:
-                                            BorderRadius.circular(80 / 2),
-                                      ),
-                                      height: 80,
-                                      width: 80,
-                                      child: Center(
-                                        child: Text(
-                                          userController.userData!.name!
-                                              .substring(0, 1)
-                                              .toUpperCase(),
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 28,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  : CircularShimmerImage(
-                                      imageUrl:
-                                          userController.userData!.imageUrl!,
-                                      size: 80,
+                        userData == null && userData!.imageUrl == null
+                            ? Container(
+                                decoration: BoxDecoration(
+                                  color: accent,
+                                  borderRadius: BorderRadius.circular(80 / 2),
+                                ),
+                                height: 80,
+                                width: 80,
+                                child: Center(
+                                  child: Text(
+                                    userData!.name!
+                                        .substring(0, 1)
+                                        .toUpperCase(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.w700,
                                     ),
-                        ),
+                                  ),
+                                ),
+                              )
+                            : CircularShimmerImage(
+                                imageUrl: userData!.imageUrl!,
+                                size: 80,
+                              ),
                         const SizedBox(width: 30),
                         Expanded(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               StatsElem(
-                                count: userController.userData!.feeds.length,
+                                count: userData == null
+                                    ? 0
+                                    : userData!.feeds.length,
                                 title: "Posts",
                               ),
                               StatsElem(
-                                count: userController.userData!.followers ?? 0,
+                                count: userData == null
+                                    ? 0
+                                    : userData!.followers ?? 0,
                                 title: "Followers",
                               ),
                               StatsElem(
-                                count: userController.userData!.following ?? 0,
+                                count: userData == null
+                                    ? 0
+                                    : userData!.following ?? 0,
                                 title: "Following",
                               ),
                             ],
@@ -188,7 +146,7 @@ class _MyProfileState extends State<MyProfile> {
                     Row(
                       children: [
                         Text(
-                          userController.userData!.name!,
+                          userData == null ? "..." : userData!.name!,
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -209,7 +167,7 @@ class _MyProfileState extends State<MyProfile> {
                             vertical: 4,
                           ),
                           child: Text(
-                            "@${userController.userData!.username}",
+                            "@${userData == null ? '' : userData!.username}",
                             style: const TextStyle(
                               fontWeight: FontWeight.w400,
                             ),
@@ -221,38 +179,18 @@ class _MyProfileState extends State<MyProfile> {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(userController.userData!.bio == null
-                              ? ""
-                              : userController.userData!.bio!),
-                        ),
-                        IconButton(
-                          onPressed: () => Get.to(
-                            () => Bio(
-                              update: true,
-                              bio: userController.userData!.bio == null
-                                  ? ""
-                                  : userController.userData!.bio!,
-                            ),
-                          ),
-                          icon: const Icon(Icons.draw_outlined),
+                          child:
+                              Text(userData!.bio == null ? "" : userData!.bio!),
                         ),
                       ],
                     ),
                     const SizedBox(height: 10),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset("assets/icons/trophy.svg", height: 25),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Reward Points ${userController.userData!.rewardPoints!.toString()}",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: accent,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                    InkWell(
+                      child: StyledButton(
+                        loading: followLoading,
+                        text: !userData!.isFollowing! ? "Follow" : "Unfollow",
+                      ),
+                      onTap: handleFollowing,
                     ),
                     const SizedBox(height: 8),
                     const Divider(),
@@ -265,16 +203,6 @@ class _MyProfileState extends State<MyProfile> {
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                           ),
-                        ),
-                        IconButton(
-                          onPressed: () => Get.to(
-                            () => InterestedIn(
-                              update: true,
-                              choosenInterest:
-                                  userController.userData!.interest,
-                            ),
-                          ),
-                          icon: const Icon(Icons.draw_outlined),
                         ),
                       ],
                     ),
@@ -290,14 +218,12 @@ class _MyProfileState extends State<MyProfile> {
                       ),
                       itemBuilder: (BuildContext context, int index) {
                         return InterestChoice(
-                          interestType: handleInterests(
-                              userController.userData!.interest)[index],
-                          selected: userController.userData!.interest,
+                          interestType:
+                              handleInterests(userData!.interest)[index],
+                          selected: userData!.interest,
                         );
                       },
-                      itemCount:
-                          handleInterests(userController.userData!.interest)
-                              .length,
+                      itemCount: handleInterests(userData!.interest).length,
                     ),
                     const SizedBox(height: 8),
                     const Divider(),
@@ -306,7 +232,7 @@ class _MyProfileState extends State<MyProfile> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Your Posts",
+                          "Posts",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -315,7 +241,7 @@ class _MyProfileState extends State<MyProfile> {
                       ],
                     ),
                     const SizedBox(height: 5),
-                    ...userController.userData!.feeds.reversed
+                    ...userData!.feeds.reversed
                         .map((e) => ProfilePosts(post: e)),
                     InkWell(
                       onTap: () => Get.to(() => const YourPosts()),
@@ -409,8 +335,10 @@ class _MyProfileState extends State<MyProfile> {
                     ),
                   ],
                 ),
-              );
-            }),
+              )
+            : Center(
+                child: CircularProgressIndicator(),
+              ),
       ),
       bottomNavigationBar: const Navbar(),
     );

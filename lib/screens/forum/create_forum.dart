@@ -54,7 +54,7 @@ class _CreateForumState extends State<CreateForum> {
     if (image != null) {
       final imageResult =
           await UploadServices().uploadSingleFile(image!, 'forum/$userID');
-      final uploadResult = await ForumServices().createForum({
+      await ForumServices().createForum({
         'public': !private,
         'name': forumName.text,
         'category': category,
