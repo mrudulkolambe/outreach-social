@@ -171,7 +171,6 @@ class ForumPostsResponse {
   });
 
   factory ForumPostsResponse.fromJson(dynamic json) {
-    print(json["response"]["totalPosts"]);
     final success = json["success"] as bool;
     final message = json["message"] as String;
     final forumPosts = json["response"]["forumPosts"] == [] ||

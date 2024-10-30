@@ -40,7 +40,6 @@ class PostsResponse {
   });
 
   factory PostsResponse.fromJson(dynamic json) {
-    print(json);
     final success = json["success"] as bool;
     final message = json["message"] as String;
     final totalPages = json["response"]["totalPages"] as int;
@@ -89,7 +88,6 @@ class Post {
       required this.commentCount});
 
   factory Post.fromJson(dynamic json) {
-    print(json);
     final id = json["_id"] as String;
     final content = json["content"] as String;
     final media =

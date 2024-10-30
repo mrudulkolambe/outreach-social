@@ -36,7 +36,6 @@ class CommentFeedServices {
         await ApiService().post('$createForumFeedCommentAPI/$postID', body);
     if (response != null && response.statusCode == 200 ||
         response != null && response.statusCode == 201) {
-      print(response.body);
       final commentResponse =
           ForumFeedCommentResponse.fromJson(jsonDecode(response.body));
       return commentResponse.comment;

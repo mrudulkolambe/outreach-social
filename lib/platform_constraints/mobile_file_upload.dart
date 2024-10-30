@@ -21,7 +21,6 @@ Future<void> handleResponse(http.StreamedResponse response) async {
     final responseString = String.fromCharCodes(responseData);
     final jsonMap = jsonDecode(responseString);
     var data = CloudinaryUpload.fromJson(jsonMap);
-    print(data.secureUrl);
     userService.updateUser({
       "updateData": {"imageUrl": data.secureUrl}
     });

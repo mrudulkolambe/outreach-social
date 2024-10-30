@@ -62,7 +62,6 @@ class _UserProfileState extends State<UserProfile> {
     } else {
       ToastManager.showToast("Something went wrong", context);
     }
-    print("Response: $response");
   }
 
   @override

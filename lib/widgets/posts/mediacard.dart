@@ -1,8 +1,7 @@
 // ignore_for_file: deprecated_member_use, library_private_types_in_public_api
 
-import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/material.dart';
 import 'package:outreach/api/models/upload.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/widgets/hls/hls_videoplayer.dart';

@@ -62,7 +62,6 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-    print("initstate");
     initializeState();
     _scrollController.addListener(morePost);
   }
@@ -75,17 +74,12 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> _loadMorePosts() async {
-    print("Load More Posts");
     if (hasMorePost) {
       _currentPage++;
       final morePostsResponse = await feedService.getFeed(page: _currentPage);
       setState(() {
-        print(morePostsResponse!.totalFeeds);
-        print(morePostsResponse.totalPages);
-        print(morePostsResponse.currentPage);
         hasMorePost =
-            morePostsResponse.totalPages > morePostsResponse.currentPage;
-        print(morePostsResponse.totalPages > morePostsResponse.currentPage);
+            morePostsResponse!.totalPages > morePostsResponse.currentPage;
         postsList.addAll(morePostsResponse.posts);
         postController.addAllPosts(morePostsResponse.posts);
       });
@@ -96,7 +90,6 @@ class _HomePageState extends State<HomePage>
 
   Future<void> initializeState() async {
     try {
-      print("test");
       final listPostsResponse = await feedService.getFeed(page: 1);
       setState(() {
         _currentPage = 1;
@@ -104,7 +97,6 @@ class _HomePageState extends State<HomePage>
         postController.initAddPosts(listPostsResponse.posts);
         hasMorePost =
             listPostsResponse.totalPages > listPostsResponse.currentPage;
-        print(listPostsResponse.totalPages > listPostsResponse.currentPage);
       });
     } catch (e) {
       print(e);
@@ -175,12 +167,12 @@ class _HomePageState extends State<HomePage>
               "assets/icons/notification.svg",
             ),
           ),
-          IconButton(
-            onPressed: () => Get.to(() => ZIMKitDemoHomePage()),
-            icon: SvgPicture.asset(
-              "assets/icons/message.svg",
-            ),
-          ),
+          // IconButton(
+          //   onPressed: () => Get.to(() => ZIMKitDemoHomePage()),
+          //   icon: SvgPicture.asset(
+          //     "assets/icons/message.svg",
+          //   ),
+          // ),
           const SizedBox(
             width: 10,
           )

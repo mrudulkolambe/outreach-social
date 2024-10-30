@@ -22,7 +22,6 @@ void uploadToFirebaseWeb()async {
             TaskSnapshot uploadTask =
                 await storage.ref().child("testfile").putData(data);
             String downloadUrl = await uploadTask.ref.getDownloadURL();
-            print("File uploaded to: $downloadUrl");
           }
         } 
       });

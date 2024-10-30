@@ -25,10 +25,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  ZIMKit().init(
-    appID: 1326692995,
-    appSign: "b692aa52fba5fcffb670e4f40af132ddc4668255866d687dfe8675bad2d19a2a",
-  );
+  // ZIMKit().init(
+  //   appID: 1326692995,
+  //   appSign: "b692aa52fba5fcffb670e4f40af132ddc4668255866d687dfe8675bad2d19a2a",
+  // );
   runApp(const MyApp());
 }
 
@@ -79,14 +79,14 @@ class _SplashScreenState extends State<SplashScreen>
         if (!mounted) return;
 
         if (user != null) {
-          await ZIMKit().requestPermission();
+          // await ZIMKit().requestPermission();
           final UserData? userData = await userService.currentUser();
-          final zegoResult = await ZIMKit().connectUser(
-            id: userData!.id,
-            name: userData.username!,
-            avatarUrl: userData.imageUrl!,
-          );
-          print("zegoResult, $zegoResult");
+          // final zegoResult = await ZIMKit().connectUser(
+          //   id: userData!.id,
+          //   name: userData.username!,
+          //   avatarUrl: userData.imageUrl!,
+          // );
+          // print("zegoResult, $zegoResult");
           if (!mounted) return;
 
           if (userData == null) {

@@ -42,7 +42,6 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
   SavingState _saving = SavingState.no;
 
   final List<File> _mediaFiles = [];
-  final List<VideoPlayerController> _videoControllers = [];
 
   @override
   void initState() {
@@ -54,9 +53,6 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
   @override
   void dispose() {
     _scrollController.dispose();
-    for (var controller in _videoControllers) {
-      controller.dispose();
-    }
     super.dispose();
   }
 
@@ -69,7 +65,6 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
       postController.initAddPosts(forumPostsFetched.forumPosts);
       hasMorePost =
           forumPostsFetched.totalPages > forumPostsFetched.currentPage;
-      print("hasMorePost: $hasMorePost");
     });
   }
 
@@ -81,18 +76,13 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
   }
 
   Future<void> _loadMorePosts() async {
-    print("Load More Posts");
     if (hasMorePost) {
       _currentPage++;
       final morePostsResponse = await forumServices.getForumPosts(
           page: _currentPage, forumID: widget.forum.id);
       setState(() {
-        print(morePostsResponse!.totalFeeds);
-        print(morePostsResponse.totalPages);
-        print(morePostsResponse.currentPage);
         hasMorePost =
-            morePostsResponse.totalPages > morePostsResponse.currentPage;
-        print(morePostsResponse.totalPages > morePostsResponse.currentPage);
+            morePostsResponse!.totalPages > morePostsResponse.currentPage;
         forumPosts.addAll(morePostsResponse.forumPosts);
         postController.addAllPosts(morePostsResponse.forumPosts);
       });
@@ -146,7 +136,6 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
             List<Map<String, String>> urls = [];
             if (_mediaFiles.isNotEmpty) {
               final uploadedData = await _uploadMedia();
-              print(uploadedData);
               if (uploadedData == null) {
                 ToastManager.showToast("Upload failed", context);
                 return;
@@ -158,7 +147,6 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
               "content": descriptionController.text,
               "media": urls,
             };
-            print(body);
             ForumServices().createForumPost(widget.forum.id, body);
           }
 

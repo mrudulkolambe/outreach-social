@@ -42,7 +42,6 @@ class _LoginState extends State<Login> {
         email: emailController.text,
         password: passwordController.text,
       );
-      print(credential.credential);
       final UserData? userData = await userService.currentUser();
       if (!mounted) return;
 
@@ -57,9 +56,6 @@ class _LoginState extends State<Login> {
         Get.offAll(() => const MainStack());
       }
     } on FirebaseAuthException catch (e) {
-      print("message");
-      print('Error code: ${e.code}');
-      print('Error message: ${e.message}');
       if (e.code == 'user-not-found') {
         ToastManager.showToast(
           'No user found for that email.',
@@ -87,7 +83,6 @@ class _LoginState extends State<Login> {
         );
       }
     } catch (e) {
-      print(e);
       ToastManager.showToast(
         e.toString(),
         context,

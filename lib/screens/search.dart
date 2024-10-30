@@ -33,7 +33,6 @@ class _SearchUsersState extends State<SearchUsers> {
     if (search == null) {
       _storage.write("global_search_history", []);
     } else {
-      print("search");
       print(search);
     }
   }

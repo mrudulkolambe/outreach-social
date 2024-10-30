@@ -11,9 +11,6 @@ class ApiService {
       url,
       headers: {'Authorization': token},
     );
-    print(endpoint);
-    print(
-        "Bearer ${await FirebaseAuth.instance.currentUser!.getIdToken(true)}");
     return response;
   }
 

@@ -10,7 +10,8 @@ import 'package:outreach/screens/more.dart';
 import 'package:outreach/screens/resources/list_resources.dart';
 
 class MainStack extends StatefulWidget {
-  const MainStack({super.key});
+  final int? page;
+  const MainStack({super.key, this.page});
 
   @override
   _MainStackState createState() => _MainStackState();
@@ -22,6 +23,9 @@ class _MainStackState extends State<MainStack> {
 
   @override
   void initState() {
+    setState(() {
+      _currentIndex = widget.page ?? 0;
+    });
     super.initState();
     _pages = [
       const HomePage(key: PageStorageKey('FeedPage')),

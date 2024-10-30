@@ -111,10 +111,6 @@ final List<InterestType> interestsOptions = [
 ];
 
 List<InterestType> handleInterests(List<String> interests) {
-  print(interestsOptions
-      .where((interestType) => interests.contains(interestType.interest))
-      .toList()
-      .length);
   return interestsOptions
       .where((interestType) => interests.contains(interestType.interest))
       .toList();

@@ -1,5 +1,5 @@
+// const String baseUrl = 'https://2d4c-103-127-20-196.ngrok-free.app';
 const String baseUrl = 'https://outreach-backend-development.vercel.app';
-// const String baseUrl = 'http://192.168.0.105:2000';
 const String uploadBaseURL = "http://13.233.246.217:8080";
 
 const String userEndpoint = '$baseUrl/user';
@@ -40,6 +40,13 @@ const String getFeedCommentsAPI = feedCommentEndpoint;
 const String forumFeedCommentEndpoint = '$baseUrl/forum-feed-comment';
 const String createForumFeedCommentAPI = forumFeedCommentEndpoint;
 const String getForumFeedCommentsAPI = forumFeedCommentEndpoint;
+
+const String resourceCategoryEndpoint = '$baseUrl/resource-category';
+const String getResourceCategoryAPI = '$resourceCategoryEndpoint/get';
+
+const String resourceFeedEndpoint = '$baseUrl/resource';
+const String getResourceFeedAPI = '$resourceFeedEndpoint/get';
+const String createResourceFeedAPI = '$resourceFeedEndpoint/create';
 
 const String singlefileUpload = '$uploadBaseURL/upload';
 const String multifileUpload = '$uploadBaseURL/multi-upload';

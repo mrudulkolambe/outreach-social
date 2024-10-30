@@ -26,6 +26,7 @@ class UserService {
         userController.updateUser(data.user);
         return data.user;
       } else {
+        print("test error ${response.reasonPhrase}");
         blockedUser();
       }
     } else {}
@@ -34,7 +35,6 @@ class UserService {
 
   Future<UserData?> getUserProfile(String id, String userId) async {
     final response = await ApiService().get("$getUserProfileAPI/$id/$userId");
-    print(response!.body);
     if (response != null) {
       if (response.statusCode == 200) {
         final data = UserResponse.fromJson(jsonDecode(response.body));
@@ -91,11 +91,9 @@ class UserService {
   }
 
   Future<List<UserData>?> searchUsers(String query) async {
-    print("$queryUsers?query=$query");
     final response = await ApiService().get("$queryUsers?query=$query");
     if (response != null && response.statusCode == 200) {
       final data = UsersResponse.fromJson(jsonDecode(response.body));
-      print(data.users);
       return data.users;
     } else {
       final error = ErrorState.fromJson(jsonDecode(response!.body));
@@ -109,7 +107,6 @@ class UserService {
         await ApiService().get("$globalSearchAPI?query=$query&user=$user");
     if (response != null && response.statusCode == 200) {
       final data = PostUsersResponse.fromJson(jsonDecode(response.body));
-      print(data.response);
       return data.response;
     } else {
       final error = ErrorState.fromJson(jsonDecode(response!.body));

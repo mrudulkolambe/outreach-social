@@ -19,7 +19,6 @@ class FeedCommentController extends GetxController {
   }
 
   void initComment(List<FeedComment> commentsList) {
-    print(commentsList.length);
     comments.addAll(commentsList);
     update();
   }

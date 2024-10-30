@@ -29,7 +29,6 @@ class _ZIMKitDemoHomePageState extends State<ZIMKitDemoHomePage> {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 200), () async {
       if (query.isNotEmpty) {
-        print(query);
         final usersList = await userService.searchUsers(query);
         setState(() {
           if (usersList == null) {

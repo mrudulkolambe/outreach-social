@@ -160,7 +160,6 @@ class ForumFeedComment {
   });
 
   factory ForumFeedComment.fromJson(dynamic json) {
-    print(json);
     final text = json["text"] as String;
     final author = PostUser.fromJson(json["author"]);
     final createdAt = json["createdAt"] as int;

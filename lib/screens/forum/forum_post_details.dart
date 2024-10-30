@@ -72,11 +72,8 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
           await commentFeedServices.getForumPostsComments(
               page: _currentPage, postID: widget.forumPost.id);
       setState(() {
-        print(moreCommentsResponse!.totalComments);
-        print(moreCommentsResponse.totalPages);
-        print(moreCommentsResponse.currentPage);
         hasMoreComments =
-            moreCommentsResponse.totalPages > moreCommentsResponse.currentPage;
+            moreCommentsResponse!.totalPages > moreCommentsResponse.currentPage;
         feedCommentController.addAllForumComment(moreCommentsResponse.comments);
         forumComments.addAll(moreCommentsResponse.comments);
       });
@@ -87,7 +84,6 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
 
   Future<void> initializeState() async {
     try {
-      print("test");
       final listCommentsResponse = await commentFeedServices
           .getForumPostsComments(page: 1, postID: widget.forumPost.id);
       setState(() {

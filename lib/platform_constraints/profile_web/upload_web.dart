@@ -37,7 +37,6 @@ void uploadToFirebaseWebProfile() async {
           ToastManager.showToastApp("Something went wrong");
         }
 
-        print("File uploaded to: $downloadUrl");
       }
     }
   });

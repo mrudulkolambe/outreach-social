@@ -247,7 +247,6 @@ class _ForumCardState extends State<ForumCard> {
               children: [
                 InkWell(
                   onTap: () {
-                    print("object");
                     ForumServices().likeOnPost(widget.forumPost);
                   },
                   child: Row(
