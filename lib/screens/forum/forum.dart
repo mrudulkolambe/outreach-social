@@ -38,6 +38,7 @@ class _ForumScreenState extends State<ForumScreen> {
       appBar: AppBar(
         surfaceTintColor: appbarColor,
         backgroundColor: appbarColor,
+        centerTitle: false,
         title: const Text(
           "Forum",
           style: TextStyle(
@@ -213,20 +214,20 @@ class _ForumScreenState extends State<ForumScreen> {
               );
             }),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Get.to(() => const CreateForum()),
-        label: const Text(
-          "Create Forum",
-          style: TextStyle(color: Colors.white),
-        ),
-        icon: const Icon(
-          Icons.add_rounded,
-          color: Colors.white,
-        ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-        isExtended: true,
-        backgroundColor: accent,
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () => Get.to(() => const CreateForum()),
+      //   label: const Text(
+      //     "Create Forum",
+      //     style: TextStyle(color: Colors.white),
+      //   ),
+      //   icon: const Icon(
+      //     Icons.add_rounded,
+      //     color: Colors.white,
+      //   ),
+      //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+      //   isExtended: true,
+      //   backgroundColor: accent,
+      // ),
     );
   }
 }

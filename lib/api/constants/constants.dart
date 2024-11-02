@@ -1,6 +1,6 @@
 // const String baseUrl = 'https://2d4c-103-127-20-196.ngrok-free.app';
 const String baseUrl = 'https://outreach-backend-development.vercel.app';
-const String uploadBaseURL = "http://13.233.246.217:8080";
+const String uploadBaseURL = "http://15.207.14.199:8080";
 
 const String userEndpoint = '$baseUrl/user';
 
@@ -48,8 +48,14 @@ const String resourceFeedEndpoint = '$baseUrl/resource';
 const String getResourceFeedAPI = '$resourceFeedEndpoint/get';
 const String createResourceFeedAPI = '$resourceFeedEndpoint/create';
 
+const String storyEndpoint = '$baseUrl/story';
+const String shareStoryAPI = '$storyEndpoint/create';
+const String getStoryAPI = '$storyEndpoint/get';
+const String deleteStoryAPI = '$storyEndpoint/delete';
+
 const String singlefileUpload = '$uploadBaseURL/upload';
 const String multifileUpload = '$uploadBaseURL/multi-upload';
+const String storyFileUpload = '$uploadBaseURL/story-upload';
 
 const String allUsers = '$baseUrl/user/get';
 const String queryUsers = '$baseUrl/user/search';

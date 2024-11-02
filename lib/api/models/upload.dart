@@ -54,6 +54,33 @@ class SingleUploadResponse {
   }
 }
 
+class StoryUploadResponse {
+  String status;
+  Media media;
+
+  StoryUploadResponse({
+    required this.status,
+    required this.media,
+  });
+
+  factory StoryUploadResponse.fromJson(dynamic json) {
+    final status = json["status"] as String;
+    final media = Media.fromJson(json["response"]);
+
+    return StoryUploadResponse(
+      status: status,
+      media: media,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "status": status,
+      "media": media.toJson(),
+    };
+  }
+}
+
 class Media {
   String url;
   String type;

@@ -36,4 +36,18 @@ class UploadServices {
       return null;
     }
   }
+
+  Future<StoryUploadResponse?> storyUpload(File file, String path) async {
+    var request = http.MultipartRequest('POST', Uri.parse(storyFileUpload));
+    request.fields.addAll({'path': path});
+    request.files.add(await http.MultipartFile.fromPath('files', file.path));
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      final result = await response.stream.bytesToString();
+      final data = StoryUploadResponse.fromJson(jsonDecode(result));
+      return data;
+    } else {
+      return null;
+    }
+  }
 }

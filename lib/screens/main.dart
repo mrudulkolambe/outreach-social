@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/screens/add_post.dart';
+import 'package:outreach/screens/add_story.dart';
 import 'package:outreach/screens/forum/forum.dart';
 import 'package:outreach/screens/home.dart';
 import 'package:outreach/screens/more.dart';
@@ -32,7 +33,8 @@ class _MainStackState extends State<MainStack> {
       const ForumScreen(key: PageStorageKey('SearchPage')),
       const AddPost(key: PageStorageKey('AddPost')),
       const ListResources(key: PageStorageKey('ResourcesPage')),
-      const MoreScreen(key: PageStorageKey('MorePage'))
+      const MoreScreen(key: PageStorageKey('MorePage')),
+      const AddStory(key: PageStorageKey('AddStory')),
     ];
   }
 
@@ -69,7 +71,7 @@ class _MainStackState extends State<MainStack> {
             color: Colors.black,
             fontWeight: FontWeight.w400,
           ),
-          currentIndex: _currentIndex,
+          currentIndex: _currentIndex < 5 ? _currentIndex : 0,
           onTap: (index) {
             setState(() {
               _currentIndex = index;

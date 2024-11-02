@@ -259,20 +259,20 @@ class _ListResourcesState extends State<ListResources> {
           );
         }
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Get.to(() => const ResourceAddPost()),
-        label: const Text(
-          "Create Resource",
-          style: TextStyle(color: Colors.white),
-        ),
-        icon: const Icon(
-          Icons.add_rounded,
-          color: Colors.white,
-        ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-        isExtended: true,
-        backgroundColor: accent,
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () => Get.to(() => const ResourceAddPost()),
+      //   label: const Text(
+      //     "Create Resource",
+      //     style: TextStyle(color: Colors.white),
+      //   ),
+      //   icon: const Icon(
+      //     Icons.add_rounded,
+      //     color: Colors.white,
+      //   ),
+      //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+      //   isExtended: true,
+      //   backgroundColor: accent,
+      // ),
     );
   }
 }

@@ -47,29 +47,31 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyB1D1jECBxwtJCng7KDmV_nV67gEa6Ty2Y',
-    appId: '1:497882681132:web:19bd2f7293fec3ebd8e689',
-    messagingSenderId: '497882681132',
-    projectId: 'outreach-dev-62760',
-    authDomain: 'outreach-dev-62760.firebaseapp.com',
-    storageBucket: 'outreach-dev-62760.appspot.com',
+    apiKey: 'AIzaSyB0CLfKW9mg5xKtPrlGAUmBp8QM9SOXFM0',
+    appId: '1:1055951057562:web:0e6d85df8ce9f8371be523',
+    messagingSenderId: '1055951057562',
+    projectId: 'outreach-social',
+    authDomain: 'outreach-social.firebaseapp.com',
+    storageBucket: 'outreach-social.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCwlF0TX0eIboUIfOSeWSc8AMcv9Kr9yt8',
-    appId: '1:497882681132:android:db7c971b073466e1d8e689',
-    messagingSenderId: '497882681132',
-    projectId: 'outreach-dev-62760',
-    storageBucket: 'outreach-dev-62760.appspot.com',
+    apiKey: 'AIzaSyDE-matJ__y1GcwLeMURaPk56kE8DAlLqM',
+    appId: '1:1055951057562:android:a3a7191f171421a61be523',
+    messagingSenderId: '1055951057562',
+    projectId: 'outreach-social',
+    storageBucket: 'outreach-social.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA0tAt2QwflHo_RbOzaJBt4cqSoD-BHBzA',
-    appId: '1:497882681132:ios:45482785abe1843cd8e689',
-    messagingSenderId: '497882681132',
-    projectId: 'outreach-dev-62760',
-    storageBucket: 'outreach-dev-62760.appspot.com',
-    iosClientId: '497882681132-kdpucpjagq99osgo3r3fus8tcfguqlpl.apps.googleusercontent.com',
+    apiKey: 'AIzaSyBLnXDJX8lVJeHV2e3zf4VTxyEnT-lQzjQ',
+    appId: '1:1055951057562:ios:710ba3a1f79dc4711be523',
+    messagingSenderId: '1055951057562',
+    projectId: 'outreach-social',
+    storageBucket: 'outreach-social.appspot.com',
+    androidClientId: '1055951057562-24cu5g0cant70uei4mm6facicjnm8knc.apps.googleusercontent.com',
+    iosClientId: '1055951057562-hlj22gch50uvuku1o5b8tsofkv0pbm64.apps.googleusercontent.com',
     iosBundleId: 'com.outreach.social',
   );
+
 }
