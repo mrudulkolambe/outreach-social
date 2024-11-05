@@ -38,15 +38,21 @@ class _LoginState extends State<Login> {
       loading = true;
     });
     try {
+      print("object");
+      print(emailController.text);
+      print(passwordController.text);
+      await FirebaseAuth.instance.signOut();
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
       );
+      print("credential $credential");
       final UserData? userData = await userService.currentUser();
+      print("userData $userData");
       if (!mounted) return;
 
       if (userData == null) {
-        userService.blockedUser();
+        // userService.blockedUser();
       } else if (userData.username == "" ||
           userData.username == null ||
           userData.name == null ||
@@ -56,6 +62,7 @@ class _LoginState extends State<Login> {
         Get.offAll(() => const MainStack());
       }
     } on FirebaseAuthException catch (e) {
+      print(e.message);
       if (e.code == 'user-not-found') {
         ToastManager.showToast(
           'No user found for that email.',

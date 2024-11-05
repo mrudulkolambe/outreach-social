@@ -1,53 +1,37 @@
 {
   "project_info": {
-    "project_number": "1055951057562",
-    "project_id": "outreach-social",
-    "storage_bucket": "outreach-social.appspot.com"
+    "project_number": "497882681132",
+    "project_id": "outreach-dev-62760",
+    "storage_bucket": "outreach-dev-62760.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1055951057562:android:a3a7191f171421a61be523",
+        "mobilesdk_app_id": "1:497882681132:android:db7c971b073466e1d8e689",
         "android_client_info": {
           "package_name": "com.outreach.social"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1055951057562-24cu5g0cant70uei4mm6facicjnm8knc.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.outreach.social",
-            "certificate_hash": "77e2e91c2d7d5c9a48b97d8802b49f89e5bebff8"
-          }
-        },
-        {
-          "client_id": "1055951057562-nvlu79si8bqqrnbebsqeaeh8ab7nm49u.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.outreach.social",
-            "certificate_hash": "3826172f2cc7b5f0844cdf5720433db99a2cebdc"
-          }
-        },
-        {
-          "client_id": "1055951057562-k6lpoobp4dflh9fjc103d3j2m44l27po.apps.googleusercontent.com",
+          "client_id": "497882681132-onbnam36ti2gdc4dvrkdfmmruvo1i509.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDE-matJ__y1GcwLeMURaPk56kE8DAlLqM"
+          "current_key": "AIzaSyCwlF0TX0eIboUIfOSeWSc8AMcv9Kr9yt8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1055951057562-k6lpoobp4dflh9fjc103d3j2m44l27po.apps.googleusercontent.com",
+              "client_id": "497882681132-eu60licoffn2sktl5nvfurkmrrrjfsgr.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "1055951057562-hlj22gch50uvuku1o5b8tsofkv0pbm64.apps.googleusercontent.com",
+              "client_id": "497882681132-kdpucpjagq99osgo3r3fus8tcfguqlpl.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "com.outreach.social"

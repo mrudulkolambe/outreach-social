@@ -129,7 +129,8 @@ class _HomePageState extends State<HomePage>
     for (var story in stories) {
       final username = story.userId.username;
       if (!groupedMap.containsKey(username)) {
-        groupedMap[username] = UserStoryGroup(username: username, stories: []);
+        groupedMap[username] = UserStoryGroup(
+            username: username, stories: [], imageUrl: story.userId.imageUrl!);
       }
       groupedMap[username]!.stories.add(story);
     }
@@ -235,6 +236,9 @@ class _HomePageState extends State<HomePage>
                         height: 125,
                         child: AdvStory(
                           buildStoryOnTrayScroll: true,
+                          preloadStory: true,
+                          preloadContent: true,
+                          style: AdvStoryStyle(),
                           storyCount: groupedStories.length,
                           trayBuilder: (storyIndex) {
                             print("storyIndex $storyIndex");
@@ -304,7 +308,7 @@ class _HomePageState extends State<HomePage>
                                         textAlign: TextAlign.center,
                                         storyIndex == 0
                                             ? "Your story"
-                                            : "@${groupedStories[storyIndex].username}",
+                                            : "${groupedStories[storyIndex].username}",
                                         style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
@@ -315,32 +319,88 @@ class _HomePageState extends State<HomePage>
                                     borderRadius: 20,
                                     size: Size(88, 103),
                                     shape: BoxShape.rectangle,
-                                    url:
-                                        "https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg",
+                                    url: groupedStories[storyIndex].imageUrl !=
+                                                null ||
+                                            groupedStories[storyIndex]
+                                                    .imageUrl !=
+                                                ""
+                                        ? groupedStories[storyIndex].imageUrl!
+                                        : "assets/icons/user-placeholder.png",
                                   );
                           },
                           storyBuilder: (storyIndex) {
                             return Story(
-                              header: Row(
-                                children: [
-                                  Image.network(
-                                    "https://i.ytimg.com/vi/ghvcEGLibs8/maxresdefault.jpg",
-                                    height: 50,
-                                    width: 50,
-                                  )
-                                ],
+                              header: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(25),
+                                      child: groupedStories[storyIndex]
+                                                      .imageUrl ==
+                                                  null ||
+                                              groupedStories[storyIndex]
+                                                      .imageUrl ==
+                                                  ""
+                                          ? Image.asset(
+                                              "assets/icons/user-placeholder.png")
+                                          : Image.network(
+                                              fit: BoxFit.cover,
+                                              groupedStories[storyIndex]
+                                                  .imageUrl!,
+                                              height: 50,
+                                              width: 50,
+                                            ),
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      "@${groupedStories[storyIndex].username}",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                          fontSize: 16),
+                                    )
+                                  ],
+                                ),
                               ),
-                              contentCount: groupedStories[storyIndex].stories.length,
+                              contentCount:
+                                  groupedStories[storyIndex].stories.length,
                               contentBuilder: (contentIndex) {
-                                return ImageContent(
-                                  footer: Text(
-                                    groupedStories[storyIndex].username,
-                                  ),
-                                  url: groupedStories[storyIndex]
-                                      .stories[contentIndex]
-                                      .media
-                                      .url,
-                                );
+                                return groupedStories[storyIndex]
+                                            .stories[contentIndex]
+                                            .media
+                                            .type ==
+                                        "video"
+                                    ? VideoContent(
+                                        timeout: Duration(seconds: 5),
+                                        url: groupedStories[storyIndex]
+                                            .stories[contentIndex]
+                                            .media
+                                            .url,
+                                      )
+                                    : ImageContent(
+                                        footer: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 20),
+                                          child: Text(
+                                            groupedStories[storyIndex]
+                                                .stories[contentIndex]
+                                                .content,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
+                                        url: groupedStories[storyIndex]
+                                            .stories[contentIndex]
+                                            .media
+                                            .url,
+                                      );
                               },
                             );
                           },

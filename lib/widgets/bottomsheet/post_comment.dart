@@ -6,6 +6,7 @@ import 'package:outreach/api/models/feed_comments.dart';
 import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/comment_feed_services.dart';
 import 'package:outreach/constants/colors.dart';
+import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 
 class CommentBottomSheet extends StatefulWidget {
@@ -28,7 +29,8 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
   List<FeedComment> feedComments = [];
   final TextEditingController commentController = TextEditingController();
   final feedCommentServices = CommentFeedServices();
-
+  String? parentID;
+  String? viewNestedComments;
   @override
   void initState() {
     super.initState();
@@ -39,7 +41,10 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     setState(() {
       isPosting = true;
     });
-    final body = {'text': commentController.text, 'parentID': null};
+    final body = {
+      'text': commentController.text,
+      'parentID': parentID == "" ? null : parentID
+    };
     final response =
         await feedCommentServices.createComment(widget.postId, body);
     if (response != null) {
@@ -48,6 +53,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       commentController.text = "";
     }
     setState(() {
+      parentID = "";
       isPosting = false;
     });
   }
@@ -55,15 +61,32 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
   void fetchComments() async {
     try {
       final comments = await feedCommentServices.getPostComments(widget.postId);
-      setState(() {
-        feedComments = comments;
-        feedComments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          feedComments = comments;
+          feedComments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          isLoading = false;
+        });
+      }
     } catch (error) {
-      setState(() {
-        isLoading = false;
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  FeedComment? handleReplyStories(
+      String? parentID, List<FeedComment> feedComments) {
+    if (parentID == null || parentID == "") {
+      return null;
+    } else {
+      print(feedComments.first.id);
+      final data = feedComments.firstWhere((comment) {
+        return comment.id == parentID;
       });
+      return data;
     }
   }
 
@@ -139,7 +162,10 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                     child: SingleChildScrollView(
                                       child: Column(
                                         children: List.generate(
-                                            feedComments.length, (index) {
+                                            feedComments
+                                                .where((comment) =>
+                                                    comment.parentID == null)
+                                                .length, (index) {
                                           return Container(
                                             padding: const EdgeInsets.only(
                                               left: 16,
@@ -152,7 +178,11 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                               children: [
                                                 CircularShimmerImage(
                                                   size: 40,
-                                                  imageUrl: feedComments[index]
+                                                  imageUrl: feedComments
+                                                      .where((comment) =>
+                                                          comment.parentID ==
+                                                          null)
+                                                      .toList()[index]
                                                       .author
                                                       .imageUrl,
                                                 ),
@@ -164,7 +194,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                                     Row(
                                                       children: [
                                                         Text(
-                                                          "@${feedComments[index].author.username}",
+                                                          "@${feedComments.where((comment) => comment.parentID == null).toList()[index].author.username}",
                                                           style:
                                                               const TextStyle(
                                                             fontWeight:
@@ -177,7 +207,12 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                                           formatDate(
                                                               DateTime
                                                                   .fromMillisecondsSinceEpoch(
-                                                                feedComments[
+                                                                feedComments
+                                                                    .where((comment) =>
+                                                                        comment
+                                                                            .parentID ==
+                                                                        null)
+                                                                    .toList()[
                                                                         index]
                                                                     .createdAt,
                                                               ),
@@ -188,7 +223,8 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                                                 ' ',
                                                                 am
                                                               ]),
-                                                          style: TextStyle(
+                                                          style:
+                                                              const TextStyle(
                                                             color:
                                                                 Colors.black54,
                                                             fontSize: 12,
@@ -197,16 +233,42 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                                       ],
                                                     ),
                                                     const SizedBox(height: 3),
-                                                    Text(
-                                                      feedComments[index].text,
-                                                      style: const TextStyle(
-                                                        fontSize: 16,
+                                                    SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width -
+                                                              82 -
+                                                              20,
+                                                      child: Text(
+                                                        feedComments
+                                                            .where((comment) =>
+                                                                comment
+                                                                    .parentID ==
+                                                                null)
+                                                            .toList()[index]
+                                                            .text,
+                                                        style: const TextStyle(
+                                                          fontSize: 16,
+                                                        ),
                                                       ),
                                                     ),
-                                                    const Row(
+                                                    Row(
                                                       children: [
                                                         InkWell(
-                                                          child: Text(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              parentID = feedComments
+                                                                  .where((comment) =>
+                                                                      comment
+                                                                          .parentID ==
+                                                                      null)
+                                                                  .toList()[
+                                                                      index]
+                                                                  .id;
+                                                            });
+                                                          },
+                                                          child: const Text(
                                                             "Reply",
                                                             style: TextStyle(
                                                               color: Colors
@@ -217,8 +279,203 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                                             ),
                                                           ),
                                                         ),
+                                                        const SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        if (feedComments
+                                                            .where((comment) =>
+                                                                comment
+                                                                    .parentID ==
+                                                                feedComments
+                                                                    .where((comment) =>
+                                                                        comment
+                                                                            .parentID ==
+                                                                        null)
+                                                                    .toList()[
+                                                                        index]
+                                                                    .id)
+                                                            .isNotEmpty)
+                                                          InkWell(
+                                                            onTap: () {
+                                                              setState(() {
+                                                                viewNestedComments = viewNestedComments ==
+                                                                        null
+                                                                    ? feedComments
+                                                                        .where((comment) =>
+                                                                            comment.parentID ==
+                                                                            null)
+                                                                        .toList()[
+                                                                            index]
+                                                                        .id
+                                                                    : null;
+                                                              });
+                                                            },
+                                                            child: const Text(
+                                                              "View comments",
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .black54,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                              ),
+                                                            ),
+                                                          ),
                                                       ],
                                                     ),
+                                                    // TODO: START
+                                                    if (viewNestedComments ==
+                                                        feedComments
+                                                            .where((comment) =>
+                                                                comment
+                                                                    .parentID ==
+                                                                null)
+                                                            .toList()[index]
+                                                            .id)
+                                                      Column(
+                                                        children: List.generate(
+                                                            feedComments
+                                                                .where((comment) =>
+                                                                    comment
+                                                                        .parentID ==
+                                                                    feedComments
+                                                                        .where((comment) =>
+                                                                            comment.parentID ==
+                                                                            null)
+                                                                        .toList()[
+                                                                            index]
+                                                                        .id)
+                                                                .length,
+                                                            (nestedIndex) {
+                                                          return Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                              top: 20,
+                                                            ),
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                CircularShimmerImage(
+                                                                  size: 40,
+                                                                  imageUrl: feedComments
+                                                                      .where((comment) =>
+                                                                          comment
+                                                                              .parentID ==
+                                                                          feedComments
+                                                                              .where((comment) =>
+                                                                                  comment.parentID ==
+                                                                                  null)
+                                                                              .toList()[
+                                                                                  index]
+                                                                              .id)
+                                                                      .toList()[
+                                                                          nestedIndex]
+                                                                      .author
+                                                                      .imageUrl,
+                                                                ),
+                                                                const SizedBox(
+                                                                    width: 15),
+                                                                Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
+                                                                          "@${feedComments.where((comment) => comment.parentID == feedComments.where((comment) => comment.parentID == null).toList()[index].id).toList()[nestedIndex].author.username}",
+                                                                          style:
+                                                                              const TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.w600,
+                                                                          ),
+                                                                        ),
+                                                                        const SizedBox(
+                                                                            width:
+                                                                                7),
+                                                                        Text(
+                                                                          formatDate(
+                                                                              DateTime.fromMillisecondsSinceEpoch(
+                                                                                feedComments.where((comment) => comment.parentID == feedComments.where((comment) => comment.parentID == null).toList()[index].id).toList()[nestedIndex].createdAt,
+                                                                              ),
+                                                                              [
+                                                                                hh,
+                                                                                ':',
+                                                                                nn,
+                                                                                ' ',
+                                                                                am
+                                                                              ]),
+                                                                          style:
+                                                                              const TextStyle(
+                                                                            color:
+                                                                                Colors.black54,
+                                                                            fontSize:
+                                                                                12,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            3),
+                                                                    SizedBox(
+                                                                      width: MediaQuery.of(context)
+                                                                              .size
+                                                                              .width -
+                                                                          82 -
+                                                                          20 -
+                                                                          40 -
+                                                                          15,
+                                                                      child:
+                                                                          Text(
+                                                                        feedComments
+                                                                            .where((comment) =>
+                                                                                comment.parentID ==
+                                                                                feedComments.where((comment) => comment.parentID == null).toList()[index].id)
+                                                                            .toList()[nestedIndex]
+                                                                            .text,
+                                                                        style:
+                                                                            const TextStyle(
+                                                                          fontSize:
+                                                                              16,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    // TODO: Hidden nested reply functionality
+                                                                    if (true ==
+                                                                        false)
+                                                                      Row(
+                                                                        children: [
+                                                                          InkWell(
+                                                                            onTap:
+                                                                                () {
+                                                                              setState(() {
+                                                                                parentID = feedComments.where((comment) => comment.parentID == null).toList()[index].id;
+                                                                              });
+                                                                            },
+                                                                            child:
+                                                                                const Text(
+                                                                              "Reply",
+                                                                              style: TextStyle(
+                                                                                color: Colors.black54,
+                                                                                fontWeight: FontWeight.w700,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                  ],
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          );
+                                                        }),
+                                                      ),
+
+                                                    // TODO: END
                                                   ],
                                                 ),
                                               ],
@@ -232,6 +489,48 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                         ),
                       ),
                     ),
+                    if (parentID != null && parentID != "" ||
+                        handleReplyStories(parentID, feedComments) != null)
+                      Container(
+                        height: 60,
+                        width: MediaQuery.of(context).size.width,
+                        padding: const EdgeInsets.only(left: horizontal_p),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "@${handleReplyStories(parentID, feedComments) == null ? "" : handleReplyStories(parentID, feedComments)!.author.username}",
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey),
+                                  ),
+                                  Text(
+                                    "${handleReplyStories(parentID, feedComments) == null ? "" : handleReplyStories(parentID, feedComments)!.text}",
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                        overflow: TextOverflow.ellipsis),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  parentID = null;
+                                });
+                              },
+                              icon: const Icon(Icons.close),
+                            )
+                          ],
+                        ),
+                      ),
                     Container(
                       height: 60,
                       padding: const EdgeInsets.symmetric(

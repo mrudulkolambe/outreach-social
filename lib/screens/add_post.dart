@@ -176,6 +176,7 @@ class _AddPostState extends State<AddPost> {
                       : ClipRRect(
                           borderRadius: BorderRadius.circular(40),
                           child: Image.network(
+                            fit: BoxFit.cover,
                             userController.userData!.imageUrl!,
                             height: 70,
                             width: 70,

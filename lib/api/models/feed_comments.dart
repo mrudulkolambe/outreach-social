@@ -52,12 +52,14 @@ class FeedCommentResponse {
 
 class FeedComment {
   String text;
+  String id;
   PostUser author;
   int createdAt;
   String? parentID;
   String postID;
 
   FeedComment({
+    required this.id,
     required this.text,
     required this.author,
     required this.createdAt,
@@ -66,6 +68,7 @@ class FeedComment {
   });
 
   factory FeedComment.fromJson(dynamic json) {
+    final id = json["_id"] as String;
     final text = json["text"] as String;
     final author = PostUser.fromJson(json["author"]);
     final createdAt = json["createdAt"] as int;
@@ -74,6 +77,7 @@ class FeedComment {
 
     return FeedComment(
       text: text,
+      id: id,
       author: author,
       createdAt: createdAt,
       parentID: parentID,

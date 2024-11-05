@@ -35,7 +35,8 @@ class _AddStoryState extends State<AddStory> {
   Future<void> pickMedia() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png', 'mp4', 'mov'],
+      // allowedExtensions: ['jpg', 'jpeg', 'png', 'mp4', 'mov'],
+        allowedExtensions: ['jpg', 'jpeg', 'png'],
       allowMultiple: false,
     );
 

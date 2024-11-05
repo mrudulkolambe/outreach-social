@@ -95,10 +95,12 @@ class UploadStoryResponse {
 
 class UserStoryGroup {
   String username;
+  String? imageUrl;
   List<UserStory> stories;
 
   UserStoryGroup({
     required this.username,
+    this.imageUrl,
     required this.stories,
   });
 }
