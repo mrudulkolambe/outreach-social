@@ -126,6 +126,7 @@ class ResourcePostsResponse {
 
 class ResourcePost {
   String id;
+  String title;
   String content;
   String category;
   List<Media> media;
@@ -136,6 +137,7 @@ class ResourcePost {
 
   ResourcePost({
     required this.id,
+    required this.title,
     required this.content,
     required this.category,
     required this.media,
@@ -148,6 +150,7 @@ class ResourcePost {
   factory ResourcePost.fromJson(dynamic json) {
     final id = json["_id"] as String;
     final content = json["content"] as String;
+    final title = json["title"] as String;
     final category = json["category"] as String;
     final media =
         List.from(json["media"]).map((e) => Media.fromJson(e)).toList();
@@ -159,6 +162,7 @@ class ResourcePost {
 
     return ResourcePost(
       id: id,
+      title: title,
       content: content,
       category: category,
       media: media,

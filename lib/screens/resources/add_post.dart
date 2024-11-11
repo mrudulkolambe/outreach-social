@@ -13,6 +13,7 @@ import 'package:outreach/controller/user.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/platform_constraints/media_preview_mobile.dart';
+import 'package:outreach/widgets/styled_textfield.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ResourceAddPost extends StatefulWidget {
@@ -24,6 +25,7 @@ class ResourceAddPost extends StatefulWidget {
 
 class _ResourceAddPostState extends State<ResourceAddPost> {
   TextEditingController descriptionController = TextEditingController();
+  TextEditingController titleController = TextEditingController();
   final SavingController savingController = Get.put(SavingController());
   List<File> _mediaFiles = [];
   UserController userController = Get.put(UserController());
@@ -80,6 +82,7 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
       "content": descriptionController.text,
       "category": category,
       "media": urls,
+      "title": titleController.text
     };
     resourceServices.createPost(body);
     if (mounted) {
@@ -241,6 +244,16 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
                       );
                     }).toList(),
                   ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                StyledTextField(
+                  controller: titleController,
+                  keyboardType: TextInputType.name,
+                  hintText: "Resource title",
+                  label: "Write the title",
+                  next: true,
                 ),
               const SizedBox(
                 height: 5,

@@ -95,172 +95,176 @@ class _ListResourcesState extends State<ListResources> {
           builder: (userController) {
             return SafeArea(
               child: SingleChildScrollView(
-                child: Column(
+                child: Stack(
                   children: [
-                    Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: horizontal_p),
-                      child: SizedBox(
-                        height: 45,
-                        child: TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: "Search...",
-                            prefixIcon: Icon(
-                              Icons.search_rounded,
-                              size: 20,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 20),
-                            fillColor: Color.fromRGBO(239, 239, 240, 1),
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: horizontal_p),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            width: 2,
-                            color: Color.fromRGBO(239, 239, 240, 1),
-                          ),
-                        ),
-                      ),
-                      width: MediaQuery.of(context).size.width,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            ...resourceCategories.map((category) {
-                              return InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    filter = category.id;
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border(
-                                      bottom: BorderSide(
-                                          width: 2,
-                                          color: category.id == filter
-                                              ? accent
-                                              : Colors.transparent),
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      category.title,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
+                    Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: horizontal_p),
+                          child: SizedBox(
+                            height: 45,
+                            child: TextFormField(
+                              decoration: const InputDecoration(
+                                hintText: "Search...",
+                                prefixIcon: Icon(
+                                  Icons.search_rounded,
+                                  size: 20,
                                 ),
-                              );
-                            }),
-                            if (resourceCategories.isEmpty)
-                              ...[0, 1, 2].map((element) {
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 10,
-                                  ),
-                                  color: Colors.white,
-                                  child: Center(
-                                      child: Container(
-                                    height: 16,
-                                    width: 20,
-                                    color: grey.withOpacity(0.2),
-                                  )),
-                                );
-                              }),
-                          ],
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 20),
+                                fillColor: Color.fromRGBO(239, 239, 240, 1),
+                                filled: true,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    if (userController.userData != null)
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height -
-                            8 -
-                            20 -
-                            45 -
-                            80 -
-                            70 -
-                            45,
-                        child: GetBuilder<ResourcesController>(
-                            init: ResourcesController(),
-                            builder: (resourceController) {
-                              return SingleChildScrollView(
-                                controller: _scrollController,
-                                child: resourceController.resources.isEmpty
-                                    ? Column(
-                                        children: [
-                                          ...resourcePosts
-                                              .where(
-                                                (element) {
-                                                  return element.category ==
-                                                      filter;
-                                                },
-                                              )
-                                              .toList()
-                                              .asMap()
-                                              .entries
-                                              .map((resource) {
-                                                return PostCard(
-                                                  post: resource.value,
-                                                  index: resource.key,
-                                                  user:
-                                                      userController.userData!,
-                                                );
-                                              })
-                                        ],
-                                      )
-                                    : Column(
-                                        children: [
-                                          ...resourceController.resources
-                                              .where(
-                                                (element) {
-                                                  return element.category ==
-                                                      filter;
-                                                },
-                                              )
-                                              .toList()
-                                              .asMap()
-                                              .entries
-                                              .map((resource) {
-                                                return PostCard(
-                                                  post: resource.value,
-                                                  index: resource.key,
-                                                  user:
-                                                      userController.userData!,
-                                                );
-                                              })
-                                        ],
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: horizontal_p),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                width: 2,
+                                color: Color.fromRGBO(239, 239, 240, 1),
+                              ),
+                            ),
+                          ),
+                          width: MediaQuery.of(context).size.width,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                ...resourceCategories.map((category) {
+                                  return InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        filter = category.id;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 10,
                                       ),
-                              );
-                            }),
-                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border(
+                                          bottom: BorderSide(
+                                              width: 2,
+                                              color: category.id == filter
+                                                  ? accent
+                                                  : Colors.transparent),
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          category.title,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                                if (resourceCategories.isEmpty)
+                                  ...[0, 1, 2].map((element) {
+                                    return Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 10,
+                                      ),
+                                      color: Colors.white,
+                                      child: Center(
+                                          child: Container(
+                                        height: 16,
+                                        width: 20,
+                                        color: grey.withOpacity(0.2),
+                                      )),
+                                    );
+                                  }),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        if (userController.userData != null)
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height -
+                                8 -
+                                20 -
+                                45 -
+                                80 -
+                                70 -
+                                45,
+                            child: GetBuilder<ResourcesController>(
+                                init: ResourcesController(),
+                                builder: (resourceController) {
+                                  return SingleChildScrollView(
+                                    controller: _scrollController,
+                                    child: resourceController.resources.isEmpty
+                                        ? Column(
+                                            children: [
+                                              ...resourcePosts
+                                                  .where(
+                                                    (element) {
+                                                      return element.category ==
+                                                          filter;
+                                                    },
+                                                  )
+                                                  .toList()
+                                                  .asMap()
+                                                  .entries
+                                                  .map((resource) {
+                                                    return PostCard(
+                                                      post: resource.value,
+                                                      index: resource.key,
+                                                      user: userController
+                                                          .userData!,
+                                                    );
+                                                  })
+                                            ],
+                                          )
+                                        : Column(
+                                            children: [
+                                              ...resourceController.resources
+                                                  .where(
+                                                    (element) {
+                                                      return element.category ==
+                                                          filter;
+                                                    },
+                                                  )
+                                                  .toList()
+                                                  .asMap()
+                                                  .entries
+                                                  .map((resource) {
+                                                    return PostCard(
+                                                      post: resource.value,
+                                                      index: resource.key,
+                                                      user: userController
+                                                          .userData!,
+                                                    );
+                                                  })
+                                            ],
+                                          ),
+                                  );
+                                }),
+                          ),
+                      ],
+                    ),
                     Positioned(
-                      bottom: 86.0,
+                      bottom: 40.0,
                       right: 16.0,
                       child: ElevatedButton.icon(
                         onPressed: () => Get.to(() => const ResourceAddPost()),
@@ -279,7 +283,7 @@ class _ListResourcesState extends State<ListResources> {
                             borderRadius: BorderRadius.circular(40),
                           ),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 12.0),
+                              horizontal: 20.0, vertical: 16.0),
                         ),
                       ),
                     ),
