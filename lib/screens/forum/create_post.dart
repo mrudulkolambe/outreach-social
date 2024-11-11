@@ -219,7 +219,7 @@ class _CreateForumPost extends State<CreateForumPost> {
                                   postImgList.removeAt(i);
                                 });
                               },
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.close,
                                 color: Colors.black,
                                 size: 20,
@@ -235,8 +235,9 @@ class _CreateForumPost extends State<CreateForumPost> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
+      bottomNavigationBar: SizedBox(
         height: 70,
+        width: MediaQuery.of(context).size.width,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -274,7 +275,6 @@ class _CreateForumPost extends State<CreateForumPost> {
             )
           ],
         ),
-        width: MediaQuery.of(context).size.width,
       ),
     );
   }

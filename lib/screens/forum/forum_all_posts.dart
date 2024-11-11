@@ -19,7 +19,6 @@ import 'package:outreach/widgets/forum/forum_card.dart';
 import 'package:outreach/widgets/navbar.dart';
 import 'package:outreach/widgets/platform_constraints/media_preview_mobile.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:video_player/video_player.dart';
 
 class ForumAllPosts extends StatefulWidget {
   final Forum forum;

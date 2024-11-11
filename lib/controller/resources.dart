@@ -15,7 +15,7 @@ class ResourcesController extends GetxController {
   }
 
   void initAdd(List<ResourcePost> data) {
-    print("Controller Data ${data}");
+    print("Controller Data $data");
     resources = [];
     resources.addAll(data);
     update();

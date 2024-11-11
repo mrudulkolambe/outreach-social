@@ -4,7 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/models/upload.dart';
-import 'package:outreach/api/services/feed_services.dart';
 import 'package:outreach/api/services/story_services.dart';
 import 'package:outreach/api/services/upload_services.dart';
 import 'package:outreach/constants/colors.dart';
@@ -14,7 +13,6 @@ import 'package:outreach/controller/user.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/platform_constraints/media_preview_mobile.dart';
-import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class AddStory extends StatefulWidget {
@@ -42,15 +40,13 @@ class _AddStoryState extends State<AddStory> {
 
     print(result!.files);
 
-    if (result != null) {
-      setState(() {
-        List<File> newFiles = result.paths.map((path) {
-          return File(path!);
-        }).toList();
-        _mediaFiles.addAll(newFiles);
-      });
+    setState(() {
+      List<File> newFiles = result.paths.map((path) {
+        return File(path!);
+      }).toList();
+      _mediaFiles.addAll(newFiles);
+    });
     }
-  }
 
   Future<bool> requestGalleryPermission() async {
     var status = await Permission.storage.request();

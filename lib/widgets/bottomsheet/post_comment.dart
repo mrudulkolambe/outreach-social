@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
@@ -511,7 +510,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                         color: Colors.grey),
                                   ),
                                   Text(
-                                    "${handleReplyStories(parentID, feedComments) == null ? "" : handleReplyStories(parentID, feedComments)!.text}",
+                                    handleReplyStories(parentID, feedComments) == null ? "" : handleReplyStories(parentID, feedComments)!.text,
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 16,

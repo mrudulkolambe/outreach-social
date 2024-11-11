@@ -7,7 +7,7 @@ class MediaPreview extends StatefulWidget {
   final double height;
   final double width;
 
-  MediaPreview({
+  const MediaPreview({super.key, 
     required this.mediaFile,
     this.height = 135,
     this.width = 165,
@@ -69,7 +69,7 @@ class _MediaPreviewState extends State<MediaPreview> {
               ),
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
       );

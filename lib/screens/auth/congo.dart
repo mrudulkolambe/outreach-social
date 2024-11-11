@@ -28,14 +28,14 @@ class _CongoState extends State<Congo> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(),
-              Padding(
-                padding: const EdgeInsets.symmetric(
+              const Padding(
+                padding: EdgeInsets.symmetric(
                   horizontal: horizontal_p,
                   vertical: 20,
                 ),
                 child: Column(
                   children: [
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
@@ -64,7 +64,7 @@ class _CongoState extends State<Congo> {
                         )
                       ],
                     ),
-                    const SizedBox(
+                    SizedBox(
                       height: 15,
                     ),
                   ],

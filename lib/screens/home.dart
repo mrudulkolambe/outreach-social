@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -13,12 +12,10 @@ import 'package:outreach/controller/post.dart';
 import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/models/post.dart';
-import 'package:outreach/screens/chats/home.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/search.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/post_card.dart';
-import 'package:outreach/widgets/story_card.dart';
 import 'package:story_view/story_view.dart';
 import 'package:video_player/video_player.dart';
 import 'package:outreach/screens/profile.dart';
@@ -238,7 +235,7 @@ class _HomePageState extends State<HomePage>
                           buildStoryOnTrayScroll: true,
                           preloadStory: true,
                           preloadContent: true,
-                          style: AdvStoryStyle(),
+                          style: const AdvStoryStyle(),
                           storyCount: groupedStories.length,
                           trayBuilder: (storyIndex) {
                             print("storyIndex $storyIndex");
@@ -308,8 +305,8 @@ class _HomePageState extends State<HomePage>
                                         textAlign: TextAlign.center,
                                         storyIndex == 0
                                             ? "Your story"
-                                            : "${groupedStories[storyIndex].username}",
-                                        style: TextStyle(
+                                            : groupedStories[storyIndex].username,
+                                        style: const TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
                                           overflow: TextOverflow.ellipsis,
@@ -317,7 +314,7 @@ class _HomePageState extends State<HomePage>
                                       ),
                                     ),
                                     borderRadius: 20,
-                                    size: Size(88, 103),
+                                    size: const Size(88, 103),
                                     shape: BoxShape.rectangle,
                                     url: groupedStories[storyIndex].imageUrl !=
                                                 null ||
@@ -353,12 +350,12 @@ class _HomePageState extends State<HomePage>
                                               width: 50,
                                             ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 20,
                                     ),
                                     Text(
                                       "@${groupedStories[storyIndex].username}",
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.w600,
                                           color: Colors.white,
                                           fontSize: 16),
@@ -375,7 +372,7 @@ class _HomePageState extends State<HomePage>
                                             .type ==
                                         "video"
                                     ? VideoContent(
-                                        timeout: Duration(seconds: 5),
+                                        timeout: const Duration(seconds: 5),
                                         url: groupedStories[storyIndex]
                                             .stories[contentIndex]
                                             .media
@@ -383,13 +380,13 @@ class _HomePageState extends State<HomePage>
                                       )
                                     : ImageContent(
                                         footer: Padding(
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               horizontal: 20),
                                           child: Text(
                                             groupedStories[storyIndex]
                                                 .stories[contentIndex]
                                                 .content,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontWeight: FontWeight.w600,
                                               color: Colors.white,
                                               fontSize: 16,
@@ -531,6 +528,7 @@ class _SelfStoryViewState extends State<SelfStoryView> {
                         controller: controller,
                         caption: Text(widget.userStories[index].content));
                   }
+                  return null;
                 },
               ),
               controller: controller)),

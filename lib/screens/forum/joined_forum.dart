@@ -28,6 +28,7 @@ class _JoinedForumState extends State<JoinedForum> {
     super.initState();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

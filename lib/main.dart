@@ -1,10 +1,8 @@
 // ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison
 
 import 'dart:async';
-import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -13,14 +11,12 @@ import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/controller/post.dart';
-import 'package:outreach/firebase_options.dart';
 import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/auth/username.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/onboarding.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:zego_zimkit/zego_zimkit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,13 +1,9 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:outreach/api/models/feed_comments.dart';
-import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/comment_feed_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/controller/comment.dart';
-import 'package:outreach/widgets/CircularShimmerImage.dart';
 
 class ForumCommentBottomSheet extends StatefulWidget {
   final String postId;

@@ -1,18 +1,15 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:outreach/api/models/forum.dart';
 import 'package:outreach/api/services/forum_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/screens/forum/forum_post_details.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
-import 'package:outreach/widgets/bottomsheet/forum_post_comment.dart';
 import 'package:outreach/widgets/posts/mediacard.dart';
 
 class ForumCard extends StatefulWidget {
@@ -32,7 +29,7 @@ class ForumCard extends StatefulWidget {
 }
 
 class _ForumCardState extends State<ForumCard> {
-  bool _isExpanded = false;
+  final bool _isExpanded = false;
   static const int _maxLines = 2;
 
   String _getTruncatedText(String text) {
@@ -177,7 +174,7 @@ class _ForumCardState extends State<ForumCard> {
                   : MediaQuery.of(context).size.width - 2 * horizontal_p,
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 6,
                   ),
                   Row(
@@ -185,7 +182,7 @@ class _ForumCardState extends State<ForumCard> {
                       Expanded(
                         child: Text(
                           widget.forumPost.content,
-                          style: TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
                     ],
@@ -268,9 +265,9 @@ class _ForumCardState extends State<ForumCard> {
                 const SizedBox(
                   width: 15,
                 ),
-                Row(
+                const Row(
                   children: [
-                    const Text(
+                    Text(
                       "Reply",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,

@@ -184,7 +184,7 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
                                                 child: Text(
                                                   widget.forum.public
                                                       ? widget
-                                                          .forumPost.user.name!
+                                                          .forumPost.user.name
                                                           .substring(0, 1)
                                                       : "A",
                                                   style: const TextStyle(

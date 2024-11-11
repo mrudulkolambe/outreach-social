@@ -44,7 +44,7 @@ class _CreateAccountState extends State<CreateAccount> {
         'Account created successfully',
         context,
       );
-      Get.to(() => Username());
+      Get.to(() => const Username());
     } else {
       ToastManager.showToast(
         response.reasonPhrase!,
@@ -108,7 +108,7 @@ class _CreateAccountState extends State<CreateAccount> {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       if (googleUser == null) {
-        return null;
+        return;
       }
 
       final GoogleSignInAuthentication googleAuth =
@@ -240,7 +240,7 @@ class _CreateAccountState extends State<CreateAccount> {
                             ],
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         Row(
@@ -275,13 +275,13 @@ class _CreateAccountState extends State<CreateAccount> {
                             loading: loading,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 8,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
+                            const Text(
                               "Already have an account?",
                               style: TextStyle(
                                 fontSize: 16,
@@ -289,12 +289,12 @@ class _CreateAccountState extends State<CreateAccount> {
                                 color: Colors.black,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 3,
                             ),
                             GestureDetector(
                               onTap: () => Get.to(() => const Login()),
-                              child: Text(
+                              child: const Text(
                                 "Sign In",
                                 style: TextStyle(
                                   fontSize: 16,

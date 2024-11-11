@@ -130,7 +130,7 @@ class _HLSVideoPlayerState extends State<HLSVideoPlayer> {
                     borderRadius: BorderRadius.circular(60),
                   ),
                     child: IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.replay,
                         size: 25,
                         color: Colors.white,
@@ -141,7 +141,7 @@ class _HLSVideoPlayerState extends State<HLSVideoPlayer> {
                 ),
             ],
           )
-        : Center(
+        : const Center(
             child: CircularProgressIndicator(),
           );
   }

@@ -38,7 +38,7 @@ class _HelpAndSupportState extends State<HelpAndSupport> {
     final statusCode = await helpService.createSupportRequest(body);
     if (statusCode == 200) {
       ToastManager.showToast("Request submitted", context);
-      Get.offAll(() => MainStack());
+      Get.offAll(() => const MainStack());
     } else {
       ToastManager.showToast("Something went wrong!", context);
     }

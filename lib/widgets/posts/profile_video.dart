@@ -82,7 +82,7 @@ class _ProfileHLSVideoPlayerState extends State<ProfileHLSVideoPlayer> {
             _chewieController!.videoPlayerController.value.isInitialized
         ? Stack(
             children: [
-              Container(
+              SizedBox(
                 height: 75,
                 width: 115,
                 child: ClipRRect(
@@ -134,7 +134,7 @@ class _ProfileHLSVideoPlayerState extends State<ProfileHLSVideoPlayer> {
                       borderRadius: BorderRadius.circular(60),
                     ),
                     child: IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.replay,
                         size: 25,
                         color: Colors.white,
@@ -145,7 +145,7 @@ class _ProfileHLSVideoPlayerState extends State<ProfileHLSVideoPlayer> {
                 ),
             ],
           )
-        : Center(
+        : const Center(
             child: CircularProgressIndicator(),
           );
   }

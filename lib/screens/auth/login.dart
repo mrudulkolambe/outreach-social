@@ -12,7 +12,6 @@ import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/screens/auth/create_account.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:outreach/screens/auth/username.dart';
-import 'package:outreach/screens/home.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/styled_button.dart';
@@ -140,7 +139,7 @@ class _LoginState extends State<Login> {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       if (googleUser == null) {
-        return null;
+        return;
       }
 
       final GoogleSignInAuthentication googleAuth =
@@ -244,7 +243,7 @@ class _LoginState extends State<Login> {
                           enableFeedback: false,
                           splashColor: Colors.transparent,
                           onTap: resetPass,
-                          child: Text(
+                          child: const Text(
                             "Reset Password",
                             style: TextStyle(color: accent),
                           ),

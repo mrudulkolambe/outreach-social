@@ -24,7 +24,7 @@ class StatsElem extends StatelessWidget {
           ),
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12
             ),
           )

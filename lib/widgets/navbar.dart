@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/screens/forum/forum.dart';
-import 'package:outreach/screens/home.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/more.dart';
 import 'package:outreach/screens/resources/list_resources.dart';
@@ -67,7 +66,7 @@ class Navbar extends StatelessWidget {
               if (Get.currentRoute == "/HomePage") {
                 openBottomSheet!();
               } else {
-                Get.to(() => MainStack());
+                Get.to(() => const MainStack());
               }
             },
             child: const Column(

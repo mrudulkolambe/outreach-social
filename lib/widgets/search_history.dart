@@ -22,7 +22,7 @@ class SearchHistoryCard extends StatelessWidget {
           ),
           contentPadding: const EdgeInsets.all(0),
           leading: user.imageUrl == null
-              ? Container(
+              ? SizedBox(
                   height: 45,
                   width: 45,
                   child: Center(
@@ -39,9 +39,9 @@ class SearchHistoryCard extends StatelessWidget {
             children: [
               Text(
                 "@${user.username}",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
               ),
-              Text(
+              const Text(
                 "20 followers",
                 style: TextStyle(color: grey, fontSize: 12),
               ),
@@ -55,7 +55,7 @@ class SearchHistoryCard extends StatelessWidget {
             onPressed: () {},
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 5,
         ),
       ],

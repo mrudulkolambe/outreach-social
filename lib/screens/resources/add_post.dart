@@ -4,7 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/models/resource.dart';
-import 'package:outreach/api/services/feed_services.dart';
 import 'package:outreach/api/services/resource_services.dart';
 import 'package:outreach/api/services/upload_services.dart';
 import 'package:outreach/constants/colors.dart';
@@ -12,7 +11,6 @@ import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/screens/main.dart';
-import 'package:outreach/screens/resources/list_resources.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/platform_constraints/media_preview_mobile.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -212,7 +210,7 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               if (category.isNotEmpty)
@@ -221,7 +219,7 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
                       border: Border.all(width: 2, color: accent),
                       borderRadius: BorderRadius.circular(8)),
                   child: DropdownButton<String>(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     isExpanded: true,
                     value: category,
                     elevation: 16,

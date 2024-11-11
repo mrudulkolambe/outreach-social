@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
@@ -91,7 +90,7 @@ class _SearchUsersState extends State<SearchUsers> {
                   },
                   decoration: InputDecoration(
                     hintText: "Search...",
-                    suffixIcon: fetching ? Container(
+                    suffixIcon: fetching ? SizedBox(
                       height: 10,
                       width: 10,
                       child: Center(
@@ -101,15 +100,15 @@ class _SearchUsersState extends State<SearchUsers> {
                         ),
                       ),
                     ): null,
-                    prefixIcon: Icon(
+                    prefixIcon: const Icon(
                       Icons.search_rounded,
                       size: 20,
                     ),
                     contentPadding:
-                        EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-                    fillColor: Color.fromRGBO(239, 239, 240, 1),
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                    fillColor: const Color.fromRGBO(239, 239, 240, 1),
                     filled: true,
-                    border: OutlineInputBorder(
+                    border: const OutlineInputBorder(
                       borderSide: BorderSide.none,
                     ),
                   ),

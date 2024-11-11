@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
@@ -30,7 +29,7 @@ class _OnBoardingState extends State<OnBoarding> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         "Connect",
                         style: TextStyle(
                           fontSize: 34,
@@ -39,8 +38,8 @@ class _OnBoardingState extends State<OnBoarding> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () => Get.to(() => CreateAccount()),
-                        child: Text(
+                        onTap: () => Get.to(() => const CreateAccount()),
+                        child: const Text(
                           "Skip",
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
@@ -107,7 +106,7 @@ class _OnBoardingState extends State<OnBoarding> {
                             borderRadius: BorderRadius.circular(12)
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         Container(

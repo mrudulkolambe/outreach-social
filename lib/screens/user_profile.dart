@@ -1,7 +1,6 @@
 // main.dart
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/user_services.dart';
@@ -185,18 +184,18 @@ class _UserProfileState extends State<UserProfile> {
                     ),
                     const SizedBox(height: 10),
                     InkWell(
+                      onTap: handleFollowing,
                       child: StyledButton(
                         loading: followLoading,
                         text: !userData!.isFollowing! ? "Follow" : "Unfollow",
                       ),
-                      onTap: handleFollowing,
                     ),
                     const SizedBox(height: 8),
                     const Divider(),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           "Interest",
                           style: TextStyle(
                             fontSize: 18,
@@ -335,7 +334,7 @@ class _UserProfileState extends State<UserProfile> {
                   ],
                 ),
               )
-            : Center(
+            : const Center(
                 child: CircularProgressIndicator(),
               ),
       ),

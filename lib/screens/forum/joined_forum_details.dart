@@ -51,7 +51,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                 fit: BoxFit.cover,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 15,
             ),
             Column(
@@ -59,13 +59,13 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
               children: [
                 Text(
                   widget.forum.name,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                   ),
                 ),
                 Text(
                   "${widget.forum.joined.length} members",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: grey,
@@ -78,7 +78,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: horizontal_p,
             vertical: 20,
           ),
@@ -86,18 +86,18 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
             children: [
               Row(
                 children: [
-                  Text(
+                  const Text(
                     'Created by',
                     style: TextStyle(color: grey),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   CircularShimmerImage(
                     imageUrl: widget.forum.userId.imageUrl,
                     size: 24,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   Expanded(
@@ -105,18 +105,18 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                     "@${widget.forum.userId.username}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ))
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8,
               ),
               Row(
                 children: [
                   Text(
                     '${widget.forum.joined.length.toString()} members',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                       color: grey,
@@ -124,10 +124,10 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
-              Row(
+              const Row(
                 children: [
                   CircularShimmerImage(
                     imageUrl:
@@ -163,10 +163,10 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
-              Row(
+              const Row(
                 children: [
                   Text(
                     "Description",
@@ -177,7 +177,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               Row(
@@ -185,7 +185,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                   Expanded(
                     child: Text(
                       widget.forum.description,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         color: grey,
                       ),
@@ -193,7 +193,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               InkWell(
@@ -201,7 +201,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                       forum: widget.forum,
                     )),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                   decoration: BoxDecoration(
                     color: grey.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
@@ -209,7 +209,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         "All Post",
                         style: TextStyle(
                           fontSize: 16,
@@ -218,7 +218,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                       ),
                       IconButton(
                         onPressed: () {},
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.chevron_right,
                         ),
                       )
@@ -226,13 +226,13 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               InkWell(
                 onTap: leaveForum,
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                   decoration: BoxDecoration(
                     color: grey.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
@@ -240,7 +240,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         "Leave forum",
                         style: TextStyle(
                           fontSize: 16,
@@ -250,7 +250,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                       ),
                       IconButton(
                         onPressed: () {},
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.logout_rounded,
                           color: Colors.red,
                         ),
@@ -263,7 +263,7 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
           ),
         ),
       ),
-      bottomNavigationBar: Navbar(),
+      bottomNavigationBar: const Navbar(),
     );
   }
 }

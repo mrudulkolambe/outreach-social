@@ -10,7 +10,7 @@ class StoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         // Container(

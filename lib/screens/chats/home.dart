@@ -12,7 +12,7 @@ import 'package:zego_zimkit/zego_zimkit.dart';
 
 // home_page.dart
 class ZIMKitDemoHomePage extends StatefulWidget {
-  const ZIMKitDemoHomePage({Key? key}) : super(key: key);
+  const ZIMKitDemoHomePage({super.key});
 
   @override
   State<ZIMKitDemoHomePage> createState() => _ZIMKitDemoHomePageState();
@@ -99,9 +99,9 @@ class _ZIMKitDemoHomePageState extends State<ZIMKitDemoHomePage> {
           if (searchQuery.startsWith("@"))
             Column(
               children: [
-                Padding(
+                const Padding(
                   padding: EdgeInsets.symmetric(horizontal: horizontal_p),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Text(
                         "Messages",
@@ -119,7 +119,7 @@ class _ZIMKitDemoHomePageState extends State<ZIMKitDemoHomePage> {
                 ),
                 ...users.map((user) {
                   return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: horizontal_p),
+                    padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
                     child: Column(children: [
                       InkWell(
                         onTap: () {
@@ -192,9 +192,9 @@ class _ZIMKitDemoHomePageState extends State<ZIMKitDemoHomePage> {
           if (searchQuery.isEmpty || !searchQuery.contains("@"))
             Column(
               children: [
-                Padding(
+                const Padding(
                   padding: EdgeInsets.symmetric(horizontal: horizontal_p),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Text(
                         "Messages",
@@ -224,7 +224,7 @@ class _ZIMKitDemoHomePageState extends State<ZIMKitDemoHomePage> {
                     },
                     itemBuilder: (context, conversation, defaultWidget) {
                       return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: horizontal_p),
+                        padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
                         child: Column(children: [
                           InkWell(
                             onTap: () {
@@ -293,12 +293,12 @@ class _ZIMKitDemoHomePageState extends State<ZIMKitDemoHomePage> {
                                                 ),
                                                 [hh, ':', nn, ' ', am],
                                               ),
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w700,
                                               ),
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               height: 3,
                                             ),
                                             Opacity(
@@ -320,7 +320,7 @@ class _ZIMKitDemoHomePageState extends State<ZIMKitDemoHomePage> {
                                                     conversation
                                                         .unreadMessageCount
                                                         .toString(),
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 10,
                                                       fontWeight:

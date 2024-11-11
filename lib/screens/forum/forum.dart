@@ -208,26 +208,36 @@ class _ForumScreenState extends State<ForumScreen> {
                               ),
                             )
                       ],
-                    )
+                    ),
+                    Positioned(
+                      bottom: 86.0,
+                      right: 16.0,
+                      child: ElevatedButton.icon(
+                        onPressed: () => Get.to(() => const CreateForum()),
+                        icon: const Icon(
+                          Icons.add_rounded,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          "Create Forum",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              accent, // Use the color you used for FloatingActionButton
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 12.0),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               );
             }),
       ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: () => Get.to(() => const CreateForum()),
-      //   label: const Text(
-      //     "Create Forum",
-      //     style: TextStyle(color: Colors.white),
-      //   ),
-      //   icon: const Icon(
-      //     Icons.add_rounded,
-      //     color: Colors.white,
-      //   ),
-      //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-      //   isExtended: true,
-      //   backgroundColor: accent,
-      // ),
     );
   }
 }

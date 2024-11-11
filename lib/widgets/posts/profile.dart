@@ -40,7 +40,7 @@ class _ProfilePostsState extends State<ProfilePosts> {
                           widget.post.public
                               ? widget.post.user.name.substring(0, 1)
                               : "A",
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                           ),
                         ),

@@ -154,7 +154,7 @@ class ResourcePost {
     final user = PostUser.fromJson(json["user"]);
     final liked = json["liked"];
     final likesCount = json["likesCount"];
-    final commentCount = 0;
+    const commentCount = 0;
     // final commentCount = json["commentCount"];
 
     return ResourcePost(
