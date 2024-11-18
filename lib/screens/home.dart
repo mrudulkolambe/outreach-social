@@ -480,16 +480,6 @@ class _HomePageState extends State<HomePage>
           ),
         ),
       ),
-      // bottomNavigationBar: Navbar(
-      //   homeClick: () {
-      //     _scrollController.animateTo(
-      //       0,
-      //       duration: const Duration(milliseconds: 500),
-      //       curve: Curves.easeInOut,
-      //     );
-      //   },
-      //   openBottomSheet: _openBottomSheet,
-      // ),
     );
   }
 }

@@ -11,6 +11,7 @@ class ApiService {
       url,
       headers: {'Authorization': token},
     );
+    print(token);
     return response;
   }
 
@@ -28,6 +29,8 @@ class ApiService {
   Future<http.Response?> patch(
       String endpoint, Map<String, dynamic> body) async {
     final url = Uri.parse(endpoint);
+    print('Bearer ${await FirebaseAuth.instance.currentUser!.getIdToken(true)}');
+    print(url);
     final response = await http.patch(url, body: jsonEncode(body), headers: {
       'Content-Type': 'application/json',
       'Authorization':

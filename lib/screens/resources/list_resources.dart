@@ -213,6 +213,7 @@ class _ListResourcesState extends State<ListResources> {
                                 builder: (resourceController) {
                                   return SingleChildScrollView(
                                     controller: _scrollController,
+                                    key: Key(resourceController.resources.toString()),
                                     child: resourceController.resources.isEmpty
                                         ? Column(
                                             children: [

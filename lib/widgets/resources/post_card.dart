@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outreach/api/models/resource.dart';
 import 'package:outreach/api/models/user.dart';
+import 'package:outreach/api/services/resource_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
@@ -242,7 +243,7 @@ class _PostCardState extends State<PostCard> {
             children: [
               InkWell(
                 onTap: () {
-                  // FeedService().likeOnPost(widget.post);
+                  ResourceServices().likeOnPost(widget.post);
                 },
                 child: Row(
                   children: [

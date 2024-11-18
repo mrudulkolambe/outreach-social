@@ -148,6 +148,7 @@ class ResourcePost {
   });
 
   factory ResourcePost.fromJson(dynamic json) {
+    print("title:  ${json["title"]}");
     final id = json["_id"] as String;
     final content = json["content"] as String;
     final title = json["title"] as String;

@@ -47,6 +47,7 @@ const String getResourceCategoryAPI = '$resourceCategoryEndpoint/get';
 const String resourceFeedEndpoint = '$baseUrl/resource';
 const String getResourceFeedAPI = '$resourceFeedEndpoint/get';
 const String createResourceFeedAPI = '$resourceFeedEndpoint/create';
+const String likeResourceFeedAPI = '$resourceFeedEndpoint/like';
 
 const String storyEndpoint = '$baseUrl/story';
 const String shareStoryAPI = '$storyEndpoint/create';

@@ -20,4 +20,17 @@ class ResourcesController extends GetxController {
     resources.addAll(data);
     update();
   }
+
+  void updatePost(ResourcePost data) {
+    List<ResourcePost> resourcePosts = resources.map((resourcePost) {
+      if (resourcePost.id == data.id) {
+        print("MATCHED");
+        return data;
+      } else {
+        return resourcePost;
+      }
+    }).toList();
+    resources = resourcePosts;
+    update();
+  }
 }
