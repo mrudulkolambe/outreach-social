@@ -187,19 +187,22 @@ class CustomPopupMenuItemState extends State<CustomPopupMenuItem> {
         widget.onTap();
         Navigator.pop(context);
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              widget.text,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
+      child: SizedBox(
+        width: 150,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                widget.text,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

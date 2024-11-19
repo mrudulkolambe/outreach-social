@@ -7,6 +7,7 @@ import 'package:outreach/api/services/comment_feed_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/comment.dart';
+import 'package:outreach/controller/user.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/bottomsheet/forum_post_comment.dart';
 import 'package:outreach/widgets/forum/forum_card.dart';
@@ -97,6 +98,7 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
       print(e);
     }
   }
+  final UserController userController = Get.put(UserController());
 
   @override
   Widget build(BuildContext context) {
@@ -152,6 +154,7 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
               forum: widget.forum,
               forumPost: widget.forumPost,
               type: "details",
+              user: userController.userData!.id
             ),
             GetBuilder<FeedCommentController>(
                 init: FeedCommentController(),

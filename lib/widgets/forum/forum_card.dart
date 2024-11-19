@@ -9,19 +9,23 @@ import 'package:outreach/api/services/forum_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/screens/forum/forum_post_details.dart';
+import 'package:outreach/utils/report_reasons.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
+import 'package:outreach/widgets/popup/report_popup.dart';
 import 'package:outreach/widgets/posts/mediacard.dart';
 
 class ForumCard extends StatefulWidget {
   final Forum forum;
   final ForumPost forumPost;
   final String type;
+  final String user;
 
   const ForumCard({
     super.key,
     required this.forum,
     required this.forumPost,
     required this.type,
+    required this.user
   });
 
   @override
@@ -49,6 +53,17 @@ class _ForumCardState extends State<ForumCard> {
   bool _isTextLong(String text) {
     final words = text.split(' ');
     return words.length > _maxLines * 10;
+  }
+
+  void _openReportModal() {
+    showDialog(
+      useSafeArea: false,
+      context: context,
+      builder: (context) {
+        return ReportPopup(reasons: ReportReasons.postReasons, type: "forum", postId: widget.forumPost.id, userID: widget.user);
+      },
+    );
+    // showDialog(context: context, builder: (context) => ReportPopup());
   }
 
   @override
@@ -164,6 +179,63 @@ class _ForumCardState extends State<ForumCard> {
                     )
                   ],
                 ),
+              ),
+              PopupMenuButton<int>(
+                padding: const EdgeInsets.all(0),
+                onSelected: (item) {
+                  if (item == 1) {
+                    print('Edit tapped');
+                  } else if (item == 2) {
+                    print('Delete tapped');
+                  } else if (item == 3) {
+                    _openReportModal();
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 1,
+                    child: Center(
+                      child: SizedBox(
+                          width: 150,
+                          child: Text(
+                            'Edit',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          )),
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 2,
+                    child: Center(
+                      child: SizedBox(
+                          width: 150,
+                          child: Text(
+                            'Delete',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          )),
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 3,
+                    child: Center(
+                      child: SizedBox(
+                          width: 150,
+                          child: Text(
+                            'Report',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          )),
+                    ),
+                  ),
+                ],
+                icon: const Icon(Icons.more_vert),
               ),
             ],
           ),

@@ -528,6 +528,7 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
                                 forum: widget.forum,
                                 forumPost: forumPost,
                                 type: "primary",
+                                user: userController.userData!.id,
                               );
                             }),
                           ],
