@@ -1,19 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:outreach/api/models/user.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/models/post.dart';
+import 'package:outreach/utils/report_reasons.dart';
+import 'package:outreach/widgets/bottomsheet/post_comment.dart';
 import 'package:outreach/widgets/circular_image.dart';
+import 'package:outreach/widgets/popup/report_popup.dart';
+import 'package:outreach/widgets/posts/mediacard.dart';
 import 'package:outreach/widgets/posts/profile_video.dart';
 
 class ProfilePosts extends StatefulWidget {
   final Post post;
+  final UserData user;
 
-  const ProfilePosts({super.key, required this.post});
+  const ProfilePosts({super.key, required this.post, required this.user});
 
   @override
   State<ProfilePosts> createState() => _ProfilePostsState();
 }
 
 class _ProfilePostsState extends State<ProfilePosts> {
+  void _openCommentBottomsheet() {
+    showModalBottomSheet(
+      useSafeArea: false,
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      isScrollControlled: true,
+      showDragHandle: false,
+      builder: (context) {
+        return CommentBottomSheet(
+          postId: widget.post.id,
+          user: widget.user,
+        );
+      },
+    );
+  }
+
+  void _openReportModal() {
+    showDialog(
+      useSafeArea: false,
+      context: context,
+      builder: (context) {
+        return ReportPopup(
+            reasons: ReportReasons.postReasons,
+            type: "post",
+            postId: widget.post.id,
+            userID: widget.user.id);
+      },
+    );
+    // showDialog(context: context, builder: (context) => ReportPopup());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -102,15 +142,57 @@ class _ProfilePostsState extends State<ProfilePosts> {
                     ),
                     PopupMenuButton<int>(
                       padding: const EdgeInsets.all(0),
-                      onSelected: (item) => print(item),
+                      onSelected: (item) {
+                        if (item == 1) {
+                          print('Edit tapped');
+                        } else if (item == 2) {
+                          print('Delete tapped');
+                        } else if (item == 3) {
+                          _openReportModal();
+                        }
+                      },
                       itemBuilder: (context) => [
-                        CustomPopupMenuItem(
-                          text: 'Edit',
-                          onTap: () => print(1),
+                        const PopupMenuItem(
+                          value: 1,
+                          child: Center(
+                            child: SizedBox(
+                                width: 150,
+                                child: Text(
+                                  'Edit',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                )),
+                          ),
                         ),
-                        CustomPopupMenuItem(
-                          text: 'Delete',
-                          onTap: () => print(1),
+                        const PopupMenuItem(
+                          value: 2,
+                          child: Center(
+                            child: SizedBox(
+                                width: 150,
+                                child: Text(
+                                  'Delete',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                )),
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 3,
+                          child: Center(
+                            child: SizedBox(
+                                width: 150,
+                                child: Text(
+                                  'Report',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                )),
+                          ),
                         ),
                       ],
                       icon: const Icon(Icons.more_vert),
@@ -126,20 +208,18 @@ class _ProfilePostsState extends State<ProfilePosts> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            if(widget.post.media.isNotEmpty)  widget.post.media.first.type == "mp4" ||
-                      widget.post.media.first.type == "mov"
-                  ? ProfileHLSVideoPlayer(
-                      url: widget.post.media.first.url,
-                    )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        widget.post.media.first.url,
-                        height: 75,
-                        width: 115,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+              if (widget.post.media.isNotEmpty)
+                // Text(
+                //     widget.post.media.length.toString(),
+                //     style: const TextStyle(
+                //       fontSize: 12,
+                //     ),
+                //   ),
+                Container(
+                  color: Colors.grey.withOpacity(0.2),
+                  height: 80,
+                  child: MediaCarousel(mediaPosts: widget.post.media),
+                ),
               const SizedBox(
                 width: 8,
               ),
@@ -149,6 +229,48 @@ class _ProfilePostsState extends State<ProfilePosts> {
                   style: const TextStyle(
                     fontSize: 12,
                   ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            children: [
+              InkWell(
+                onTap: () {
+                  // FeedService().likeOnPost(widget.post);
+                },
+                child: Row(
+                  children: [
+                    widget.post.liked
+                        ? SvgPicture.asset(
+                            "assets/icons/like-filled.svg",
+                          )
+                        : SvgPicture.asset(
+                            "assets/icons/like.svg",
+                          ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(widget.post.likesCount.toString())
+                  ],
+                ),
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+              InkWell(
+                onTap: _openCommentBottomsheet,
+                child: Row(
+                  children: [
+                    SvgPicture.asset("assets/icons/comment.svg"),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(widget.post.commentCount.toString())
+                  ],
                 ),
               ),
             ],

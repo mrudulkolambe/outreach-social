@@ -316,7 +316,7 @@ class _MyProfileState extends State<MyProfile> {
                     ),
                     const SizedBox(height: 5),
                     ...userController.userData!.feeds.reversed
-                        .map((e) => ProfilePosts(post: e)),
+                        .map((e) => ProfilePosts(post: e, user: userController.userData!,)),
                     InkWell(
                       onTap: () => Get.to(() => const YourPosts()),
                       child: Container(

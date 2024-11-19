@@ -68,7 +68,7 @@ class _YourPostsState extends State<YourPosts> {
                       return Column(
                         children: [
                           ...userController.userData!.feeds.map(
-                            (e) => ProfilePosts(post: e),
+                            (e) => ProfilePosts(post: e, user: userController.userData!,),
                           )
                         ],
                       );
