@@ -8,7 +8,7 @@ import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/widgets/shimmer_image.dart';
-import 'package:zego_zimkit/zego_zimkit.dart';
+// import 'package:zego_zimkit/zego_zimkit.dart';
 
 // home_page.dart
 class ZIMKitDemoHomePage extends StatefulWidget {
@@ -122,14 +122,14 @@ class _ZIMKitDemoHomePageState extends State<ZIMKitDemoHomePage> {
                     padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
                     child: Column(children: [
                       InkWell(
-                        onTap: () {
-                          Get.to(
-                            () => ZIMKitMessageListPage(
-                              conversationID: user.id,
-                              conversationType: ZIMConversationType.peer,
-                            ),
-                          );
-                        },
+                        // onTap: () {
+                        //   Get.to(
+                        //     () => ZIMKitMessageListPage(
+                        //       conversationID: user.id,
+                        //       conversationType: ZIMConversationType.peer,
+                        //     ),
+                        //   );
+                        // },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             vertical: 10,
@@ -210,163 +210,163 @@ class _ZIMKitDemoHomePageState extends State<ZIMKitDemoHomePage> {
                 const SizedBox(
                   height: 8,
                 ),
-                Expanded(
-                  child: ZIMKitConversationListView(
-                    filter: (context, p1) {
-                      if (searchQuery.contains("@")) {
-                        return p1;
-                      }
-                      return p1.where((element) {
-                        return element.value.name
-                            .toLowerCase()
-                            .contains(searchQuery);
-                      }).toList();
-                    },
-                    itemBuilder: (context, conversation, defaultWidget) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
-                        child: Column(children: [
-                          InkWell(
-                            onTap: () {
-                              Get.to(
-                                () => ZIMKitMessageListPage(
-                                  conversationID: conversation.id,
-                                  conversationType: ZIMConversationType.peer,
-                                ),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 10,
-                              ),
-                              color: Colors.white,
-                              child: Row(
-                                children: [
-                                  ShimmerImage(
-                                    imageUrl: conversation.avatarUrl,
-                                    width: 60,
-                                    height: 60,
-                                  ),
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  conversation.name,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  conversation.lastMessage!
-                                                      .textContent!.text,
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              formatDate(
-                                                DateTime
-                                                    .fromMillisecondsSinceEpoch(
-                                                  conversation.lastMessage!.info
-                                                      .timestamp,
-                                                ),
-                                                [hh, ':', nn, ' ', am],
-                                              ),
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 3,
-                                            ),
-                                            Opacity(
-                                              opacity: conversation
-                                                          .unreadMessageCount ==
-                                                      0
-                                                  ? 0
-                                                  : 1,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: accent,
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                height: 18,
-                                                width: 18,
-                                                child: Center(
-                                                  child: Text(
-                                                    conversation
-                                                        .unreadMessageCount
-                                                        .toString(),
-                                                    style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 10,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 8,
-                          )
-                        ]),
-                      );
-                    },
-                    onPressed: (context, conversation, defaultAction) {
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (context) {
-                          return ZIMKitMessageListPage(
-                            messageContentBuilder:
-                                (context, message, defaultWidget) {
-                              if (message.type == ZIMMessageType.custom) {
-                                return Text(message.textContent!.text);
-                              } else {
-                                return Text(message.textContent!.text);
-                              }
-                            },
-                            conversationID: conversation.id,
-                            conversationType: conversation.type,
-                          );
-                        },
-                      ));
-                    },
-                  ),
-                ),
-              ],
-            ),
+              //   Expanded(
+              //     child: ZIMKitConversationListView(
+              //       filter: (context, p1) {
+              //         if (searchQuery.contains("@")) {
+              //           return p1;
+              //         }
+              //         return p1.where((element) {
+              //           return element.value.name
+              //               .toLowerCase()
+              //               .contains(searchQuery);
+              //         }).toList();
+              //       },
+              //       itemBuilder: (context, conversation, defaultWidget) {
+              //         return Padding(
+              //           padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
+              //           child: Column(children: [
+              //             InkWell(
+              //               onTap: () {
+              //                 // Get.to(
+              //                 //   () => ZIMKitMessageListPage(
+              //                 //     conversationID: conversation.id,
+              //                 //     conversationType: ZIMConversationType.peer,
+              //                 //   ),
+              //                 // );
+              //               },
+              //               child: Container(
+              //                 padding: const EdgeInsets.symmetric(
+              //                   vertical: 10,
+              //                 ),
+              //                 color: Colors.white,
+              //                 child: Row(
+              //                   children: [
+              //                     ShimmerImage(
+              //                       imageUrl: conversation.avatarUrl,
+              //                       width: 60,
+              //                       height: 60,
+              //                     ),
+              //                     const SizedBox(
+              //                       width: 20,
+              //                     ),
+              //                     Expanded(
+              //                       child: Row(
+              //                         mainAxisAlignment:
+              //                             MainAxisAlignment.spaceBetween,
+              //                         children: [
+              //                           Column(
+              //                             crossAxisAlignment:
+              //                                 CrossAxisAlignment.start,
+              //                             children: [
+              //                               Row(
+              //                                 children: [
+              //                                   Text(
+              //                                     conversation.name,
+              //                                     style: const TextStyle(
+              //                                       fontSize: 16,
+              //                                       fontWeight: FontWeight.w700,
+              //                                     ),
+              //                                   ),
+              //                                 ],
+              //                               ),
+              //                               Row(
+              //                                 children: [
+              //                                   Text(
+              //                                     conversation.lastMessage!
+              //                                         .textContent!.text,
+              //                                   ),
+              //                                 ],
+              //                               )
+              //                             ],
+              //                           ),
+              //                           Column(
+              //                             crossAxisAlignment:
+              //                                 CrossAxisAlignment.end,
+              //                             children: [
+              //                               Text(
+              //                                 formatDate(
+              //                                   DateTime
+              //                                       .fromMillisecondsSinceEpoch(
+              //                                     conversation.lastMessage!.info
+              //                                         .timestamp,
+              //                                   ),
+              //                                   [hh, ':', nn, ' ', am],
+              //                                 ),
+              //                                 style: const TextStyle(
+              //                                   fontSize: 12,
+              //                                   fontWeight: FontWeight.w700,
+              //                                 ),
+              //                               ),
+              //                               const SizedBox(
+              //                                 height: 3,
+              //                               ),
+              //                               Opacity(
+              //                                 opacity: conversation
+              //                                             .unreadMessageCount ==
+              //                                         0
+              //                                     ? 0
+              //                                     : 1,
+              //                                 child: Container(
+              //                                   decoration: BoxDecoration(
+              //                                     color: accent,
+              //                                     borderRadius:
+              //                                         BorderRadius.circular(10),
+              //                                   ),
+              //                                   height: 18,
+              //                                   width: 18,
+              //                                   child: Center(
+              //                                     child: Text(
+              //                                       conversation
+              //                                           .unreadMessageCount
+              //                                           .toString(),
+              //                                       style: const TextStyle(
+              //                                         color: Colors.white,
+              //                                         fontSize: 10,
+              //                                         fontWeight:
+              //                                             FontWeight.w700,
+              //                                       ),
+              //                                     ),
+              //                                   ),
+              //                                 ),
+              //                               )
+              //                             ],
+              //                           )
+              //                         ],
+              //                       ),
+              //                     ),
+              //                   ],
+              //                 ),
+              //               ),
+              //             ),
+              //             const SizedBox(
+              //               height: 8,
+              //             )
+              //           ]),
+              //         );
+              //       },
+              //       onPressed: (context, conversation, defaultAction) {
+              //         Navigator.push(context, MaterialPageRoute(
+              //           builder: (context) {
+              //             return ZIMKitMessageListPage(
+              //               messageContentBuilder:
+              //                   (context, message, defaultWidget) {
+              //                 if (message.type == ZIMMessageType.custom) {
+              //                   return Text(message.textContent!.text);
+              //                 } else {
+              //                   return Text(message.textContent!.text);
+              //                 }
+              //               },
+              //               conversationID: conversation.id,
+              //               conversationType: conversation.type,
+              //             );
+              //           },
+              //         ));
+              //       },
+              //     ),
+              //   ),
+              // ],
+        ]),
         ],
       ),
     );

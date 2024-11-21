@@ -1,4 +1,7 @@
 PODS:
+  - agora_chat_sdk (0.0.1):
+    - Flutter
+    - HyphenateChat (= 4.1.1)
   - AppAuth (1.7.5):
     - AppAuth/Core (= 1.7.5)
     - AppAuth/ExternalUserAgent (= 1.7.5)
@@ -217,6 +220,7 @@ PODS:
   - GTMSessionFetcher/Core (3.5.0)
   - GTMSessionFetcher/Full (3.5.0):
     - GTMSessionFetcher/Core
+  - HyphenateChat (4.1.1)
   - image_picker_ios (0.0.1):
     - Flutter
   - nanopb (3.30910.0):
@@ -272,6 +276,7 @@ PODS:
   - ZPNs (2.6.0)
 
 DEPENDENCIES:
+  - agora_chat_sdk (from `.symlinks/plugins/agora_chat_sdk/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -321,6 +326,7 @@ SPEC REPOS:
     - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
+    - HyphenateChat
     - nanopb
     - PromisesObjC
     - PromisesSwift
@@ -334,6 +340,8 @@ SPEC REPOS:
     - ZPNs
 
 EXTERNAL SOURCES:
+  agora_chat_sdk:
+    :path: ".symlinks/plugins/agora_chat_sdk/ios"
   file_picker:
     :path: ".symlinks/plugins/file_picker/ios"
   firebase_analytics:
@@ -384,6 +392,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/zego_zpns/ios"
 
 SPEC CHECKSUMS:
+  agora_chat_sdk: ce828d371e932342a5e03dbade5f07afa52c4391
   AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
@@ -416,6 +425,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
+  HyphenateChat: 95aa4abbad0e763f513acbe21ff9543f50b886cd
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
@@ -444,4 +454,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 1484d74c30de292093cd0a0a920041f15268f2fb
 
-COCOAPODS: 1.16.1
+COCOAPODS: 1.16.2

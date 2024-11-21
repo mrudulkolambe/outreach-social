@@ -1,38 +1,28 @@
-// ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison
+// ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outreach/api/models/user.dart';
+import 'package:outreach/api/services/agora_service.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/controller/post.dart';
+import 'package:outreach/firebase_options.dart';
 import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/auth/username.dart';
-import 'package:outreach/screens/main.dart';
+import 'package:outreach/screens/home.dart';
 import 'package:outreach/screens/onboarding.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await GetStorage.init();
-  await Firebase.initializeApp();
-  // ZIMKit().init(
-  //   appID: 1326692995,
-  //   appSign: "b692aa52fba5fcffb670e4f40af132ddc4668255866d687dfe8675bad2d19a2a",
-  // );
-  // FlutterError.onError = (errorDetails) {
-  //   FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-  // };
-  // PlatformDispatcher.instance.onError = (error, stack) {
-  //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-  //   return true;
-  // };
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -73,6 +63,7 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   final PostController postController = Get.put(PostController());
   final userService = UserService();
+  // final _agoraChatService = AgoraChatService();
 
   StreamSubscription<User?>? _authSubscription;
 
@@ -81,18 +72,12 @@ class _SplashScreenState extends State<SplashScreen>
       _authSubscription =
           FirebaseAuth.instance.authStateChanges().listen((User? user) async {
         if (!mounted) return;
-
         if (user != null) {
-          // await ZIMKit().requestPermission();
-          final UserData? userData = await userService.currentUser();
-          // final zegoResult = await ZIMKit().connectUser(
-          //   id: userData!.id,
-          //   name: userData.username!,
-          //   avatarUrl: userData.imageUrl!,
-          // );
-          // print("zegoResult, $zegoResult");
-          if (!mounted) return;
+          // Initialize Agora Chat
+          // await _agoraChatService.initializeChat('411247955#1440028');
 
+          final UserData? userData = await userService.currentUser();
+          if (!mounted) return;
           if (userData == null) {
             userService.blockedUser();
           } else if (userData.username == "" ||
@@ -102,7 +87,9 @@ class _SplashScreenState extends State<SplashScreen>
             ToastManager.showToast("Please fill the form first", context);
             Get.offAll(() => const Username());
           } else {
-            Get.offAll(() => const MainStack());
+            // Try to login to Agora Chat
+            // await _agoraChatService.loginToAgoraChat();
+            Get.offAll(() => const HomePage());
           }
         } else {
           Get.offAll(() => const OnBoarding());
@@ -152,3 +139,4 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
+

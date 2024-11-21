@@ -6,7 +6,7 @@ import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/widgets/shimmer_image.dart';
-import 'package:zego_zimkit/zego_zimkit.dart';
+// import 'package:zego_zimkit/zego_zimkit.dart';
 
 class ChatList extends StatefulWidget {
   const ChatList({super.key});
@@ -110,12 +110,12 @@ class _ChatListState extends State<ChatList> {
                 return Column(children: [
                   InkWell(
                     onTap: () {
-                      Get.to(
-                        () => ZIMKitMessageListPage(
-                          conversationID: user.id,
-                          conversationType: ZIMConversationType.peer,
-                        ),
-                      );
+                      // Get.to(
+                      //   () => ZIMKitMessageListPage(
+                      //     conversationID: user.id,
+                      //     conversationType: ZIMConversationType.peer,
+                      //   ),
+                      // );
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(

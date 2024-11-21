@@ -12,6 +12,7 @@ import 'package:outreach/controller/post.dart';
 import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/models/post.dart';
+import 'package:outreach/screens/agora/chat.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/search.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
@@ -198,12 +199,12 @@ class _HomePageState extends State<HomePage>
               "assets/icons/notification.svg",
             ),
           ),
-          // IconButton(
-          //   onPressed: () => Get.to(() => ZIMKitDemoHomePage()),
-          //   icon: SvgPicture.asset(
-          //     "assets/icons/message.svg",
-          //   ),
-          // ),
+          IconButton(
+            onPressed: () => Get.to(() => const MyHomePagex(title: "Chat Screen",)),
+            icon: SvgPicture.asset(
+              "assets/icons/message.svg",
+            ),
+          ),
           const SizedBox(
             width: 10,
           )
