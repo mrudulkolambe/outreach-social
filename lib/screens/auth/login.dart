@@ -16,6 +16,7 @@ import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/styled_button.dart';
 import 'package:outreach/widgets/styled_textfield.dart';
+import 'package:outreach/api/services/agora_service.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -31,6 +32,7 @@ class _LoginState extends State<Login> {
   bool loading = false;
 
   UserService userService = UserService();
+  final AgoraService agoraService = AgoraService();
 
   void login() async {
     setState(() {
@@ -58,6 +60,8 @@ class _LoginState extends State<Login> {
           userData.name == "") {
         Get.offAll(() => const Username());
       } else {
+        final token = await credential.user?.getIdToken(true);
+        await agoraService.loginToAgoraChat(userData.id, token);
         Get.offAll(() => const MainStack());
       }
     } on FirebaseAuthException catch (e) {
@@ -127,6 +131,8 @@ class _LoginState extends State<Login> {
             userData.name == "") {
           Get.offAll(() => const Username());
         } else {
+          final token = await FirebaseAuth.instance.currentUser?.getIdToken(true);
+          await agoraService.loginToAgoraChat(userData.id, token);
           Get.offAll(() => const MainStack());
         }
       } catch (e) {
@@ -164,6 +170,8 @@ class _LoginState extends State<Login> {
           userData.name == "") {
         Get.offAll(() => const Username());
       } else {
+        final token = await FirebaseAuth.instance.currentUser?.getIdToken(true);
+        await agoraService.loginToAgoraChat(userData.id, token);
         Get.offAll(() => const MainStack());
       }
 

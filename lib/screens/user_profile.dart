@@ -1,13 +1,20 @@
 // main.dart
 // ignore_for_file: use_build_context_synchronously
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/models/user.dart';
+import 'package:outreach/api/services/agora_service.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/models/interest.dart';
+import 'package:outreach/screens/agora/chat.dart';
+import 'package:outreach/screens/chat_screen.dart';
 import 'package:outreach/screens/your_posts.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
@@ -65,6 +72,7 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
+    AgoraService agoraService = AgoraService();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -190,6 +198,27 @@ class _UserProfileState extends State<UserProfile> {
                         text: !userData!.isFollowing! ? "Follow" : "Unfollow",
                       ),
                     ),
+                    const SizedBox(height: 10),
+                    // Message Button
+                    InkWell(
+                      onTap: () async {
+                        await agoraService.createAttribute(
+                          userName: userData!.name!,
+                          userImage: userData!.imageUrl!,
+                          cId: userData!.id,
+                          );
+                        Get.to(() => ChatScreen(
+                              recipientId: userData!.id,
+                              recipientName: userData!.name!,
+                              recipientImage: userData!.imageUrl,
+                            ));
+                      },
+                      child: StyledButton(
+                        text: "Message",
+                        loading: false,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                     const SizedBox(height: 8),
                     const Divider(),
                     const Row(

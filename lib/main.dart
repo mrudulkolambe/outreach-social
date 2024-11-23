@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,6 +13,7 @@ import 'package:outreach/api/services/agora_service.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/controller/post.dart';
+import 'package:outreach/controller/user.dart';
 import 'package:outreach/firebase_options.dart';
 import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/auth/username.dart';
@@ -63,21 +65,20 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   final PostController postController = Get.put(PostController());
   final userService = UserService();
-  // final _agoraChatService = AgoraChatService();
-
+  final AgoraService _agoraService = AgoraService();
+  UserController userController = Get.put(UserController());
+  UserData? userDatax;
   StreamSubscription<User?>? _authSubscription;
 
-  Future<void> _isAuthed() async {
+  Future<void> _initializeServices() async {
     try {
       _authSubscription =
           FirebaseAuth.instance.authStateChanges().listen((User? user) async {
         if (!mounted) return;
         if (user != null) {
-          // Initialize Agora Chat
-          // await _agoraChatService.initializeChat('411247955#1440028');
-
           final UserData? userData = await userService.currentUser();
           if (!mounted) return;
+
           if (userData == null) {
             userService.blockedUser();
           } else if (userData.username == "" ||
@@ -87,9 +88,26 @@ class _SplashScreenState extends State<SplashScreen>
             ToastManager.showToast("Please fill the form first", context);
             Get.offAll(() => const Username());
           } else {
-            // Try to login to Agora Chat
-            // await _agoraChatService.loginToAgoraChat();
-            Get.offAll(() => const HomePage());
+            // try {
+            //   await _agoraService.logout();
+            // } catch (e) {
+            //   log("Agora logout error: $e"); // Non-blocking error
+            // }
+            try {
+              final token = await user.getIdToken(true);
+              await _agoraService.loginToAgoraChat(userData.id, token);
+              Get.offAll(() => const HomePage());
+            } catch (e) {
+              if (e.toString().contains("already logged in")) {
+                Get.offAll(() => const HomePage());
+              } else {
+                log("Agora Chat login error: $e");
+                ToastManager.showToast(
+                    "Chat login failed. Please try again.", context);
+              }
+            } catch (e) {
+              log("Agora Chat initialization error: $e");
+            }
           }
         } else {
           Get.offAll(() => const OnBoarding());
@@ -110,12 +128,13 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _initialize() async {
     await Future.delayed(const Duration(seconds: 4));
-    await _isAuthed();
+    await _initializeServices();
   }
 
   @override
   void dispose() {
     _authSubscription?.cancel();
+    _agoraService.dispose();
     super.dispose();
   }
 
@@ -139,4 +158,3 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
-

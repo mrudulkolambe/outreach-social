@@ -60,3 +60,10 @@ const String storyFileUpload = '$uploadBaseURL/story-upload';
 
 const String allUsers = '$baseUrl/user/get';
 const String queryUsers = '$baseUrl/user/search';
+
+
+//Chat Config 
+const String agoraAppID = "411247955#1440028";
+const String agoraConfig = 'https://a41.chat.agora.io:443/411247955/1440028/users';
+const String agoraMetaDataConfig = 'https://a41.chat.agora.io:443/411247955/1440028/metadata/user/';
+const String agoraToken = "Bearer 007eJxTYDjxunNy943rpwLe9C2reVbT86Bxl1zc509/J03tfP+U1eatAkOiiYmpZaKBsYGZubFJUoqFhYWBgXFKSlqSmZmhYYpBSttyh/SGQEYGCb8bLIwMrAyMDEwMID4DAwANnCIy";

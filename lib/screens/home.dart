@@ -13,6 +13,8 @@ import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/models/post.dart';
 import 'package:outreach/screens/agora/chat.dart';
+import 'package:outreach/screens/agora/chatMainScreen.dart';
+import 'package:outreach/screens/chat_screen.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/search.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
@@ -200,7 +202,7 @@ class _HomePageState extends State<HomePage>
             ),
           ),
           IconButton(
-            onPressed: () => Get.to(() => const MyHomePagex(title: "Chat Screen",)),
+            onPressed: () => Get.to(() => const ChatMainScreen()),
             icon: SvgPicture.asset(
               "assets/icons/message.svg",
             ),
@@ -306,7 +308,8 @@ class _HomePageState extends State<HomePage>
                                         textAlign: TextAlign.center,
                                         storyIndex == 0
                                             ? "Your story"
-                                            : groupedStories[storyIndex].username,
+                                            : groupedStories[storyIndex]
+                                                .username,
                                         style: const TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
