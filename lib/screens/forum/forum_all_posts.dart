@@ -323,7 +323,6 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
                     ),
                     TextFormField(
                       controller: descriptionController,
-                      maxLength: 500,
                       minLines: null,
                       maxLines: null,
                       keyboardType: TextInputType.multiline,

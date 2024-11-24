@@ -13,6 +13,7 @@ import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/models/post.dart';
 import 'package:outreach/screens/main.dart';
+import 'package:outreach/screens/notification.dart';
 import 'package:outreach/screens/search.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/post_card.dart';
@@ -79,14 +80,17 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _loadMorePosts() async {
     if (hasMorePost) {
-      _currentPage++;
-      final morePostsResponse = await feedService.getFeed(page: _currentPage);
-      setState(() {
-        hasMorePost =
-            morePostsResponse!.totalPages > morePostsResponse.currentPage;
-        postsList.addAll(morePostsResponse.posts);
-        postController.addAllPosts(morePostsResponse.posts);
-      });
+      final morePostsResponse =
+          await feedService.getFeed(page: _currentPage + 1);
+      if (morePostsResponse != null) {
+        setState(() {
+          _currentPage++;
+          hasMorePost =
+              morePostsResponse.totalPages > morePostsResponse.currentPage;
+          postsList.addAll(morePostsResponse.posts);
+          postController.addAllPosts(morePostsResponse.posts);
+        });
+      }
     } else {
       print("Else Load More Posts");
     }
@@ -193,7 +197,7 @@ class _HomePageState extends State<HomePage>
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () => Get.to(() => const NotificationScreen()),
             icon: SvgPicture.asset(
               "assets/icons/notification.svg",
             ),
@@ -305,7 +309,8 @@ class _HomePageState extends State<HomePage>
                                         textAlign: TextAlign.center,
                                         storyIndex == 0
                                             ? "Your story"
-                                            : groupedStories[storyIndex].username,
+                                            : groupedStories[storyIndex]
+                                                .username,
                                         style: const TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,

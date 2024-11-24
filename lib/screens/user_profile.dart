@@ -87,7 +87,7 @@ class _UserProfileState extends State<UserProfile> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        userData == null && userData!.imageUrl == null
+                        userData!.imageUrl == null
                             ? Container(
                                 decoration: BoxDecoration(
                                   color: accent,

@@ -39,7 +39,7 @@ class _ListResourcesState extends State<ListResources> {
     super.dispose();
   }
 
-  void initData() async {
+  Future<void> initData() async {
     final response = await resourceServices.getResourceCategory();
     final postsFetched = await resourceServices.getPosts(page: 1);
     print("LENGTH OF POSTS ${postsFetched!.feeds.length}");
@@ -211,54 +211,63 @@ class _ListResourcesState extends State<ListResources> {
                             child: GetBuilder<ResourcesController>(
                                 init: ResourcesController(),
                                 builder: (resourceController) {
-                                  return SingleChildScrollView(
-                                    controller: _scrollController,
-                                    key: Key(resourceController.resources.toString()),
-                                    child: resourceController.resources.isEmpty
-                                        ? Column(
-                                            children: [
-                                              ...resourcePosts
-                                                  .where(
-                                                    (element) {
-                                                      return element.category ==
-                                                          filter;
-                                                    },
-                                                  )
-                                                  .toList()
-                                                  .asMap()
-                                                  .entries
-                                                  .map((resource) {
-                                                    return PostCard(
-                                                      post: resource.value,
-                                                      index: resource.key,
-                                                      user: userController
-                                                          .userData!,
-                                                    );
-                                                  })
-                                            ],
-                                          )
-                                        : Column(
-                                            children: [
-                                              ...resourceController.resources
-                                                  .where(
-                                                    (element) {
-                                                      return element.category ==
-                                                          filter;
-                                                    },
-                                                  )
-                                                  .toList()
-                                                  .asMap()
-                                                  .entries
-                                                  .map((resource) {
-                                                    return PostCard(
-                                                      post: resource.value,
-                                                      index: resource.key,
-                                                      user: userController
-                                                          .userData!,
-                                                    );
-                                                  })
-                                            ],
-                                          ),
+                                  return RefreshIndicator(
+                                    onRefresh: () {
+                                      return initData();
+                                    },
+                                    child: SingleChildScrollView(
+                                      controller: _scrollController,
+                                      key: Key(resourceController.resources
+                                          .toString()),
+                                      child: resourceController
+                                              .resources.isEmpty
+                                          ? Column(
+                                              children: [
+                                                ...resourcePosts
+                                                    .where(
+                                                      (element) {
+                                                        return element
+                                                                .category ==
+                                                            filter;
+                                                      },
+                                                    )
+                                                    .toList()
+                                                    .asMap()
+                                                    .entries
+                                                    .map((resource) {
+                                                      return PostCard(
+                                                        post: resource.value,
+                                                        index: resource.key,
+                                                        user: userController
+                                                            .userData!,
+                                                      );
+                                                    })
+                                              ],
+                                            )
+                                          : Column(
+                                              children: [
+                                                ...resourceController.resources
+                                                    .where(
+                                                      (element) {
+                                                        return element
+                                                                .category ==
+                                                            filter;
+                                                      },
+                                                    )
+                                                    .toList()
+                                                    .asMap()
+                                                    .entries
+                                                    .map((resource) {
+                                                      return PostCard(
+                                                        post: resource.value,
+                                                        index: resource.key,
+                                                        user: userController
+                                                            .userData!,
+                                                      );
+                                                    })
+                                              ],
+                                            ),
+                                    ),
                                   );
                                 }),
                           ),

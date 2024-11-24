@@ -171,7 +171,6 @@ class _CreateForumPost extends State<CreateForumPost> {
               ),
               TextFormField(
                 // controller: postDesptn,
-                maxLength: 500,
                 minLines: null,
                 maxLines: null,
                 onChanged: (string) {
