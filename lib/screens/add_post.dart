@@ -40,6 +40,8 @@ class _AddPostState extends State<AddPost> {
   bool showSuggestions = false;
   int currentHashtagStartIndex = -1;
 
+  double cursorX = 0.0;
+  double cursorY = 0.0;
   void _onTextChanged(String text) {
     final cursorPosition = descriptionController.selection.baseOffset;
 
@@ -60,7 +62,7 @@ class _AddPostState extends State<AddPost> {
       // Show suggestions for matching tags
       setState(() {
         filteredTags =
-            availableTags.where((tag) => tag.startsWith(enteredTag)).toList();
+            availableTags.where((tag) => tag.toLowerCase().startsWith(enteredTag.toLowerCase())).toList();
         showSuggestions = filteredTags.isNotEmpty;
       });
     } else {
@@ -88,16 +90,6 @@ class _AddPostState extends State<AddPost> {
     setState(() {
       showSuggestions = false;
       filteredTags = [];
-    });
-  }
-
-  void extractTags(String text) {
-    final matches = _tagRegExp.allMatches(text);
-    setState(() {
-      _tags.clear();
-      for (Match match in matches) {
-        _tags.add(match.group(0)!);
-      }
     });
   }
 
@@ -379,35 +371,46 @@ class _AddPostState extends State<AddPost> {
                   // ),
 
                   // Transparent TextField for input
-                  TextFormField(
-                    onChanged: _onTextChanged,
-                    controller: descriptionController,
-                    minLines: 5,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    style: GoogleFonts.mulish(
-                      fontSize: 16,
-                      // color: accent,
-                      // backgroundColor: Colors.yellow,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: "What's on your mind?",
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide.none,
+                  MouseRegion(
+                    onEnter: (_) {},
+                    onExit: (_) {},
+                    onHover: (details) {
+                      setState(() {
+                        cursorX = details.localPosition.dx;
+                        cursorY = details.localPosition.dy -
+                            20;
+                      });
+                    },
+                    child: TextFormField(
+                      onChanged: _onTextChanged,
+                      controller: descriptionController,
+                      minLines: 5,
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      style: GoogleFonts.mulish(
+                        fontSize: 16,
+                        // color: accent,
+                        // backgroundColor: Colors.yellow,
                       ),
-                      counterText: '',
-                      hintStyle:
-                          TextStyle(color: Colors.grey[500], fontSize: 16),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide.none,
+                      decoration: InputDecoration(
+                        hintText: "What's on your mind?",
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        counterText: '',
+                        hintStyle:
+                            TextStyle(color: Colors.grey[500], fontSize: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.all(8.0),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.all(8.0),
                     ),
                   ),
 
@@ -416,20 +419,21 @@ class _AddPostState extends State<AddPost> {
                     Positioned(
                       left: 8.0,
                       right: 8.0,
-                      top: 50.0, // Position this below the input field
+                      top: cursorY - 240, // Position this below the input field
                       child: Material(
                         elevation: 4.0,
                         borderRadius: BorderRadius.circular(8.0),
                         child: Container(
-                          height: 500,
+                          height: 200,
                           decoration: BoxDecoration(
-                            color: Colors.red,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(8.0),
                             border: Border.all(color: Colors.grey[300]!),
                           ),
                           child: ListView.builder(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             shrinkWrap: true,
+                            reverse: true,
                             itemCount: filteredTags.length,
                             itemBuilder: (context, index) {
                               final tag = filteredTags[index];
