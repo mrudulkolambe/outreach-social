@@ -62,8 +62,8 @@ class UserService {
       final data = UserResponse.fromJson(jsonDecode(response.body));
       userController.updateUser(data.user);
       return 200;
-    } else {
-      final error = ErrorState.fromJson(jsonDecode(response!.body));
+    } else if (response != null && response.body.isNotEmpty) {
+      final error = ErrorState.fromJson(jsonDecode(response.body));
       ToastManager.showToastApp(error.message);
     }
     return 500;

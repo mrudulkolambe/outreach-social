@@ -1,21 +1,27 @@
 // main.dart
 // ignore_for_file: use_build_context_synchronously
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outreach/api/constants/constants.dart';
 import 'package:outreach/api/models/user.dart';
-import 'package:outreach/api/services/agora_service.dart';
+import 'package:outreach/api/services/agora_chat_service.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/user.dart';
+import 'package:outreach/controller/voice_call_controller.dart';
+import 'package:outreach/models/call_request.dart';
 import 'package:outreach/models/interest.dart';
 import 'package:outreach/screens/agora/chat.dart';
-import 'package:outreach/screens/chat_screen.dart';
+import 'package:outreach/screens/agora/voice_call_state/call.dart';
 import 'package:outreach/screens/your_posts.dart';
+import 'package:outreach/utils/f.dart';
+import 'package:outreach/utils/firebasemsg_handler.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/interest/interest_choice.dart';
@@ -23,6 +29,8 @@ import 'package:outreach/widgets/navbar.dart';
 import 'package:outreach/widgets/posts/profile.dart';
 import 'package:outreach/widgets/profile/details_elem.dart';
 import 'package:outreach/widgets/styled_button.dart';
+
+import 'package:http/http.dart' as http;
 
 class UserProfile extends StatefulWidget {
   final String userId;
@@ -68,6 +76,37 @@ class _UserProfileState extends State<UserProfile> {
     } else {
       ToastManager.showToast("Something went wrong", context);
     }
+  }
+
+  void audioCall(
+    String call_type,
+    String to_token,
+    String to_avatar,
+    String to_name,
+    String channel_id,
+  ) async {
+    final VoiceCallController callController = Get.put(VoiceCallController());
+
+    callController.personalID.value = userController.userData!.id;
+    callController.nextPersonID.value = userData!.id;
+
+    await F.sendNotifications(
+      call_type,
+      to_token,
+      to_avatar,
+      to_name,
+      channel_id,
+    );
+
+    Get.to(
+      () => VoiceCallPage(
+        to_token: userData!.id,
+        to_name: userData!.name,
+        to_profile_image: userData!.imageUrl,
+        call_role:
+            callController.callerRole.value == "anchor" ? "anchor" : "audience",
+      ),
+    );
   }
 
   @override
@@ -206,19 +245,37 @@ class _UserProfileState extends State<UserProfile> {
                           userName: userData!.name!,
                           userImage: userData!.imageUrl!,
                           cId: userData!.id,
-                          );
-                        Get.to(() => ChatScreen(
-                              recipientId: userData!.id,
-                              recipientName: userData!.name!,
-                              recipientImage: userData!.imageUrl,
-                            ));
+                        );
+
+                        final conversation =
+                            await agoraService.getConversation(userData!.id);
+                        Get.to(
+                          () => ChatScreen(
+                            recipientId: userData!.id,
+                            recipientName: userData!.name!,
+                            recipientImage: userData!.imageUrl,
+                            conversation: conversation,
+                          ),
+                        );
                       },
-                      child: StyledButton(
+                      child: const StyledButton(
                         text: "Message",
                         loading: false,
                       ),
                     ),
                     const SizedBox(height: 10),
+                    InkWell(
+                      onTap: () {
+                        final VoiceCallController callController =
+                            Get.put(VoiceCallController());
+                        audioCall("voice", userData!.id, userData!.imageUrl!,
+                            userData!.name!, callController.uniqueChannelName.value);
+                      },
+                      child: const StyledButton(
+                        text: "Calling Button",
+                        loading: false,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     const Divider(),
                     const Row(

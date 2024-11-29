@@ -1,9 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/constants/constants.dart';
+import 'package:outreach/api/models/user.dart';
+import 'package:outreach/api/services/agora_chat_service.dart';
+import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/screens/auth/login.dart';
@@ -27,6 +32,10 @@ class _CreateAccountState extends State<CreateAccount> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confPassword = TextEditingController();
+
+  final userService = UserService();
+  AgoraService agoraService = AgoraService();
+
   bool loading = false;
 
   void registerUserDB(String token) async {
@@ -38,6 +47,12 @@ class _CreateAccountState extends State<CreateAccount> {
     request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();
+
+    // Log the response status code and reason phrase
+    log('Response status: ${response.statusCode}');
+    log('Response reason: ${token}');
+    log('Response reason: ${response.reasonPhrase}');
+    log('Response body: ${await response.stream.bytesToString()}');
 
     if (response.statusCode == 201) {
       ToastManager.showToast(
@@ -53,6 +68,7 @@ class _CreateAccountState extends State<CreateAccount> {
     }
   }
 
+  
   void createAcc() async {
     if (passwordController.text == confPassword.text) {
       setState(() {
@@ -64,8 +80,18 @@ class _CreateAccountState extends State<CreateAccount> {
           email: emailController.text,
           password: passwordController.text,
         );
+
         final token = await credential.user!.getIdToken();
         registerUserDB(token!);
+
+        UserData? userData = await userService.currentUser();
+        if (userData != null) {
+          await agoraService.loginToAgoraChat(userData.id, token);
+          // await agoraService.registerUser(username: userData.id, password: token);
+          log("UserNameasdas ${userData.id}");
+        } else {
+          ToastManager.showToast('User data is null', context);
+        }
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           ToastManager.showToast(

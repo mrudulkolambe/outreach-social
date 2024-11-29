@@ -14,7 +14,6 @@ import 'package:outreach/controller/user.dart';
 import 'package:outreach/models/post.dart';
 import 'package:outreach/screens/agora/chat.dart';
 import 'package:outreach/screens/agora/chatMainScreen.dart';
-import 'package:outreach/screens/chat_screen.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/search.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
@@ -502,30 +501,31 @@ class _SelfStoryViewState extends State<SelfStoryView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: StoryView(
-              onComplete: () {
-                Get.back();
-              },
-              storyItems: List.generate(
-                widget.userStories.length,
-                (index) {
-                  if (widget.userStories[index].media.type == "video") {
-                    return StoryItem.pageVideo(
-                        widget.userStories[index].media.url,
-                        controller: controller,
-                        imageFit: BoxFit.contain,
-                        caption: Text(widget.userStories[index].content));
-                  } else if (widget.userStories[index].media.type == "image") {
-                    return StoryItem.pageImage(
-                        url: widget.userStories[index].media.url,
-                        imageFit: BoxFit.contain,
-                        controller: controller,
-                        caption: Text(widget.userStories[index].content));
-                  }
-                  return null;
-                },
-              ),
-              controller: controller)),
+        child: StoryView(
+          onComplete: () {
+            Get.back();
+          },
+          storyItems: List.generate(
+            widget.userStories.length,
+            (index) {
+              if (widget.userStories[index].media.type == "video") {
+                return StoryItem.pageVideo(widget.userStories[index].media.url,
+                    controller: controller,
+                    imageFit: BoxFit.contain,
+                    caption: Text(widget.userStories[index].content));
+              } else if (widget.userStories[index].media.type == "image") {
+                return StoryItem.pageImage(
+                    url: widget.userStories[index].media.url,
+                    imageFit: BoxFit.contain,
+                    controller: controller,
+                    caption: Text(widget.userStories[index].content));
+              }
+              return null;
+            },
+          ),
+          controller: controller,
+        ),
+      ),
     );
   }
 }

@@ -3,10 +3,8 @@ import 'dart:developer';
 import 'dart:async';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:outreach/api/constants/constants.dart';
-import 'package:outreach/api/models/user.dart';
 
 class UserAttributes {
   final String userName;
@@ -31,11 +29,10 @@ class AgoraService {
   factory AgoraService() => _instance;
   AgoraService._internal();
 
-  // Modify stream controller initialization
+  String? agoraChatToken;
   StreamController<bool>? _connectionStatusController;
   StreamController<ChatMessage>? _messageController;
-  
-  // Getter for streams
+
   Stream<bool> get connectionStatus {
     _connectionStatusController ??= StreamController<bool>.broadcast();
     return _connectionStatusController!.stream;
@@ -50,10 +47,8 @@ class AgoraService {
   Timer? _connectionCheckTimer;
   bool _isDisposed = false;
 
-  // Add cache map
   final Map<String, UserAttributes> _attributesCache = {};
 
-  // Add reinitialize method
   void _reinitializeControllers() {
     if (_isDisposed) {
       _connectionStatusController = StreamController<bool>.broadcast();
@@ -63,7 +58,7 @@ class AgoraService {
   }
 
   Future<void> initialize() async {
-    _reinitializeControllers(); // Add this line
+    _reinitializeControllers();
     if (_isInitialized) return;
 
     try {
@@ -75,7 +70,6 @@ class AgoraService {
         ),
       );
 
-      // Set up global message handlers
       _setupGlobalMessageHandlers();
 
       _isInitialized = true;
@@ -192,14 +186,31 @@ class AgoraService {
     }
   }
 
+  Future<String> fetchChatToken() async {
+    try {
+      final response = await http.post(Uri.parse(agoraChatTokenAPI));
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+        return agoraChatToken = jsonData['chatToken'] ?? '';
+      } else {
+        throw Exception('Failed to fetch chatToken: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      return '';
+    }
+  }
+
   Future<void> registerUser({
     required String username,
     required String password,
   }) async {
+    final chatToken = await fetchChatToken();
     final url = Uri.parse(agoraConfig.toString());
 
     final headers = {
-      'Authorization': agoraToken.toString(),
+      'Authorization': 'Bearer $agoraChatToken',
       'Content-Type': 'application/json',
       'Accept': '*/*',
       'Connection': 'keep-alive',
@@ -217,10 +228,10 @@ class AgoraService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         log('User registered successfully: ${response.body}');
+        log("message Line 199 $agoraChatToken");
       } else {
         log('Failed to register user: ${response.statusCode} - ${response.body}');
         if (response.statusCode != 409) {
-          // Ignore if user already exists
           throw Exception('Registration failed: ${response.statusCode}');
         }
       }
@@ -230,14 +241,14 @@ class AgoraService {
     }
   }
 
-  Future<void> createAttribute({String? userName, String? userImage, String? cId}) async {
-   
-    final url = Uri.parse(agoraMetaDataConfig.toString()+cId.toString());
+  Future<void> createAttribute(
+      {String? userName, String? userImage, String? cId}) async {
+    final url = Uri.parse(agoraMetaDataConfig.toString() + cId.toString());
     log(url.toString());
     final headers = {
-      'Authorization': agoraToken.toString(),
+      'Authorization': 'Bearer $agoraChatToken',
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': '*/*', 
+      'Accept': '*/*',
       'Connection': 'keep-alive',
       'Accept-Encoding': 'gzip, deflate, br',
       'Host': 'a41.chat.agora.io',
@@ -264,7 +275,7 @@ class AgoraService {
 
   Future<UserAttributes?> getAttribute({String? cId}) async {
     if (cId == null) return null;
-    
+
     // Check cache first
     if (_attributesCache.containsKey(cId)) {
       return _attributesCache[cId];
@@ -272,10 +283,10 @@ class AgoraService {
 
     final url = Uri.parse(agoraMetaDataConfig.toString() + cId);
     log('Fetching attributes from: $url');
-    
+
     final headers = {
-      'Authorization': agoraToken.toString(),
-      'Accept': '*/*', 
+      'Authorization': 'Bearer $agoraChatToken',
+      'Accept': '*/*',
       'Connection': 'keep-alive',
       'Accept-Encoding': 'gzip, deflate, br',
       'Host': 'a41.chat.agora.io',
@@ -300,28 +311,27 @@ class AgoraService {
     }
   }
 
-  // Add batch get method
-  Future<Map<String, UserAttributes>> getAttributesInBatch(List<String> ids) async {
+  Future<Map<String, UserAttributes>> getAttributesInBatch(
+      List<String> ids) async {
     final Map<String, UserAttributes> results = {};
-    final idsToFetch = ids.where((id) => !_attributesCache.containsKey(id)).toList();
-    
+    final idsToFetch =
+        ids.where((id) => !_attributesCache.containsKey(id)).toList();
+
     if (idsToFetch.isEmpty) {
       return Map.from(_attributesCache);
     }
 
-    await Future.wait(
-      idsToFetch.map((id) async {
-        try {
-          final attr = await getAttribute(cId: id);
-          if (attr != null) {
-            _attributesCache[id] = attr;
-            results[id] = attr;
-          }
-        } catch (e) {
-          log('Error fetching attribute for $id: $e');
+    await Future.wait(idsToFetch.map((id) async {
+      try {
+        final attr = await getAttribute(cId: id);
+        if (attr != null) {
+          _attributesCache[id] = attr;
+          results[id] = attr;
         }
-      })
-    );
+      } catch (e) {
+        log('Error fetching attribute for $id: $e');
+      }
+    }));
 
     return {..._attributesCache, ...results};
   }
@@ -329,7 +339,6 @@ class AgoraService {
   Future<void> loginToAgoraChat(
       String currentUser, String? currentToken) async {
     try {
-      // Initialize SDK first
       await initialize();
 
       // final currentUser = FirebaseAuth.instance.currentUser;
@@ -347,7 +356,6 @@ class AgoraService {
         log("Registration error (may already exist): $e");
       }
 
-      // Perform login
       await ChatClient.getInstance.login(
         currentUser,
         currentToken!,
@@ -411,7 +419,7 @@ class AgoraService {
         await conversation.markAllMessagesAsRead();
 
         var messages = await conversation.loadMessages(
-          startMsgId: "", 
+          startMsgId: "",
           loadCount: 20,
           direction: ChatSearchDirection.Up,
         );
@@ -441,6 +449,21 @@ class AgoraService {
     }
   }
 
+  Future<ChatConversation> getConversation(String userId) async {
+    try {
+      final conversation =
+          await ChatClient.getInstance.chatManager.getConversation(
+        userId,
+        createIfNeed: true,
+        type: ChatConversationType.Chat,
+      );
+      return conversation!;
+    } catch (e) {
+      log('Error getting conversation: $e');
+      rethrow;
+    }
+  }
+
   Future<void> logout() async {
     try {
       await ChatClient.getInstance.logout(true);
@@ -462,14 +485,28 @@ class AgoraService {
   }
 
   void _safeAddToMessageStream(ChatMessage message) {
-    if (!_isDisposed && _messageController != null && !_messageController!.isClosed) {
+    if (!_isDisposed &&
+        _messageController != null &&
+        !_messageController!.isClosed) {
       _messageController!.add(message);
     }
   }
 
   void _safeAddToConnectionStream(bool status) {
-    if (!_isDisposed && _connectionStatusController != null && !_connectionStatusController!.isClosed) {
+    if (!_isDisposed &&
+        _connectionStatusController != null &&
+        !_connectionStatusController!.isClosed) {
       _connectionStatusController!.add(status);
     }
+  }
+
+  Future<void> sendNotifications(
+      String type,
+      String recipientId,
+      String recipientImage,
+      String recipientName,
+      String conversationId) async {
+
+    log("Sending notification of type $type to $recipientId and $conversationId with $recipientImage and $recipientName");
   }
 }

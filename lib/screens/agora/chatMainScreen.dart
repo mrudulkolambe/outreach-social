@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:get/get.dart';
-import 'package:outreach/api/services/agora_service.dart';
+import 'package:outreach/api/services/agora_chat_service.dart';
 import 'package:outreach/screens/agora/chat.dart';
 
 class ChatMainScreen extends StatefulWidget {
@@ -136,6 +136,7 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
               recipientId: conversation.id,
               recipientName: attributes!.userName,
               recipientImage: attributes.userImage,
+              conversation: conversation,
             ));
       },
     );

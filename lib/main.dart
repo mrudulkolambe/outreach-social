@@ -3,13 +3,15 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outreach/api/models/user.dart';
-import 'package:outreach/api/services/agora_service.dart';
+import 'package:outreach/api/services/agora_chat_service.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/controller/post.dart';
@@ -19,13 +21,28 @@ import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/auth/username.dart';
 import 'package:outreach/screens/home.dart';
 import 'package:outreach/screens/onboarding.dart';
+import 'package:outreach/utils/firebasemsg_handler.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await fireBaseCallingNoto();
+  await FirebasemsgHandler.config();
   runApp(const MyApp());
+}
+
+Future fireBaseCallingNoto() async {
+  FirebaseMessaging.onBackgroundMessage(
+    FirebasemsgHandler.firebaseMessagingBackground,
+  );
+  if (GetPlatform.isAndroid) {
+    await FirebasemsgHandler.flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()!
+        .createNotificationChannel(FirebasemsgHandler.channel_call);
+  }
 }
 
 Future<bool> checkStoragePermission() async {
@@ -67,8 +84,20 @@ class _SplashScreenState extends State<SplashScreen>
   final userService = UserService();
   final AgoraService _agoraService = AgoraService();
   UserController userController = Get.put(UserController());
-  UserData? userDatax;
   StreamSubscription<User?>? _authSubscription;
+
+  Future<void> saveFcmToken() async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    final Map<String, String> body = {
+      'fcmToken': fcmToken!,
+    };
+    final status = await userService.updateUser({"updateData": body});
+    if (status == 200) {
+      log("FCM token saved $fcmToken");
+    } else {
+      log("FCM token not saved");
+    }
+  }
 
   Future<void> _initializeServices() async {
     try {
@@ -88,13 +117,8 @@ class _SplashScreenState extends State<SplashScreen>
             ToastManager.showToast("Please fill the form first", context);
             Get.offAll(() => const Username());
           } else {
-            // try {
-            //   await _agoraService.logout();
-            // } catch (e) {
-            //   log("Agora logout error: $e"); // Non-blocking error
-            // }
+            final token = await user.getIdToken(true);
             try {
-              final token = await user.getIdToken(true);
               await _agoraService.loginToAgoraChat(userData.id, token);
               Get.offAll(() => const HomePage());
             } catch (e) {
@@ -127,6 +151,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _initialize() async {
+    await saveFcmToken();
     await Future.delayed(const Duration(seconds: 4));
     await _initializeServices();
   }
