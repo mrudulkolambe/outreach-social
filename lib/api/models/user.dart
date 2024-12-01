@@ -73,6 +73,7 @@ class UserData {
   int? followers;
   int? following;
   bool? isFollowing;
+  String? fcmToken;
 
   UserData({
     required this.id,
@@ -91,6 +92,7 @@ class UserData {
     this.followers,
     this.following,
     this.isFollowing,
+    this.fcmToken,
   });
 
   factory UserData.fromJson(dynamic json) {
@@ -113,6 +115,7 @@ class UserData {
     final bool block = json["block"];
     final int? followers = json["followers"];
     final int? following = json["following"];
+    final String? fcmToken = json["fcmToken"];
 
     return UserData(
       id: id,
@@ -131,6 +134,7 @@ class UserData {
       followers: followers,
       following: following,
       interest: interest,
+      fcmToken: fcmToken,
     );
   }
 }

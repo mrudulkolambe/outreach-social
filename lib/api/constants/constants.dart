@@ -62,3 +62,17 @@ const String storyFileUpload = '$uploadBaseURL/story-upload';
 
 const String allUsers = '$baseUrl/user/get';
 const String queryUsers = '$baseUrl/user/search';
+
+
+const String agoraChatTokenAPI = '$baseUrl/agora/chat/token';
+const String agoraCallTokenAPI = '$baseUrl/agora/call/token'; 
+const String callNoto= '$baseUrl/notification/fcm/send/';
+const String messageNoto = '$baseUrl/notification/fcm/message/';
+
+//Chat Config
+const String agoraCallId = "ddd9a74d5fa9478b941f09a580f739b5";
+const String agoraCallToken = "007eJxTYAje9Or1ozWqJ7QWSL38Uh1y/Ltbqu4Zng+98teK24X/aKxTYEhJSbFMNDdJMU1LtDQxt0iyNDFMM7BMNLUwSDM3tkwyDch2Tm8IZGS4dO0oMyMDBIL4rAyJaeWJeQwMADe6Ik4=";
+
+const String agoraAppID = "611246630#1438571";
+const String agoraConfig = 'http://a61.chat.agora.io/611246630/1438571/users';
+const String agoraMetaDataConfig = 'http://a61.chat.agora.io/611246630/1438571/metadata/user/';

@@ -1,39 +1,48 @@
-// ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison
+// ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
+import 'dart:developer';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outreach/api/models/user.dart';
+import 'package:outreach/api/services/agora_chat_service.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/controller/post.dart';
+import 'package:outreach/controller/user.dart';
+import 'package:outreach/firebase_options.dart';
 import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/auth/username.dart';
-import 'package:outreach/screens/main.dart';
+import 'package:outreach/screens/home.dart';
 import 'package:outreach/screens/onboarding.dart';
+import 'package:outreach/utils/firebasemsg_handler.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await GetStorage.init();
-  await Firebase.initializeApp();
-  // ZIMKit().init(
-  //   appID: 1326692995,
-  //   appSign: "b692aa52fba5fcffb670e4f40af132ddc4668255866d687dfe8675bad2d19a2a",
-  // );
-  // FlutterError.onError = (errorDetails) {
-  //   FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-  // };
-  // PlatformDispatcher.instance.onError = (error, stack) {
-  //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-  //   return true;
-  // };
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await fireBaseCallingNoto();
+  await FirebasemsgHandler.config();
   runApp(const MyApp());
+}
+
+Future fireBaseCallingNoto() async {
+  FirebaseMessaging.onBackgroundMessage(
+    FirebasemsgHandler.firebaseMessagingBackground,
+  );
+  if (GetPlatform.isAndroid) {
+    await FirebasemsgHandler.flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()!
+        .createNotificationChannel(FirebasemsgHandler.channel_call);
+  }
 }
 
 Future<bool> checkStoragePermission() async {
@@ -73,24 +82,30 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   final PostController postController = Get.put(PostController());
   final userService = UserService();
-
+  final AgoraService _agoraService = AgoraService();
+  UserController userController = Get.put(UserController());
   StreamSubscription<User?>? _authSubscription;
 
-  Future<void> _isAuthed() async {
+  Future<void> saveFcmToken() async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    final Map<String, String> body = {
+      'fcmToken': fcmToken!,
+    };
+    final status = await userService.updateUser({"updateData": body});
+    if (status == 200) {
+      log("FCM token saved $fcmToken");
+    } else {
+      log("FCM token not saved");
+    }
+  }
+
+  Future<void> _initializeServices() async {
     try {
       _authSubscription =
           FirebaseAuth.instance.authStateChanges().listen((User? user) async {
         if (!mounted) return;
-
         if (user != null) {
-          // await ZIMKit().requestPermission();
           final UserData? userData = await userService.currentUser();
-          // final zegoResult = await ZIMKit().connectUser(
-          //   id: userData!.id,
-          //   name: userData.username!,
-          //   avatarUrl: userData.imageUrl!,
-          // );
-          // print("zegoResult, $zegoResult");
           if (!mounted) return;
 
           if (userData == null) {
@@ -102,7 +117,21 @@ class _SplashScreenState extends State<SplashScreen>
             ToastManager.showToast("Please fill the form first", context);
             Get.offAll(() => const Username());
           } else {
-            Get.offAll(() => const MainStack());
+            final token = await user.getIdToken(true);
+            try {
+              await _agoraService.loginToAgoraChat(userData.id, token);
+              Get.offAll(() => const HomePage());
+            } catch (e) {
+              if (e.toString().contains("already logged in")) {
+                Get.offAll(() => const HomePage());
+              } else {
+                log("Agora Chat login error: $e");
+                ToastManager.showToast(
+                    "Chat login failed. Please try again.", context);
+              }
+            } catch (e) {
+              log("Agora Chat initialization error: $e");
+            }
           }
         } else {
           Get.offAll(() => const OnBoarding());
@@ -122,13 +151,15 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _initialize() async {
+    await saveFcmToken();
     await Future.delayed(const Duration(seconds: 4));
-    await _isAuthed();
+    await _initializeServices();
   }
 
   @override
   void dispose() {
     _authSubscription?.cancel();
+    _agoraService.dispose();
     super.dispose();
   }
 

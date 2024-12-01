@@ -1,6 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,6 +19,7 @@ import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/styled_button.dart';
 import 'package:outreach/widgets/styled_textfield.dart';
+import 'package:outreach/api/services/agora_chat_service.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -31,6 +35,20 @@ class _LoginState extends State<Login> {
   bool loading = false;
 
   UserService userService = UserService();
+  final AgoraService agoraService = AgoraService();
+
+  Future<void> saveFcmToken() async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    final Map<String, String> body = {
+      'fcmToken': fcmToken!,
+    };
+    final status = await userService.updateUser({"updateData": body});
+    if (status == 200) {
+      log("FCM token saved $fcmToken");
+    } else {
+      log("FCM token not saved");
+    }
+  }
 
   void login() async {
     setState(() {
@@ -58,6 +76,9 @@ class _LoginState extends State<Login> {
           userData.name == "") {
         Get.offAll(() => const Username());
       } else {
+        final token = await credential.user?.getIdToken(true);
+        await agoraService.loginToAgoraChat(userData.id, token);
+        await saveFcmToken();
         Get.offAll(() => const MainStack());
       }
     } on FirebaseAuthException catch (e) {
@@ -127,6 +148,9 @@ class _LoginState extends State<Login> {
             userData.name == "") {
           Get.offAll(() => const Username());
         } else {
+          final token =
+              await FirebaseAuth.instance.currentUser?.getIdToken(true);
+          await agoraService.loginToAgoraChat(userData.id, token);
           Get.offAll(() => const MainStack());
         }
       } catch (e) {
@@ -164,6 +188,8 @@ class _LoginState extends State<Login> {
           userData.name == "") {
         Get.offAll(() => const Username());
       } else {
+        final token = await FirebaseAuth.instance.currentUser?.getIdToken(true);
+        await agoraService.loginToAgoraChat(userData.id, token);
         Get.offAll(() => const MainStack());
       }
 
