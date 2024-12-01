@@ -57,7 +57,11 @@ class _PostCardState extends State<PostCard> {
       useSafeArea: false,
       context: context,
       builder: (context) {
-        return ReportPopup(reasons: ReportReasons.postReasons, type: "post", postId: widget.post.id, userID: widget.user.id);
+        return ReportPopup(
+            reasons: ReportReasons.postReasons,
+            type: "post",
+            postId: widget.post.id,
+            userID: widget.user.id);
       },
     );
     // showDialog(context: context, builder: (context) => ReportPopup());
@@ -371,9 +375,12 @@ class _PostCardState extends State<PostCard> {
           const SizedBox(
             height: 5,
           ),
-          const Row(
+          Row(
             children: [
-              Text("View all comments"),
+              InkWell(
+                onTap: _openCommentBottomsheet,
+                child: const Text("View all comments"),
+              ),
             ],
           ),
           const SizedBox(

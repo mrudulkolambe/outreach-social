@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:outreach/api/models/story.dart';
 import 'package:outreach/api/services/feed_services.dart';
 import 'package:outreach/api/services/story_services.dart';
@@ -37,6 +39,8 @@ class MediaItem {
 
   MediaItem({required this.file, required this.type});
 }
+
+final _storage = GetStorage();
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
@@ -115,6 +119,7 @@ class _HomePageState extends State<HomePage>
         groupedStories.addAll(handleStories(storyList.response.user));
         print(groupedStories[0].stories.length);
         postsList = listPostsResponse!.posts;
+        _storage.write('posts1', json.encode(listPostsResponse.posts));
         postController.initAddPosts(listPostsResponse.posts);
         hasMorePost =
             listPostsResponse.totalPages > listPostsResponse.currentPage;

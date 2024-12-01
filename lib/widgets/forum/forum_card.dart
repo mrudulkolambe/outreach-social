@@ -1,6 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -20,13 +19,12 @@ class ForumCard extends StatefulWidget {
   final String type;
   final String user;
 
-  const ForumCard({
-    super.key,
-    required this.forum,
-    required this.forumPost,
-    required this.type,
-    required this.user
-  });
+  const ForumCard(
+      {super.key,
+      required this.forum,
+      required this.forumPost,
+      required this.type,
+      required this.user});
 
   @override
   _ForumCardState createState() => _ForumCardState();
@@ -60,7 +58,11 @@ class _ForumCardState extends State<ForumCard> {
       useSafeArea: false,
       context: context,
       builder: (context) {
-        return ReportPopup(reasons: ReportReasons.postReasons, type: "forum", postId: widget.forumPost.id, userID: widget.user);
+        return ReportPopup(
+            reasons: ReportReasons.postReasons,
+            type: "forum",
+            postId: widget.forumPost.id,
+            userID: widget.user);
       },
     );
     // showDialog(context: context, builder: (context) => ReportPopup());
@@ -337,12 +339,22 @@ class _ForumCardState extends State<ForumCard> {
                 const SizedBox(
                   width: 15,
                 ),
-                const Row(
+                Row(
                   children: [
-                    Text(
-                      "Reply",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
+                    InkWell(
+                      onTap: widget.type == "details"
+                          ? () {}
+                          : () => Get.to(
+                                () => ForumPostDetails(
+                                  forumPost: widget.forumPost,
+                                  forum: widget.forum,
+                                ),
+                              ),
+                      child: Text(
+                        "Reply",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
