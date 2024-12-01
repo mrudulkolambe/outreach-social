@@ -89,14 +89,8 @@ class _UserProfileState extends State<UserProfile> {
 
     callController.personalID.value = userController.userData!.id;
     callController.nextPersonID.value = userData!.id;
-
-    await F.sendNotifications(
-      call_type,
-      to_token,
-      to_avatar,
-      to_name,
-      channel_id,
-    );
+    callController.nextPersonName.value = userData!.name!;  
+    callController.nextPersonPic.value = userData!.imageUrl!;
 
     Get.to(
       () => VoiceCallPage(
@@ -270,6 +264,8 @@ class _UserProfileState extends State<UserProfile> {
                             Get.put(VoiceCallController());
                         audioCall("voice", userData!.id, userData!.imageUrl!,
                             userData!.name!, callController.uniqueChannelName.value);
+
+                        log("on Line 238 ${userData!.id} ${userData!.imageUrl!} ${userData!.name!} ${callController.uniqueChannelName.value}");
                       },
                       child: const StyledButton(
                         text: "Calling Button",

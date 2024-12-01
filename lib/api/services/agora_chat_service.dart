@@ -350,7 +350,7 @@ class AgoraService {
       try {
         await registerUser(
           username: currentUser,
-          password: currentToken!,
+          password: AGROA_USER_PASSWORD,
         );
       } catch (e) {
         log("Registration error (may already exist): $e");
@@ -358,7 +358,7 @@ class AgoraService {
 
       await ChatClient.getInstance.login(
         currentUser,
-        currentToken!,
+        AGROA_USER_PASSWORD,
       );
       final isConnected = await ChatClient.getInstance.isConnected();
       log("Login completed - Connected: $isConnected");
@@ -500,13 +500,13 @@ class AgoraService {
     }
   }
 
-  Future<void> sendNotifications(
-      String type,
-      String recipientId,
-      String recipientImage,
-      String recipientName,
-      String conversationId) async {
+  // Future<void> sendNotifications(
+  //     String type,
+  //     String recipientId,
+  //     String recipientImage,
+  //     String recipientName,
+  //     String conversationId) async {
 
-    log("Sending notification of type $type to $recipientId and $conversationId with $recipientImage and $recipientName");
-  }
+  //   log("Sending notification of type $type to $recipientId and $conversationId with $recipientImage and $recipientName");
+  // }
 }

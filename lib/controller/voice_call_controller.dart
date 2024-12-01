@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:outreach/api/constants/constants.dart';
 import 'package:outreach/models/call_request.dart';
+import 'package:outreach/utils/f.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class VoiceCallController extends GetxController {
@@ -105,13 +106,8 @@ class VoiceCallController extends GetxController {
     await joinChannel();
 
     if (callerRole.value == "anchor") {
-      CallRequestEntity callRequestEntity = CallRequestEntity(
-        call_type: "call", 
-        to_token: nextPersonID.value,
-        to_name: nextPersonName.value,
-        to_profile_image: nextPersonPic.value,
-      );
-
+      F.sendNotifications("voice", nextPersonID.value, nextPersonPic.value,
+          nextPersonName.value, uniqueChannelName.value);
       await player.setLoopMode(LoopMode.all);
       await player.play();
     }
@@ -149,9 +145,9 @@ class VoiceCallController extends GetxController {
 
   void leaveChannel() async {
     await player.pause();
-    PermissionStatus.denied;
-    await engine.leaveChannel();
     isJoined.value = false;
+    // // PermissionStatus.denied;
+    // await engine.leaveChannel();
     Get.back();
   }
 
@@ -159,6 +155,7 @@ class VoiceCallController extends GetxController {
     await player.pause();
     await engine.leaveChannel();
     await engine.release();
+    await player.stop();
     super.dispose();
   }
 

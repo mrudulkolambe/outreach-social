@@ -217,270 +217,271 @@ class _HomePageState extends State<HomePage>
           onRefresh: () {
             return initializeState();
           },
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: 125,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        key: Key("GROUPED_STORIES_${groupedStories.length}"),
-                        width: MediaQuery.of(context).size.width - 20,
-                        height: 125,
-                        child: AdvStory(
-                          buildStoryOnTrayScroll: true,
-                          preloadStory: true,
-                          preloadContent: true,
-                          style: const AdvStoryStyle(),
-                          storyCount: groupedStories.length,
-                          trayBuilder: (storyIndex) {
-                            print("storyIndex $storyIndex");
-                            return storyIndex == 0
-                                ? InkWell(
-                                    onTap: () {
-                                      if (storyResponse.own.isEmpty) {
-                                        Get.offAll(() => const MainStack(
-                                              page: 5,
-                                            ));
-                                      } else {
-                                        Get.to(
-                                          () => SelfStoryView(
-                                            userStories: storyResponse.own,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    onLongPress: () {
-                                      Get.offAll(() => const MainStack(
-                                            page: 5,
-                                          ));
-                                    },
-                                    child: Container(
-                                      height: 103,
-                                      width: 88,
-                                      decoration: BoxDecoration(
-                                        color: const Color.fromRGBO(
-                                            211, 221, 250, 0.3),
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.blue,
-                                              borderRadius:
-                                                  BorderRadius.circular(25),
-                                            ),
-                                            height: 25,
-                                            width: 25,
-                                            child: const Icon(
-                                              Icons.add,
-                                              color: Colors.white,
-                                              size: 22,
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
-                                          const Text(
-                                            "Add your\nstory",
-                                            textAlign: TextAlign.center,
-                                            style:
-                                                TextStyle(color: Colors.grey),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                : AdvStoryTray(
-                                    username: SizedBox(
-                                      width: 88,
-                                      child: Text(
-                                        textAlign: TextAlign.center,
-                                        storyIndex == 0
-                                            ? "Your story"
-                                            : groupedStories[storyIndex]
-                                                .username,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ),
-                                    borderRadius: 20,
-                                    size: const Size(88, 103),
-                                    shape: BoxShape.rectangle,
-                                    url: groupedStories[storyIndex].imageUrl !=
-                                                null ||
-                                            groupedStories[storyIndex]
-                                                    .imageUrl !=
-                                                ""
-                                        ? groupedStories[storyIndex].imageUrl!
-                                        : "assets/icons/user-placeholder.png",
-                                  );
-                          },
-                          storyBuilder: (storyIndex) {
-                            return Story(
-                              header: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Row(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(25),
-                                      child: groupedStories[storyIndex]
-                                                      .imageUrl ==
-                                                  null ||
-                                              groupedStories[storyIndex]
-                                                      .imageUrl ==
-                                                  ""
-                                          ? Image.asset(
-                                              "assets/icons/user-placeholder.png")
-                                          : Image.network(
-                                              fit: BoxFit.cover,
-                                              groupedStories[storyIndex]
-                                                  .imageUrl!,
-                                              height: 50,
-                                              width: 50,
-                                            ),
-                                    ),
-                                    const SizedBox(
-                                      width: 20,
-                                    ),
-                                    Text(
-                                      "@${groupedStories[storyIndex].username}",
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                          fontSize: 16),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              contentCount:
-                                  groupedStories[storyIndex].stories.length,
-                              contentBuilder: (contentIndex) {
-                                return groupedStories[storyIndex]
-                                            .stories[contentIndex]
-                                            .media
-                                            .type ==
-                                        "video"
-                                    ? VideoContent(
-                                        timeout: const Duration(seconds: 5),
-                                        url: groupedStories[storyIndex]
-                                            .stories[contentIndex]
-                                            .media
-                                            .url,
-                                      )
-                                    : ImageContent(
-                                        footer: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20),
-                                          child: Text(
-                                            groupedStories[storyIndex]
-                                                .stories[contentIndex]
-                                                .content,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ),
-                                        url: groupedStories[storyIndex]
-                                            .stories[contentIndex]
-                                            .media
-                                            .url,
-                                      );
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 16,
-                      ),
-                    ],
-                  ),
-                ),
-                GetBuilder(
-                  init: SavingController(),
-                  builder: (savingController) {
-                    return Column(
-                      children: [
-                        SizedBox(
-                          height: savingController.savingState != SavingState.no
-                              ? 20
-                              : 10,
-                        ),
-                        if (savingController.savingState ==
-                            SavingState.uploading)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: horizontal_p,
-                            ),
-                            child: Column(
-                              children: [
-                                LinearProgressIndicator(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                const Row(
-                                  children: [
-                                    Text("Your post is publishing... "),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        if (savingController.savingState ==
-                            SavingState.uploaded)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: horizontal_p,
-                            ),
-                            child: Row(
-                              children: [
-                                SvgPicture.asset("assets/icons/published.svg"),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                const Text("Your post is published"),
-                              ],
-                            ),
-                          ),
-                      ],
-                    );
-                  },
-                ),
-                GetBuilder<PostController>(
-                  init: PostController(),
-                  builder: (postController) {
-                    return Column(
-                      children: [
-                        ...postController.posts.toList().asMap().entries.map(
-                            (entry) => PostCard(
-                                post: entry.value,
-                                index: entry.key,
-                                user: userController.userData!))
-                      ],
-                    );
-                  },
-                )
-              ],
-            ),
-          ),
+          // child: SingleChildScrollView(
+          //   controller: _scrollController,
+          //   child: Column(
+          //     mainAxisAlignment: MainAxisAlignment.start,
+          //     children: [
+          //       SizedBox(
+          //         width: MediaQuery.of(context).size.width,
+          //         height: 125,
+          //         child: Row(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           mainAxisAlignment: MainAxisAlignment.start,
+          //           children: [
+          //             SizedBox(
+          //               key: Key("GROUPED_STORIES_${groupedStories.length}"),
+          //               width: MediaQuery.of(context).size.width - 20,
+          //               height: 125,
+          //               child: AdvStory(
+          //                 buildStoryOnTrayScroll: true,
+          //                 preloadStory: true,
+          //                 preloadContent: true,
+          //                 style: const AdvStoryStyle(),
+          //                 storyCount: groupedStories.length,
+          //                 trayBuilder: (storyIndex) {
+          //                   print("storyIndex $storyIndex");
+          //                   return storyIndex == 0
+          //                       ? InkWell(
+          //                           onTap: () {
+          //                             if (storyResponse.own.isEmpty) {
+          //                               Get.offAll(() => const MainStack(
+          //                                     page: 5,
+          //                                   ));
+          //                             } else {
+          //                               Get.to(
+          //                                 () => SelfStoryView(
+          //                                   userStories: storyResponse.own,
+          //                                 ),
+          //                               );
+          //                             }
+          //                           },
+          //                           onLongPress: () {
+          //                             Get.offAll(() => const MainStack(
+          //                                   page: 5,
+          //                                 ));
+          //                           },
+          //                           child: Container(
+          //                             height: 103,
+          //                             width: 88,
+          //                             decoration: BoxDecoration(
+          //                               color: const Color.fromRGBO(
+          //                                   211, 221, 250, 0.3),
+          //                               borderRadius: BorderRadius.circular(14),
+          //                             ),
+          //                             child: Column(
+          //                               mainAxisAlignment:
+          //                                   MainAxisAlignment.center,
+          //                               children: [
+          //                                 Container(
+          //                                   decoration: BoxDecoration(
+          //                                     color: Colors.blue,
+          //                                     borderRadius:
+          //                                         BorderRadius.circular(25),
+          //                                   ),
+          //                                   height: 25,
+          //                                   width: 25,
+          //                                   child: const Icon(
+          //                                     Icons.add,
+          //                                     color: Colors.white,
+          //                                     size: 22,
+          //                                   ),
+          //                                 ),
+          //                                 const SizedBox(
+          //                                   height: 5,
+          //                                 ),
+          //                                 const Text(
+          //                                   "Add your\nstory",
+          //                                   textAlign: TextAlign.center,
+          //                                   style:
+          //                                       TextStyle(color: Colors.grey),
+          //                                 ),
+          //                               ],
+          //                             ),
+          //                           ),
+          //                         )
+          //                       : AdvStoryTray(
+          //                           username: SizedBox(
+          //                             width: 88,
+          //                             child: Text(
+          //                               textAlign: TextAlign.center,
+          //                               storyIndex == 0
+          //                                   ? "Your story"
+          //                                   : groupedStories[storyIndex]
+          //                                       .username,
+          //                               style: const TextStyle(
+          //                                 fontSize: 12,
+          //                                 fontWeight: FontWeight.w600,
+          //                                 overflow: TextOverflow.ellipsis,
+          //                               ),
+          //                             ),
+          //                           ),
+          //                           borderRadius: 20,
+          //                           size: const Size(88, 103),
+          //                           shape: BoxShape.rectangle,
+          //                           url: groupedStories[storyIndex].imageUrl !=
+          //                                       null ||
+          //                                   groupedStories[storyIndex]
+          //                                           .imageUrl !=
+          //                                       ""
+          //                               ? groupedStories[storyIndex].imageUrl!
+          //                               : "assets/icons/user-placeholder.png",
+          //                         );
+          //                 },
+          //                 storyBuilder: (storyIndex) {
+          //                   return Story(
+          //                     header: Padding(
+          //                       padding:
+          //                           const EdgeInsets.symmetric(horizontal: 20),
+          //                       child: Row(
+          //                         children: [
+          //                           ClipRRect(
+          //                             borderRadius: BorderRadius.circular(25),
+          //                             child: groupedStories[storyIndex]
+          //                                             .imageUrl ==
+          //                                         null ||
+          //                                     groupedStories[storyIndex]
+          //                                             .imageUrl ==
+          //                                         ""
+          //                                 ? Image.asset(
+          //                                     "assets/icons/user-placeholder.png")
+          //                                 : Image.network(
+          //                                     fit: BoxFit.cover,
+          //                                     groupedStories[storyIndex]
+          //                                         .imageUrl!,
+          //                                     height: 50,
+          //                                     width: 50,
+          //                                   ),
+          //                           ),
+          //                           const SizedBox(
+          //                             width: 20,
+          //                           ),
+          //                           Text(
+          //                             "@${groupedStories[storyIndex].username}",
+          //                             style: const TextStyle(
+          //                                 fontWeight: FontWeight.w600,
+          //                                 color: Colors.white,
+          //                                 fontSize: 16),
+          //                           )
+          //                         ],
+          //                       ),
+          //                     ),
+          //                     contentCount:
+          //                         groupedStories[storyIndex].stories.length,
+          //                     contentBuilder: (contentIndex) {
+          //                       return groupedStories[storyIndex]
+          //                                   .stories[contentIndex]
+          //                                   .media
+          //                                   .type ==
+          //                               "video"
+          //                           ? VideoContent(
+          //                               timeout: const Duration(seconds: 5),
+          //                               url: groupedStories[storyIndex]
+          //                                   .stories[contentIndex]
+          //                                   .media
+          //                                   .url,
+          //                             )
+          //                           : ImageContent(
+          //                               footer: Padding(
+          //                                 padding: const EdgeInsets.symmetric(
+          //                                     horizontal: 20),
+          //                                 child: Text(
+          //                                   groupedStories[storyIndex]
+          //                                       .stories[contentIndex]
+          //                                       .content,
+          //                                   style: const TextStyle(
+          //                                     fontWeight: FontWeight.w600,
+          //                                     color: Colors.white,
+          //                                     fontSize: 16,
+          //                                   ),
+          //                                 ),
+          //                               ),
+          //                               url: groupedStories[storyIndex]
+          //                                   .stories[contentIndex]
+          //                                   .media
+          //                                   .url,
+          //                             );
+          //                     },
+          //                   );
+          //                 },
+          //               ),
+          //             ),
+          //             const SizedBox(
+          //               width: 16,
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //       GetBuilder(
+          //         init: SavingController(),
+          //         builder: (savingController) {
+          //           return Column(
+          //             children: [
+          //               SizedBox(
+          //                 height: savingController.savingState != SavingState.no
+          //                     ? 20
+          //                     : 10,
+          //               ),
+          //               if (savingController.savingState ==
+          //                   SavingState.uploading)
+          //                 Padding(
+          //                   padding: const EdgeInsets.symmetric(
+          //                     horizontal: horizontal_p,
+          //                   ),
+          //                   child: Column(
+          //                     children: [
+          //                       LinearProgressIndicator(
+          //                         borderRadius: BorderRadius.circular(5),
+          //                       ),
+          //                       const SizedBox(
+          //                         height: 5,
+          //                       ),
+          //                       const Row(
+          //                         children: [
+          //                           Text("Your post is publishing... "),
+          //                         ],
+          //                       ),
+          //                     ],
+          //                   ),
+          //                 ),
+          //               if (savingController.savingState ==
+          //                   SavingState.uploaded)
+          //                 Padding(
+          //                   padding: const EdgeInsets.symmetric(
+          //                     horizontal: horizontal_p,
+          //                   ),
+          //                   child: Row(
+          //                     children: [
+          //                       SvgPicture.asset("assets/icons/published.svg"),
+          //                       const SizedBox(
+          //                         width: 5,
+          //                       ),
+          //                       const Text("Your post is published"),
+          //                     ],
+          //                   ),
+          //                 ),
+          //             ],
+          //           );
+          //         },
+          //       ),
+          //       GetBuilder<PostController>(
+          //         init: PostController(),
+          //         builder: (postController) {
+          //           return Column(
+          //             children: [
+          //               ...postController.posts.toList().asMap().entries.map(
+          //                   (entry) => PostCard(
+          //                       post: entry.value,
+          //                       index: entry.key,
+          //                       user: userController.userData!))
+          //             ],
+          //           );
+          //         },
+          //       )
+          //     ],
+          //   ),
+          // ),
+          child:Container(),
         ),
       ),
     );

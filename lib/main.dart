@@ -90,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
     final fcmToken = await FirebaseMessaging.instance.getToken();
     final Map<String, String> body = {
       'fcmToken': fcmToken!,
-    };
+    };  
     final status = await userService.updateUser({"updateData": body});
     if (status == 200) {
       log("FCM token saved $fcmToken");
