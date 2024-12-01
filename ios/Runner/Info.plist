@@ -63,5 +63,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<key>NSMicrophoneUsageDescription</key>
+	<string>outreach needs for using microphone access</string>
+	<key>NSCameraUsageDescription</key>
+	<string>outreach needs camera access for sending images</string>
 </dict>
 </plist>
