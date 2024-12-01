@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/services/agora_chat_service.dart';
 import 'package:outreach/constants/colors.dart';
+import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 
 class ChatScreen extends StatefulWidget {
