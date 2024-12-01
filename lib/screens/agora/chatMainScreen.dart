@@ -58,7 +58,7 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
       if (conversations.isNotEmpty) {
         final attributes = await AgoraService()
             .getAttributesInBatch(conversations.map((c) => c.id).toList());
-
+        print(attributes["66c1c4e387e2c395e6b5f21e"]!.userName);
         if (!mounted) return;
 
         setState(() {

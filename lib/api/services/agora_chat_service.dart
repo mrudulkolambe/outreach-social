@@ -210,7 +210,7 @@ class AgoraService {
     final url = Uri.parse(agoraConfig.toString());
 
     final headers = {
-      'Authorization': 'Bearer $agoraChatToken',
+      'Authorization': 'Bearer $chatToken',
       'Content-Type': 'application/json',
       'Accept': '*/*',
       'Connection': 'keep-alive',
@@ -350,7 +350,7 @@ class AgoraService {
       try {
         await registerUser(
           username: currentUser,
-          password: currentToken!,
+          password: AGROA_USER_PASSWORD,
         );
       } catch (e) {
         log("Registration error (may already exist): $e");
@@ -358,7 +358,7 @@ class AgoraService {
 
       await ChatClient.getInstance.login(
         currentUser,
-        currentToken!,
+        AGROA_USER_PASSWORD,
       );
       final isConnected = await ChatClient.getInstance.isConnected();
       log("Login completed - Connected: $isConnected");

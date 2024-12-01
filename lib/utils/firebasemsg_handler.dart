@@ -96,7 +96,7 @@ class FirebasemsgHandler {
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         print("\n notification on onMessage function \n");
-        print(message.data.entries);
+  
         if (message != null) {
           handleNotification(message);
         }

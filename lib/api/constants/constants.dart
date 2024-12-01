@@ -70,9 +70,11 @@ const String callNoto= '$baseUrl/notification/fcm/send/';
 const String messageNoto = '$baseUrl/notification/fcm/message/';
 
 //Chat Config
-const String agoraCallId = "ddd9a74d5fa9478b941f09a580f739b5";
+const String agoraCallId = "911821326f584069b2c5fc4a36264ce1";
 const String agoraCallToken = "007eJxTYAje9Or1ozWqJ7QWSL38Uh1y/Ltbqu4Zng+98teK24X/aKxTYEhJSbFMNDdJMU1LtDQxt0iyNDFMM7BMNLUwSDM3tkwyDch2Tm8IZGS4dO0oMyMDBIL4rAyJaeWJeQwMADe6Ik4=";
 
-const String agoraAppID = "611246630#1438571";
-const String agoraConfig = 'http://a61.chat.agora.io/611246630/1438571/users';
-const String agoraMetaDataConfig = 'http://a61.chat.agora.io/611246630/1438571/metadata/user/';
+const String agoraAppID = "711253789#1445631";
+const String agoraConfig = 'http://a71.chat.agora.io/711253789/1445631/users';
+const String agoraMetaDataConfig = 'http://a71.chat.agora.io/711253789/1445631/metadata/user/';
+
+const String AGROA_USER_PASSWORD = "com.outreach.social.password_for_user";
