@@ -33,6 +33,7 @@ import 'package:outreach/widgets/profile/details_elem.dart';
 import 'package:outreach/widgets/styled_button.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
 
 class UserProfile extends StatefulWidget {
   final String userId;
@@ -79,7 +80,7 @@ class _UserProfileState extends State<UserProfile> {
       ToastManager.showToast("Something went wrong", context);
     }
   }
-
+  
   void videoCall(
     String call_type,
     String to_token,

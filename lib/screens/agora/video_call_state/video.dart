@@ -44,10 +44,23 @@ class VideoCallPage extends GetView<VideoCallControlller> {
                               ),
                             ),
                       Positioned(
+                        top: 100,
+                        right: 20,
+                        width: 100,
+                        height: 150,
+                        child: AgoraVideoView(
+                          controller: VideoViewController(
+                            rtcEngine: controller.engine,
+                            canvas: VideoCanvas(uid: 0),
+                          ),
+                        ),
+                      ),
+                      Positioned(
                         bottom: 80,
                         right: 30,
                         left: 30,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Column(
                               children: [
@@ -60,15 +73,21 @@ class VideoCallPage extends GetView<VideoCallControlller> {
                                   child: Container(
                                     width: 60,
                                     height: 60,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30),
+                                      color: controller.isJoined.value
+                                          ? Colors.red
+                                          : Colors.green,
+                                    ),
                                     child: controller.isJoined.value
                                         ? const Icon(
                                             Icons.call_end,
-                                            color: Colors.red,
+                                            color: Colors.white,
                                             size: 30,
                                           )
                                         : const Icon(
                                             Icons.call,
-                                            color: Colors.green,
+                                            color: Colors.white,
                                             size: 30,
                                           ),
                                   ),
@@ -90,7 +109,43 @@ class VideoCallPage extends GetView<VideoCallControlller> {
                             )
                           ],
                         ),
-                      )
+                      ),
+                      controller.isShowAvatar.value
+                          ? Positioned(
+                              top: 200,
+                              left: 30,
+                              right: 30,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 200,
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(110),
+                                      color: Colors.black,
+                                      image: DecorationImage(
+                                        image: NetworkImage(to_profile_image!),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 10),
+                                    child: Text(
+                                      to_name!,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          : Container(),
                     ],
                   )
                 : Container(),

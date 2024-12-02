@@ -159,7 +159,7 @@ class VoiceCallController extends GetxController {
   }
 
   Future<void> joinChannel() async {
-    await Permission.microphone.request();
+    await [Permission.camera, Permission.microphone].request();
     String clientNewID = await getCallToken();
     String? channelIdToken = await fetchTokenWithChannelID();
 

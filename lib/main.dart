@@ -47,8 +47,12 @@ Future fireBaseCallingNoto() async {
 }
 
 Future<bool> checkStoragePermission() async {
-  var status = await Permission.storage.request();
-  return status.isGranted;
+  var status = await [
+    Permission.storage,
+    Permission.camera,
+    Permission.microphone
+  ].request();
+  return status.values.every((element) => element.isGranted);
 }
 
 class MyApp extends StatelessWidget {

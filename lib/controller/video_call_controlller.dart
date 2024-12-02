@@ -114,7 +114,7 @@ class VideoCallControlller extends GetxController {
         print(
             "onJoinChannelSuccess: ${rtcConnection.toJson()}, this is the time $elapsed");
         isJoined.value = true;
-        await player.play();
+        // await player.play();
       },
       onUserJoined: (connection, remoteUid, elapsed) async {
         onRemoteUID.value = remoteUid; // added
@@ -168,20 +168,18 @@ class VideoCallControlller extends GetxController {
   Future<String> getCallToken() async {
     if (callerRole.value == "anchor") {
       uniqueChannelName.value = md5
-          .convert(
-              utf8.encode("${personalID.value}_${nextPersonID.value}video"))
+          .convert(utf8.encode("${personalID.value}_${nextPersonID.value}"))
           .toString();
     } else {
       uniqueChannelName.value = md5
-          .convert(
-              utf8.encode("${nextPersonID.value}video_${personalID.value}"))
+          .convert(utf8.encode("${nextPersonID.value}_${personalID.value}"))
           .toString();
     }
     return uniqueChannelName.value;
   }
 
   Future<void> joinChannel() async {
-    await Permission.microphone.request();
+    await Permission.camera.request();
     String clientNewID = await getCallToken();
     String? channelIdToken = await fetchTokenWithChannelID();
 
