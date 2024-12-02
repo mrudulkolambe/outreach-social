@@ -4,36 +4,44 @@ import 'dart:developer';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:http/http.dart' as http;
-import 'package:crypto/crypto.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:outreach/api/constants/constants.dart';
-import 'package:outreach/utils/f.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:crypto/crypto.dart';
 
-class VoiceCallController extends GetxController {
+class VideoCallControlller extends GetxController {
+  // RxString url = "".obs;
   RxBool isJoined = false.obs;
   RxBool openMicrophone = true.obs;
-  RxBool isMuted = false.obs;
-  RxBool isOpenSpeaker = true.obs;
+  RxBool enableSpeakerphone = true.obs;
   RxString callTime = "00:00".obs;
-  RxString callStatus = 'Calling'.obs;
+  RxString callStatus = 'Not Connected'.obs;
 
   RxString personalID = "".obs;
-  RxString personalProfileImage = "".obs;
-  RxString personalName = "".obs;
+  // RxString personalProfileImage = "".obs;
+  // RxString personalName = "".obs;
 
   RxString nextPersonID = "".obs;
-  RxString nextPersonName = "".obs;
-  RxString nextPersonPic = "".obs;
+  // RxString nextPersonName = "".obs;
+  // RxString nextPersonPic = "".obs;
 
-  RxString uniqueChannelName = "".obs;
   RxString callerRole = "anchor ".obs;
+  RxString uniqueChannelName = "".obs;
+  RxBool isReadyPreview = false.obs;
+  RxBool isShowAvatar = true.obs; //for user if no join show the avatar
+  //camera for front and rear
+  RxBool switchCamera = true.obs;
+
+  RxInt onRemoteUID = 0.obs;
+
+  late final RtcEngine engine;
+  late final Timer calltimer;
 
   String AppId = agoraCallId;
   final player = AudioPlayer();
 
-  late final RtcEngine engine;
+  bool is_calltimer = false;
   Timer? _timer;
   int _seconds = 0;
 
@@ -88,6 +96,7 @@ class VoiceCallController extends GetxController {
     }
   }
 
+  //Agora engine initialization
   Future<void> initEngine() async {
     await player.setAsset('assets/illustrations/ringtone.mp3');
     engine = createAgoraRtcEngine();
@@ -96,6 +105,7 @@ class VoiceCallController extends GetxController {
       appId: AppId,
     ));
 
+    //Video Call engine event handler
     engine.registerEventHandler(RtcEngineEventHandler(
       onError: (ErrorCodeType err, String msg) {
         print("Error on line 34: $err, $msg");
@@ -107,6 +117,9 @@ class VoiceCallController extends GetxController {
         await player.play();
       },
       onUserJoined: (connection, remoteUid, elapsed) async {
+        onRemoteUID.value = remoteUid; // added
+        isShowAvatar.value = false;
+
         await player.pause();
         startCallTimer();
         callStatus.value = "Connected";
@@ -114,6 +127,8 @@ class VoiceCallController extends GetxController {
       onLeaveChannel: (connection, stats) {
         print("onLeaveChannel: ${connection.toJson()}, $stats");
         isJoined.value = false;
+        onRemoteUID.value = 0; // added
+        isShowAvatar.value = true; // added
         openMicrophone.value = false;
         stopCallTimer();
       },
@@ -122,37 +137,44 @@ class VoiceCallController extends GetxController {
       },
     ));
 
-    await engine.enableAudio();
-    await engine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
-    await engine.setAudioProfile(
-        profile: AudioProfileType.audioProfileDefault,
-        scenario: AudioScenarioType.audioScenarioGameStreaming);
+    await engine.enableVideo(); // added video
+    await engine.setVideoEncoderConfiguration(
+      const VideoEncoderConfiguration(
+        dimensions: VideoDimensions(width: 640, height: 360),
+        frameRate: 15,
+        bitrate: 0,
+      ),
+    );
+    await engine.startPreview();
+    isReadyPreview.value = true;
 
     await joinChannel();
 
     if (callerRole.value == "anchor") {
-      F.sendNotifications(
-        "voice",
-        nextPersonID.value,
-        personalProfileImage.value,
-        personalName.value,
-        uniqueChannelName.value,
-      );
+      // F.sendNotifications(
+      //   "video",
+      //   nextPersonID.value,
+      //   personalProfileImage.value,
+      //   personalName.value,
+      //   uniqueChannelName.value,
+      // );
       await player.setLoopMode(LoopMode.all);
       await player.play();
 
-      log("on Line 68: ${personalID.value} ${nextPersonID.value}");
+      log("on Video Call Line 68: ${personalID.value} ${nextPersonID.value}");
     }
   }
 
   Future<String> getCallToken() async {
     if (callerRole.value == "anchor") {
       uniqueChannelName.value = md5
-          .convert(utf8.encode("${personalID.value}_${nextPersonID.value}"))
+          .convert(
+              utf8.encode("${personalID.value}_${nextPersonID.value}video"))
           .toString();
     } else {
       uniqueChannelName.value = md5
-          .convert(utf8.encode("${nextPersonID.value}_${personalID.value}"))
+          .convert(
+              utf8.encode("${nextPersonID.value}video_${personalID.value}"))
           .toString();
     }
     return uniqueChannelName.value;
@@ -163,7 +185,6 @@ class VoiceCallController extends GetxController {
     String clientNewID = await getCallToken();
     String? channelIdToken = await fetchTokenWithChannelID();
 
-    log("on Line 98 ChannelID: ${clientNewID} ${personalID.value} ${nextPersonID.value} ${channelIdToken}");
     await engine.joinChannel(
       token: channelIdToken!,
       channelId: clientNewID,
@@ -175,26 +196,27 @@ class VoiceCallController extends GetxController {
     );
   }
 
-  void toggleSpeaker() {
-    isOpenSpeaker.value = !isOpenSpeaker.value;
-    engine.setEnableSpeakerphone(isOpenSpeaker.value);
-  }
-
-  void toggleMic() {
-    openMicrophone.value = !openMicrophone.value;
-    engine.enableLocalAudio(openMicrophone.value);
-  }
+  ///
 
   Future<void> leaveChannel() async {
     await player.pause();
     await engine.leaveChannel();
     await engine.release();
+    switchCamera.value = true;
     await engine.stopLastmileProbeTest();
     await player.stop();
+    Get.back();
+    // sendNotificaiton for Video call cancel
     // isJoined.value = false;
     // openMicrophone.value = false;
     // isOpenSpeaker.value = false;
     // Get.back();
+  }
+
+  Future<void> switchCameraToggle() async {
+    //toggle the video camera
+    await engine.switchCamera();
+    switchCamera.value = !switchCamera.value;
   }
 
   Future<void> _dispose() async {

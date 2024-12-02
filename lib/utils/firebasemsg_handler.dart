@@ -17,6 +17,10 @@ import 'package:outreach/models/call_request.dart';
 import 'package:outreach/screens/agora/voice_call_state/call.dart';
 import 'package:outreach/utils/f.dart';
 
+
+
+
+
 class FirebasemsgHandler {
   FirebasemsgHandler._();
 
@@ -62,15 +66,16 @@ class FirebasemsgHandler {
           onDidReceiveNotificationResponse: (details) async {
         if (details.payload != null) {
           final payloadData = jsonDecode(details.payload!);
-          log("payloadData['toToken'] dddadd${payloadData['toToken']}");
-          log("payloadData['toToken'] dddadd${payloadData['toName']}");
-          log("payloadData['toToken'] dddadd${payloadData['channelId']}");
+          log("payloadData['toToken'] ${payloadData['toToken']}");
+          log("payloadData['toToken'] ${payloadData['toName']}");
+          log("payloadData['toToken'] ${payloadData['channelId']}");
+      
 
           if (payloadData['type'] == 'call') {
             if (details.actionId == 'accept') {
-              log("payloadData['toToken'] dddadd${payloadData['toToken']}");
-              log("payloadData['toToken'] dddadd${payloadData['toName']}");
-              log("payloadData['toToken'] dddadd${payloadData['channelId']}");
+              log("payloadData['toToken'] ${payloadData['toToken']}");
+              log("payloadData['toToken'] ${payloadData['toName']}");
+              log("payloadData['toToken'] ${payloadData['channelId']}");
               Get.to(() => VoiceCallPage(
                     to_token: payloadData['toToken'],
                     to_name: payloadData['toName'],
@@ -78,6 +83,8 @@ class FirebasemsgHandler {
                     call_role: "audience",
                   ));
             } else if (details.actionId == 'reject') {
+
+              // FlutterLocalNotificationsPlugin().cancel(0);
               F.sendNotifications(
                 "cancel",
                 payloadData['toToken'],
@@ -181,20 +188,21 @@ class FirebasemsgHandler {
               'toName': toName,
               'toProfileImage': toProfileImage,
               'channelId': channelId,
+
             }),
           );
 
           // Auto cancel call after 30 seconds if not answered
-          Future.delayed(const Duration(seconds: 50), () {
-            F.sendNotifications(
-              "cancel",
-              toToken,
-              toProfileImage,
-              toName,
-              channelId,
-            );
-            flutterLocalNotificationsPlugin.cancel(0);
-          });
+          // Future.delayed(const Duration(seconds: 50), () {
+          //   F.sendNotifications(
+          //     "cancel",
+          //     toToken,
+          //     toProfileImage,
+          //     toName,
+          //     channelId,
+          //   );
+          //   flutterLocalNotificationsPlugin.cancel(0);
+          // });
         }
       } else if (message.data['call_type'] == 'cancel') {
         FirebasemsgHandler.flutterLocalNotificationsPlugin.cancelAll();

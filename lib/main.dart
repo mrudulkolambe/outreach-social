@@ -28,8 +28,9 @@ import 'package:permission_handler/permission_handler.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await fireBaseCallingNoto();
-  await FirebasemsgHandler.config();
+  fireBaseCallingNoto().whenComplete(() {
+    FirebasemsgHandler.config();
+  });
   runApp(const MyApp());
 }
 
@@ -90,7 +91,7 @@ class _SplashScreenState extends State<SplashScreen>
     final fcmToken = await FirebaseMessaging.instance.getToken();
     final Map<String, String> body = {
       'fcmToken': fcmToken!,
-    };  
+    };
     final status = await userService.updateUser({"updateData": body});
     if (status == 200) {
       log("FCM token saved $fcmToken");
@@ -119,6 +120,11 @@ class _SplashScreenState extends State<SplashScreen>
           } else {
             final token = await user.getIdToken(true);
             try {
+              await _agoraService.createAttribute(
+                userName: userData.name!,
+                userImage: userData.imageUrl!,
+                cId: userData.id,
+              );
               await _agoraService.loginToAgoraChat(userData.id, token);
               Get.offAll(() => const HomePage());
             } catch (e) {

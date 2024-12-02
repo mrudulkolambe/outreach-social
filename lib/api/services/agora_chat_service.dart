@@ -251,7 +251,7 @@ class AgoraService {
       'Accept': '*/*',
       'Connection': 'keep-alive',
       'Accept-Encoding': 'gzip, deflate, br',
-      'Host': 'a41.chat.agora.io',
+      'Host': 'a71.chat.agora.io',
     };
 
     final body = {
