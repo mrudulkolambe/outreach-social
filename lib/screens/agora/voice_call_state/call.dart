@@ -16,7 +16,7 @@ class VoiceCallPage extends GetView<VoiceCallController> {
     this.doc_id,
     this.call_role,
   }) {
-    Get.put(VoiceCallController());
+     Get.put(VoiceCallController());
   }
 
   @override
@@ -84,10 +84,10 @@ class VoiceCallPage extends GetView<VoiceCallController> {
                       FloatingActionButton(
                         heroTag: 'callButton',
                         onPressed: controller.isJoined.value
-                            ? (){
-                              controller.leaveChannel();
-                              Get.back();
-                            }
+                            ? () {
+                                controller.leaveChannel();
+                                Get.back();
+                              }
                             : controller.joinChannel,
                         backgroundColor: controller.isJoined.value
                             ? Colors.red

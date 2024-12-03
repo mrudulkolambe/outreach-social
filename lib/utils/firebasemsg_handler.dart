@@ -88,13 +88,14 @@ class FirebasemsgHandler {
                     ));
               }
             } else if (details.actionId == 'reject') {
-              F.sendNotifications(
-                "cancel",
-                payloadData['toToken'],
-                payloadData['toProfileImage'],
-                payloadData['toName'],
-                payloadData['channelId'],
-              );
+              FirebasemsgHandler.flutterLocalNotificationsPlugin.cancel(0);
+              // F.sendNotifications(
+              //   "cancel",
+              //   payloadData['toToken'],
+              //   payloadData['toProfileImage'],
+              //   payloadData['toName'],
+              //   payloadData['channelId'],
+              // );
             }
           }
         }
@@ -145,7 +146,6 @@ class FirebasemsgHandler {
       if (toToken != null) {
         // Load the profile image
         Uint8List? imageBytes = await _getImageBytesFromUrl(toProfileImage);
-
         final androidPlatformChannelSpecifics = AndroidNotificationDetails(
           channel_call.id,
           channel_call.name,
@@ -201,40 +201,41 @@ class FirebasemsgHandler {
 
         // Auto cancel call after 30 seconds if not answered
         // Future.delayed(const Duration(seconds: 50), () {
-        //   F.sendNotifications(
-        //     "cancel",
-        //     toToken,
-        //     toProfileImage,
-        //     toName,
-        //     channelId,
-        //   );
-        //   flutterLocalNotificationsPlugin.cancel(0);
+          // F.sendNotifications(
+          //   "cancel",
+          //   toToken,
+          //   toProfileImage,
+          //   toName,
+          //   channelId,
+          // );
+          // flutterLocalNotificationsPlugin.cancel(0);
         // });
       }
     } else if (message.data['call_type'] == 'cancel') {
       FirebasemsgHandler.flutterLocalNotificationsPlugin.cancelAll();
-      if (Get.isSnackbarOpen) {
-        Get.closeAllSnackbars();
-      }
+      // FirebasemsgHandler.flutterLocalNotificationsPlugin.cancel(0);
 
-      if (Get.currentRoute.isNotEmpty) {
+
+
+      if(Get.currentRoute.contains("/VideoCallPage") || Get.currentRoute.contains("/VoiceCallPage")){
         Get.back();
+        print("Get.currentRoute.isNotEmpty");
       }
 
-      flutterLocalNotificationsPlugin.show(
-        0,
-        'Call Ended',
-        'The caller has ended the call',
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            channel_call.id,
-            channel_call.name,
-            channelDescription: channel_call.description,
-            importance: Importance.max,
-            priority: Priority.defaultPriority,
-          ),
-        ),
-      );
+      // flutterLocalNotificationsPlugin.show(
+      //   0,
+      //   'Call Ended',
+      //   'The caller has ended the call',
+      //   NotificationDetails(
+      //     android: AndroidNotificationDetails(
+      //       channel_call.id,
+      //       channel_call.name,
+      //       channelDescription: channel_call.description,
+      //       importance: Importance.max,
+      //       priority: Priority.defaultPriority,
+      //     ),
+      //   ),
+      // );
     }
   }
 

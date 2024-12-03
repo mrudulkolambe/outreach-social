@@ -156,9 +156,9 @@ class VideoCallPage extends GetView<VideoCallControlller> {
                                               color: Colors.white,
                                             ),
                                     ),
-                                    onTap: controller.isJoined.value
-                                        ? controller.leaveChannel
-                                        : controller.joinChannel,
+                                    onTap: () {
+                                      controller.leaveChannel();
+                                    },
                                   ),
                                   Container(
                                     margin: EdgeInsets.only(top: 10),
@@ -193,7 +193,7 @@ class VideoCallPage extends GetView<VideoCallControlller> {
                                           : Icon(Icons.cameraswitch,
                                               color: Colors.white),
                                     ),
-                                    onTap: controller.switchCamera,
+                                    onTap: controller.switchCameraToggle,
                                   ),
                                   Container(
                                     margin: EdgeInsets.only(top: 10),

@@ -111,6 +111,10 @@ class VoiceCallController extends GetxController {
         startCallTimer();
         callStatus.value = "Connected";
       },
+      onUserOffline: (connection, remoteUid, reason) {
+        print("onUserOffline: ${connection.toJson()}, $remoteUid, $reason");
+        leaveChannel();
+      },
       onLeaveChannel: (connection, stats) {
         print("onLeaveChannel: ${connection.toJson()}, $stats");
         isJoined.value = false;
@@ -191,10 +195,7 @@ class VoiceCallController extends GetxController {
     await engine.release();
     await engine.stopLastmileProbeTest();
     await player.stop();
-    // isJoined.value = false;
-    // openMicrophone.value = false;
-    // isOpenSpeaker.value = false;
-    // Get.back();
+    Get.back();
   }
 
   Future<void> _dispose() async {

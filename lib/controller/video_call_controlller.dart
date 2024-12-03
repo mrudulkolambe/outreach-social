@@ -124,6 +124,17 @@ class VideoCallControlller extends GetxController {
         await player.pause();
         startCallTimer();
         callStatus.value = "Connected";
+
+        // Listen for the notification to leave the call
+        // This could be done via a server-side notification or any other mechanism
+        // Example:
+        // if (receivedNotification == "video_end") {
+        //   leaveChannel();
+        // }
+      },
+      onUserOffline: (connection, remoteUid, reason) {
+        print("onUserOffline: ${connection.toJson()}, $remoteUid, $reason");
+        leaveChannel();
       },
       onLeaveChannel: (connection, stats) {
         print("onLeaveChannel: ${connection.toJson()}, $stats");
@@ -195,8 +206,6 @@ class VideoCallControlller extends GetxController {
     );
   }
 
-  ///
-
   Future<void> leaveChannel() async {
     await player.pause();
     await engine.leaveChannel();
@@ -205,16 +214,20 @@ class VideoCallControlller extends GetxController {
     await engine.stopLastmileProbeTest();
     await player.stop();
     Get.back();
-    // sendNotificaiton for Video call cancel
-    // isJoined.value = false;
-    // openMicrophone.value = false;
-    // isOpenSpeaker.value = false;
-    // Get.back();
   }
 
-  Future<void> switchCameraToggle() async {
-    switchCamera.value = !switchCamera.value;
-    engine.switchCamera();
+  // Future<void> switchCameraToggle() async {
+  //   switchCamera.value = !switchCamera.value;
+  //   engine.switchCamera();
+  // }
+
+  void switchCameraToggle() {
+    print('switchCamera');
+    engine.switchCamera().then((value) {
+      switchCamera.value = !switchCamera.value;
+    }).catchError((err) {
+      print('switchCamera error: $err');
+    });
   }
 
   Future<void> _dispose() async {
