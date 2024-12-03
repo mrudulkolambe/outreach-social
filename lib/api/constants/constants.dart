@@ -73,6 +73,6 @@ const String agoraCallToken = "007eJxTYAje9Or1ozWqJ7QWSL38Uh1y/Ltbqu4Zng+98teK24
 
 const String agoraAppID = "711253789#1445631";
 const String agoraConfig = 'http://a71.chat.agora.io/711253789/1445631/users';
-const String agoraMetaDataConfig = 'http://a71.chat.agora.io/611246630/1438571/metadata/user/';
+const String agoraMetaDataConfig = 'http://a71.chat.agora.io/711253789/1445631/metadata/user/';
 
 const String AGROA_USER_PASSWORD = "com.outreach.social.password_for_user";

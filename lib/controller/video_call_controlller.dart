@@ -115,7 +115,7 @@ class VideoCallControlller extends GetxController {
         print(
             "onJoinChannelSuccess: ${rtcConnection.toJson()}, this is the time $elapsed");
         isJoined.value = true;
-        // await player.play();
+        await player.play();
       },
       onUserJoined: (connection, remoteUid, elapsed) async {
         onRemoteUID.value = remoteUid; // added
@@ -139,17 +139,18 @@ class VideoCallControlller extends GetxController {
       onLeaveChannel: (connection, stats) {
         print("onLeaveChannel: ${connection.toJson()}, $stats");
         isJoined.value = false;
-        onRemoteUID.value = 0; // added
-        isShowAvatar.value = true; // added
+        onRemoteUID.value = 0;
+        isShowAvatar.value = true;
         openMicrophone.value = false;
         stopCallTimer();
+        Get.back();
       },
       onRtcStats: (connection, stats) {
         print("onRtcStats: ${connection.toJson()}, $stats");
       },
     ));
 
-    await engine.enableVideo(); // added video
+    await engine.enableVideo();
     await engine.setVideoEncoderConfiguration(
       const VideoEncoderConfiguration(
         dimensions: VideoDimensions(width: 640, height: 360),

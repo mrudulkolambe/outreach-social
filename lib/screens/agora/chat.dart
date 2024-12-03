@@ -1,12 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
-
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:outreach/api/services/agora_chat_service.dart';
-import 'package:outreach/constants/colors.dart';
+import 'package:outreach/api/constants/constants.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
+import 'package:http/http.dart' as http;
 
 class ChatScreen extends StatefulWidget {
   final String recipientId;
@@ -27,7 +25,6 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final AgoraService _agoraService = AgoraService();
   late ChatConversation _conversation;
 
   @override
@@ -35,6 +32,32 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _conversation = widget.conversation; // Add this line
     log("ChatScreen initialized for recipient: ${widget.recipientId}");
+  }
+
+  void sendMessageNotificaiton(String msk, String sendToToken) async {
+    final url = Uri.parse(messageNoto + sendToToken);
+
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+
+    final body = json.encode({
+      "msg": msk,
+    });
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: body,
+      );
+      if (response.statusCode == 200) {
+        print(response.body);
+      } else {
+        print('Error: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
   }
 
   Future<void> _initializeChat() async {
@@ -48,11 +71,11 @@ class _ChatScreenState extends State<ChatScreen> {
         createIfNeed: true,
         type: ChatConversationType.Chat,
       ))!;
-      
+
       if (_conversation != null) {
         await _conversation!.markAllMessagesAsRead();
       }
-      
+
       log("Conversation setup completed for: ${widget.recipientId}");
     } catch (e) {
       log('Error setting up conversation: $e');
@@ -87,6 +110,8 @@ class _ChatScreenState extends State<ChatScreen> {
         conversation: _conversation,
         willSendMessage: (message) {
           log("Sending message: ${message.body}");
+          sendMessageNotificaiton(message.body.toJson().entries.last.value.toString(),
+              message.to.toString());
           return message;
         },
         onError: (error) {

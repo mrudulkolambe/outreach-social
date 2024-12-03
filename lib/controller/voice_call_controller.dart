@@ -8,6 +8,7 @@ import 'package:crypto/crypto.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:outreach/api/constants/constants.dart';
+import 'package:outreach/controller/video_call_controlller.dart';
 import 'package:outreach/utils/f.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -120,6 +121,7 @@ class VoiceCallController extends GetxController {
         isJoined.value = false;
         openMicrophone.value = false;
         stopCallTimer();
+        // Get.back();
       },
       onRtcStats: (connection, stats) {
         print("onRtcStats: ${connection.toJson()}, $stats");
@@ -167,16 +169,20 @@ class VoiceCallController extends GetxController {
     String clientNewID = await getCallToken();
     String? channelIdToken = await fetchTokenWithChannelID();
 
-    log("on Line 98 ChannelID: ${clientNewID} ${personalID.value} ${nextPersonID.value} ${channelIdToken}");
-    await engine.joinChannel(
-      token: channelIdToken!,
-      channelId: clientNewID,
-      uid: 0,
-      options: const ChannelMediaOptions(
-        channelProfile: ChannelProfileType.channelProfileCommunication,
-        clientRoleType: ClientRoleType.clientRoleBroadcaster,
-      ),
-    );
+    if (channelIdToken != null) {
+      log("on Line 98 ChannelID: ${clientNewID} ${personalID.value} ${nextPersonID.value} ${channelIdToken}");
+      await engine.joinChannel(
+        token: channelIdToken,
+        channelId: clientNewID,
+        uid: 0,
+        options: const ChannelMediaOptions(
+          channelProfile: ChannelProfileType.channelProfileCommunication,
+          clientRoleType: ClientRoleType.clientRoleBroadcaster,
+        ),
+      );
+    } else {
+      log("Failed to fetch token for channel");
+    }
   }
 
   void toggleSpeaker() {
@@ -195,7 +201,6 @@ class VoiceCallController extends GetxController {
     await engine.release();
     await engine.stopLastmileProbeTest();
     await player.stop();
-    Get.back();
   }
 
   Future<void> _dispose() async {
@@ -209,6 +214,19 @@ class VoiceCallController extends GetxController {
   @override
   void onClose() {
     leaveChannel();
+    // stopCallTimer();
+    // isJoined.value = false;
+    // openMicrophone.value = true;
+    // isMuted.value = false;
+    // isOpenSpeaker.value = true;
+    // callTime.value = "00:00";
+    // callStatus.value = 'Calling';
+
+    // uniqueChannelName.value = "";
+    // nextPersonID.value = "";
+    // nextPersonName.value = "";
+    // nextPersonPic.value = "";
+
     super.onClose();
   }
 

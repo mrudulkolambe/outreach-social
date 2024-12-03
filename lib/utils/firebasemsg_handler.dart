@@ -2,21 +2,14 @@ import 'dart:developer';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:convert';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:outreach/api/constants/constants.dart';
-import 'package:outreach/controller/voice_call_controller.dart';
 import 'package:outreach/firebase_options.dart';
-import 'package:outreach/models/call_request.dart';
 import 'package:outreach/screens/agora/video_call_state/video.dart';
 import 'package:outreach/screens/agora/voice_call_state/call.dart';
-import 'package:outreach/utils/f.dart';
 
 class FirebasemsgHandler {
   FirebasemsgHandler._();
@@ -144,7 +137,6 @@ class FirebasemsgHandler {
       var channelId = data['channel_id'] ?? 'default_channel_id';
 
       if (toToken != null) {
-        // Load the profile image
         Uint8List? imageBytes = await _getImageBytesFromUrl(toProfileImage);
         final androidPlatformChannelSpecifics = AndroidNotificationDetails(
           channel_call.id,

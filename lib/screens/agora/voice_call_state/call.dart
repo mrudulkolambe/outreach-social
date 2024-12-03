@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outreach/controller/video_call_controlller.dart';
 import 'package:outreach/controller/voice_call_controller.dart';
 
 class VoiceCallPage extends GetView<VoiceCallController> {
@@ -16,11 +17,13 @@ class VoiceCallPage extends GetView<VoiceCallController> {
     this.doc_id,
     this.call_role,
   }) {
-     Get.put(VoiceCallController());
+    Get.put(VoiceCallController());
   }
 
   @override
   Widget build(BuildContext context) {
+    
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Obx(

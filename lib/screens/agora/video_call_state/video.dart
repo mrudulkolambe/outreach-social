@@ -23,6 +23,9 @@ class VideoCallPage extends GetView<VideoCallControlller> {
   @override
   @override
   Widget build(BuildContext context) {
+    // if (Get.isRegistered<VideoCallControlller>()) {
+    //   Get.delete<VideoCallControlller>();
+    // }
     return Scaffold(
         backgroundColor: Colors.black,
         body: SafeArea(child: Obx(() {
@@ -158,6 +161,7 @@ class VideoCallPage extends GetView<VideoCallControlller> {
                                     ),
                                     onTap: () {
                                       controller.leaveChannel();
+                                     
                                     },
                                   ),
                                   Container(
