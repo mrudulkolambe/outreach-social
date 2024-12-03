@@ -80,7 +80,7 @@ class _UserProfileState extends State<UserProfile> {
       ToastManager.showToast("Something went wrong", context);
     }
   }
-  
+
   void videoCall(
     String call_type,
     String to_token,
@@ -88,12 +88,19 @@ class _UserProfileState extends State<UserProfile> {
     String to_name,
     String channel_id,
   ) async {
+    final VideoCallControlller videoController =
+        Get.put(VideoCallControlller());
+
+    await F.sendNotifications(
+        call_type, to_token, to_avatar, to_name, channel_id);
+
     Get.to(
       () => VideoCallPage(
         to_token: userData!.id,
         to_name: userData!.name,
         to_profile_image: userData!.imageUrl,
-        // call_role: callController.callerRole.value, // callerRole is not defined
+        call_role:
+            videoController.callerRole.value, // callerRole is not defined
       ),
     );
   }

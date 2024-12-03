@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:outreach/api/constants/constants.dart';
+import 'package:outreach/utils/f.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:crypto/crypto.dart';
 
@@ -19,8 +20,8 @@ class VideoCallControlller extends GetxController {
   RxString callStatus = 'Not Connected'.obs;
 
   RxString personalID = "".obs;
-  // RxString personalProfileImage = "".obs;
-  // RxString personalName = "".obs;
+  RxString personalProfileImage = "".obs;
+  RxString personalName = "".obs;
 
   RxString nextPersonID = "".obs;
   // RxString nextPersonName = "".obs;
@@ -151,13 +152,13 @@ class VideoCallControlller extends GetxController {
     await joinChannel();
 
     if (callerRole.value == "anchor") {
-      // F.sendNotifications(
-      //   "video",
-      //   nextPersonID.value,
-      //   personalProfileImage.value,
-      //   personalName.value,
-      //   uniqueChannelName.value,
-      // );
+      F.sendNotifications(
+        "video",
+        nextPersonID.value,
+        personalProfileImage.value,
+        personalName.value,
+        uniqueChannelName.value,
+      );
       await player.setLoopMode(LoopMode.all);
       await player.play();
 
@@ -212,9 +213,8 @@ class VideoCallControlller extends GetxController {
   }
 
   Future<void> switchCameraToggle() async {
-    //toggle the video camera
-    await engine.switchCamera();
     switchCamera.value = !switchCamera.value;
+    engine.switchCamera();
   }
 
   Future<void> _dispose() async {

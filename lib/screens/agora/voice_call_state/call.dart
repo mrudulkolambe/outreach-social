@@ -53,7 +53,7 @@ class VoiceCallPage extends GetView<VoiceCallController> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        "${controller.callStatus.value}...",
+                        "${controller.callStatus.value}",
                         style:
                             const TextStyle(color: Colors.white, fontSize: 16),
                       ),
