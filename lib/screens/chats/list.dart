@@ -86,7 +86,7 @@ class _ChatListState extends State<ChatList> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
+          padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Column(
             children: [
               const Row(

@@ -18,6 +18,9 @@ class ShimmerImage extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: CachedNetworkImage(
+        cacheKey: imageUrl,
+        useOldImageOnUrlChange: true,
+        filterQuality: FilterQuality.medium,
         imageUrl: imageUrl,
         width: width,
         height: height,

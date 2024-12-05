@@ -124,10 +124,10 @@ class _JoinedForumDetailsState extends State<JoinedForumDetails> {
                   ),
                 ],
               ),
-              const SizedBox(
+              if(widget.forum.joined.isEmpty) const SizedBox(
                 height: 10,
               ),
-              const Row(
+              if(widget.forum.joined.isEmpty) const Row(
                 children: [
                   CircularShimmerImage(
                     imageUrl:

@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:outreach/api/services/feed_services.dart';
 import 'package:outreach/api/services/upload_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
+import 'package:outreach/models/interest.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/platform_constraints/media_preview_mobile.dart';
@@ -32,13 +34,62 @@ class _AddPostState extends State<AddPost> {
   List<String> _tags = [];
   final RegExp _tagRegExp = RegExp(r'\B#\w+');
 
-  void extractTags(String text) {
-    final matches = _tagRegExp.allMatches(text);
+  final List<String> availableTags =
+      interestsOptions.map((item) => item.tag).toList();
+  List<String> filteredTags = [];
+  bool showSuggestions = false;
+  int currentHashtagStartIndex = -1;
+
+  double cursorX = 0.0;
+  double cursorY = 0.0;
+  void _onTextChanged(String text) {
+    final cursorPosition = descriptionController.selection.baseOffset;
+
+    if (cursorPosition < 0 || text.isEmpty) {
+      setState(() {
+        showSuggestions = false;
+        filteredTags = [];
+      });
+      return;
+    }
+
+    // Find the last `#` before the cursor position
+    int hashtagIndex = text.lastIndexOf('#', cursorPosition - 1);
+    if (hashtagIndex != -1) {
+      currentHashtagStartIndex = hashtagIndex;
+      final enteredTag = text.substring(hashtagIndex + 1, cursorPosition);
+
+      // Show suggestions for matching tags
+      setState(() {
+        filteredTags =
+            availableTags.where((tag) => tag.toLowerCase().startsWith(enteredTag.toLowerCase())).toList();
+        showSuggestions = filteredTags.isNotEmpty;
+      });
+    } else {
+      setState(() {
+        showSuggestions = false;
+        filteredTags = [];
+      });
+    }
+  }
+
+  void _onTagSelected(String tag) {
+    final text = descriptionController.text;
+    final cursorPosition = descriptionController.selection.baseOffset;
+    final newText = text.replaceRange(
+      currentHashtagStartIndex,
+      cursorPosition,
+      '#$tag ',
+    );
+
+    descriptionController.text = newText;
+    descriptionController.selection = TextSelection.fromPosition(
+      TextPosition(offset: currentHashtagStartIndex + tag.length + 2),
+    );
+
     setState(() {
-      _tags.clear();
-      for (Match match in matches) {
-        _tags.add(match.group(0)!);
-      }
+      showSuggestions = false;
+      filteredTags = [];
     });
   }
 
@@ -107,6 +158,45 @@ class _AddPostState extends State<AddPost> {
     });
 
     return downloadUrls;
+  }
+
+  TextSpan _buildRichText() {
+    final text = descriptionController.text;
+    final List<InlineSpan> spans = [];
+    final hashtagRegex = RegExp(r"(#[a-zA-Z0-9_]+)");
+    final matches = hashtagRegex.allMatches(text);
+
+    int lastMatchEnd = 0;
+
+    for (final match in matches) {
+      if (match.start > lastMatchEnd) {
+        spans.add(TextSpan(
+          text: text.substring(lastMatchEnd, match.start),
+          style: const TextStyle(color: Colors.black, fontSize: 16),
+        ));
+      }
+
+      spans.add(TextSpan(
+        text: match.group(0),
+        style: const TextStyle(
+          backgroundColor: Colors.yellow,
+          color: Colors.blue,
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+        ),
+      ));
+
+      lastMatchEnd = match.end;
+    }
+
+    if (lastMatchEnd < text.length) {
+      spans.add(TextSpan(
+        text: text.substring(lastMatchEnd),
+        style: const TextStyle(color: Colors.black, fontSize: 16),
+      ));
+    }
+
+    return TextSpan(children: spans);
   }
 
   @override
@@ -264,22 +354,107 @@ class _AddPostState extends State<AddPost> {
               const SizedBox(
                 height: 10,
               ),
-              TextFormField(
-                onChanged: extractTags,
-                controller: descriptionController,
-                maxLength: 500,
-                minLines: null,
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                style: const TextStyle(fontSize: 16),
-                decoration: const InputDecoration(
-                  hintText: "What's on your mind?",
-                  enabledBorder: InputBorder.none,
-                  counterText: '',
-                  hintStyle: TextStyle(color: accent, fontSize: 16),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                ),
+              Stack(
+                children: [
+                  // RichText for styled text (background highlights)
+                  // Positioned.fill(
+                  //   child: IgnorePointer(
+                  //     ignoring: true,
+                  //     child: Padding(
+                  //       padding: const EdgeInsets.only(
+                  //           top: 8.0, left: 8.0, right: 8.0, bottom: 8.0),
+                  //       child: RichText(
+                  //         text: _buildRichText(),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+
+                  // Transparent TextField for input
+                  MouseRegion(
+                    onEnter: (_) {},
+                    onExit: (_) {},
+                    onHover: (details) {
+                      setState(() {
+                        cursorX = details.localPosition.dx;
+                        cursorY = details.localPosition.dy -
+                            20;
+                      });
+                    },
+                    child: TextFormField(
+                      onChanged: _onTextChanged,
+                      controller: descriptionController,
+                      minLines: 5,
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      style: GoogleFonts.mulish(
+                        fontSize: 16,
+                        // color: accent,
+                        // backgroundColor: Colors.yellow,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: "What's on your mind?",
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        counterText: '',
+                        hintStyle:
+                            TextStyle(color: Colors.grey[500], fontSize: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.all(8.0),
+                      ),
+                    ),
+                  ),
+
+                  // Suggestion list for hashtags
+                  if (showSuggestions)
+                    Positioned(
+                      left: 8.0,
+                      right: 8.0,
+                      top: cursorY - 240, // Position this below the input field
+                      child: Material(
+                        elevation: 4.0,
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Container(
+                          height: 200,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: Colors.grey[300]!),
+                          ),
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            shrinkWrap: true,
+                            reverse: true,
+                            itemCount: filteredTags.length,
+                            itemBuilder: (context, index) {
+                              final tag = filteredTags[index];
+                              return GestureDetector(
+                                onTap: () => _onTagSelected(tag),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8.0, horizontal: 16.0),
+                                  child: Text(
+                                    '#$tag',
+                                    style: const TextStyle(
+                                        color: Colors.blue, fontSize: 16),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
               SizedBox(
                 width: MediaQuery.of(context).size.width - 2 * horizontal_p,

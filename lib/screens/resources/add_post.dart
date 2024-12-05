@@ -260,7 +260,6 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
               ),
               TextFormField(
                 controller: descriptionController,
-                maxLength: 500,
                 minLines: null,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,

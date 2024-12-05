@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/services/agora_chat_service.dart';
+import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/screens/agora/chat.dart';
+import 'package:outreach/widgets/styled_textfield.dart';
 
 class ChatMainScreen extends StatefulWidget {
   const ChatMainScreen({Key? key}) : super(key: key);
@@ -56,7 +58,7 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
       if (conversations.isNotEmpty) {
         final attributes = await AgoraService()
             .getAttributesInBatch(conversations.map((c) => c.id).toList());
-
+        print(attributes["66c1c4e387e2c395e6b5f21e"]!.userName);
         if (!mounted) return;
 
         setState(() {
@@ -157,41 +159,27 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text('Chats'),
       ),
       body: RefreshIndicator(
         onRefresh: _fetchConversations,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              StyledTextField(
                 controller: _searchController,
-                decoration: InputDecoration(
-                  fillColor: Colors.red,
-                  hintText: 'Search',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  hintStyle: TextStyle(color: Theme.of(context).hintColor),
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: _searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _searchController.clear();
-                            FocusScope.of(context).unfocus();
-                          },
-                        )
-                      : null,
-                ),
+                keyboardType: TextInputType.text,
+                hintText: "Search",
               ),
-            ),
-            const Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
+              SizedBox(
+                height: 10,
+              ),
+              Text(
                 "Messages",
                 style: TextStyle(
                   fontSize: 15,
@@ -199,44 +187,47 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
                   color: Colors.blueAccent,
                 ),
               ),
-            ),
-            Expanded(
-              child: _isLoading || _isLoadingAttributes
-                  ? const Center(child: CircularProgressIndicator())
-                  : _error != null
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                _error!,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.error,
+              SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: _isLoading || _isLoadingAttributes
+                    ? const Center(child: CircularProgressIndicator())
+                    : _error != null
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  _error!,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.error,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed: _fetchConversations,
-                                child: const Text('Retry'),
-                              ),
-                            ],
-                          ),
-                        )
-                      : _conversations.isEmpty
-                          ? const Center(
-                              child: Text('No conversations found'),
-                            )
-                          : ListView.separated(
-                              itemCount: _filteredConversations.length,
-                              separatorBuilder: (_, __) =>
-                                  const Divider(height: 1),
-                              itemBuilder: (context, index) =>
-                                  _buildConversationItem(
-                                      _filteredConversations[index]),
+                                const SizedBox(height: 16),
+                                ElevatedButton(
+                                  onPressed: _fetchConversations,
+                                  child: const Text('Retry'),
+                                ),
+                              ],
                             ),
-            ),
-          ],
+                          )
+                        : _conversations.isEmpty
+                            ? const Center(
+                                child: Text('No conversations found'),
+                              )
+                            : ListView.separated(
+                                itemCount: _filteredConversations.length,
+                                separatorBuilder: (_, __) =>
+                                    const Divider(height: 1),
+                                itemBuilder: (context, index) =>
+                                    _buildConversationItem(
+                                        _filteredConversations[index]),
+                              ),
+              ),
+            ],
+          ),
         ),
       ),
     );

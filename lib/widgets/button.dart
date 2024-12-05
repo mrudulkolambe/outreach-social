@@ -5,7 +5,7 @@ class CustomButton extends StatefulWidget {
   final String text;
   final bool? loading;
 
-  const CustomButton({ super.key, required this.text, this.loading });
+  const CustomButton({super.key, required this.text, this.loading});
 
   @override
   State<CustomButton> createState() => _CustomButtonState();
@@ -21,10 +21,10 @@ class _CustomButtonState extends State<CustomButton> {
       ),
       decoration:
           BoxDecoration(color: accent, borderRadius: BorderRadius.circular(8)),
-      child: const Center(
+      child: Center(
         child: Text(
-          "Continue",
-          style: TextStyle(
+          widget.text,
+          style: const TextStyle(
             fontSize: 16,
             color: Colors.white,
             fontWeight: FontWeight.w600,

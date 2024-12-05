@@ -69,13 +69,13 @@ class _MoreScreenState extends State<MoreScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // InkWell(
-              //   onTap: () => Get.to(() => const HelpAndSupport()),
-              //   child: const ListTile(
-              //     title: Text("Help and Support"),
-              //     trailing: Icon(Icons.chevron_right_rounded),
-              //   ),
-              // ),
+              InkWell(
+                onTap: () => Get.to(() => const HelpAndSupport()),
+                child: const ListTile(
+                  title: Text("Help and Support"),
+                  trailing: Icon(Icons.chevron_right_rounded),
+                ),
+              ),
               const InkWell(
                 child: ListTile(
                   title: Text("Privacy Policy"),

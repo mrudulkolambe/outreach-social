@@ -1,7 +1,4 @@
 PODS:
-  - agora_chat_sdk (0.0.1):
-    - Flutter
-    - HyphenateChat (= 4.1.1)
   - AppAuth (1.7.5):
     - AppAuth/Core (= 1.7.5)
     - AppAuth/ExternalUserAgent (= 1.7.5)

@@ -22,7 +22,7 @@ import just_audio
 import package_info_plus
 import path_provider_foundation
 import record_macos
-import sqflite
+import sqflite_darwin
 import video_player_avfoundation
 import wakelock_plus
 

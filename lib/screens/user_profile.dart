@@ -154,7 +154,7 @@ class _UserProfileState extends State<UserProfile> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        userData == null && userData!.imageUrl == null
+                        userData!.imageUrl == null
                             ? Container(
                                 decoration: BoxDecoration(
                                   color: accent,
@@ -372,7 +372,7 @@ class _UserProfileState extends State<UserProfile> {
                     ),
                     const SizedBox(height: 5),
                     ...userData!.feeds.reversed
-                        .map((e) => ProfilePosts(post: e)),
+                        .map((e) => ProfilePosts(post: e, user: userController.userData!,)),
                     InkWell(
                       onTap: () => Get.to(() => const YourPosts()),
                       child: Container(
