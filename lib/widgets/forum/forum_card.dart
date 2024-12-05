@@ -1,6 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -9,20 +8,23 @@ import 'package:outreach/api/services/forum_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/screens/forum/forum_post_details.dart';
+import 'package:outreach/utils/report_reasons.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
+import 'package:outreach/widgets/popup/report_popup.dart';
 import 'package:outreach/widgets/posts/mediacard.dart';
 
 class ForumCard extends StatefulWidget {
   final Forum forum;
   final ForumPost forumPost;
   final String type;
+  final String user;
 
-  const ForumCard({
-    super.key,
-    required this.forum,
-    required this.forumPost,
-    required this.type,
-  });
+  const ForumCard(
+      {super.key,
+      required this.forum,
+      required this.forumPost,
+      required this.type,
+      required this.user});
 
   @override
   _ForumCardState createState() => _ForumCardState();
@@ -49,6 +51,21 @@ class _ForumCardState extends State<ForumCard> {
   bool _isTextLong(String text) {
     final words = text.split(' ');
     return words.length > _maxLines * 10;
+  }
+
+  void _openReportModal() {
+    showDialog(
+      useSafeArea: false,
+      context: context,
+      builder: (context) {
+        return ReportPopup(
+            reasons: ReportReasons.postReasons,
+            type: "forum",
+            postId: widget.forumPost.id,
+            userID: widget.user);
+      },
+    );
+    // showDialog(context: context, builder: (context) => ReportPopup());
   }
 
   @override
@@ -165,6 +182,63 @@ class _ForumCardState extends State<ForumCard> {
                   ],
                 ),
               ),
+              PopupMenuButton<int>(
+                padding: const EdgeInsets.all(0),
+                onSelected: (item) {
+                  if (item == 1) {
+                    print('Edit tapped');
+                  } else if (item == 2) {
+                    print('Delete tapped');
+                  } else if (item == 3) {
+                    _openReportModal();
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 1,
+                    child: Center(
+                      child: SizedBox(
+                          width: 150,
+                          child: Text(
+                            'Edit',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          )),
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 2,
+                    child: Center(
+                      child: SizedBox(
+                          width: 150,
+                          child: Text(
+                            'Delete',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          )),
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 3,
+                    child: Center(
+                      child: SizedBox(
+                          width: 150,
+                          child: Text(
+                            'Report',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          )),
+                    ),
+                  ),
+                ],
+                icon: const Icon(Icons.more_vert),
+              ),
             ],
           ),
           if (widget.type == "details")
@@ -265,12 +339,22 @@ class _ForumCardState extends State<ForumCard> {
                 const SizedBox(
                   width: 15,
                 ),
-                const Row(
+                Row(
                   children: [
-                    Text(
-                      "Reply",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
+                    InkWell(
+                      onTap: widget.type == "details"
+                          ? () {}
+                          : () => Get.to(
+                                () => ForumPostDetails(
+                                  forumPost: widget.forumPost,
+                                  forum: widget.forum,
+                                ),
+                              ),
+                      child: Text(
+                        "Reply",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],

@@ -54,6 +54,8 @@ const String shareStoryAPI = '$storyEndpoint/create';
 const String getStoryAPI = '$storyEndpoint/get';
 const String deleteStoryAPI = '$storyEndpoint/delete';
 
+const String createReportAPI = '$baseUrl/report/create';
+
 const String singlefileUpload = '$uploadBaseURL/upload';
 const String multifileUpload = '$uploadBaseURL/multi-upload';
 const String storyFileUpload = '$uploadBaseURL/story-upload';

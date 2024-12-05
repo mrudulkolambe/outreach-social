@@ -17,7 +17,7 @@ class FirebasemsgHandler {
   static AndroidNotificationChannel channel_call =
       const AndroidNotificationChannel(
     'com.outreach.outreach_notification_channel_id',
-    'OutReach Call Notification',
+    'Outreach Call Notification', 
     importance: Importance.max,
     enableLights: true,
     playSound: true,
@@ -100,7 +100,7 @@ class FirebasemsgHandler {
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         print("\n notification on onMessage function \n");
-        print(message);
+  
         if (message != null) {
           handleNotification(message);
         }

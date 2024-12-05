@@ -20,6 +20,7 @@ import 'package:outreach/firebase_options.dart';
 import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/auth/username.dart';
 import 'package:outreach/screens/home.dart';
+import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/onboarding.dart';
 import 'package:outreach/utils/firebasemsg_handler.dart';
 import 'package:outreach/utils/toast_manager.dart';
@@ -131,14 +132,13 @@ class _SplashScreenState extends State<SplashScreen>
                 cId: userData.id,
               );
               await _agoraService.loginToAgoraChat(userData.id, token);
-              Get.offAll(() => const HomePage());
+              Get.offAll(() => const MainStack());
             } catch (e) {
               if (e.toString().contains("already logged in")) {
-                Get.offAll(() => const HomePage());
+                Get.offAll(() => const MainStack());
               } else {
                 log("Agora Chat login error: $e");
-                ToastManager.showToast(
-                    "Chat login failed. Please try again.", context);
+                ToastManager.showToast("Chat login failed. Please try again.", context);
               }
             } catch (e) {
               log("Agora Chat initialization error: $e");

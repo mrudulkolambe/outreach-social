@@ -323,7 +323,6 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
                     ),
                     TextFormField(
                       controller: descriptionController,
-                      maxLength: 500,
                       minLines: null,
                       maxLines: null,
                       keyboardType: TextInputType.multiline,
@@ -528,6 +527,7 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
                                 forum: widget.forum,
                                 forumPost: forumPost,
                                 type: "primary",
+                                user: userController.userData!.id,
                               );
                             }),
                           ],

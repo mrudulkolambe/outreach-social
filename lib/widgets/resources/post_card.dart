@@ -10,8 +10,10 @@ import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/resource_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
+import 'package:outreach/utils/report_reasons.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/bottomsheet/post_comment.dart';
+import 'package:outreach/widgets/popup/report_popup.dart';
 import 'package:outreach/widgets/posts/mediacard.dart';
 
 class PostCard extends StatefulWidget {
@@ -66,6 +68,21 @@ class _PostCardState extends State<PostCard> {
   bool _isTextLong(String text) {
     final words = text.split(' ');
     return words.length > _maxLines * 10;
+  }
+
+  void _openReportModal() {
+    showDialog(
+      useSafeArea: false,
+      context: context,
+      builder: (context) {
+        return ReportPopup(
+            reasons: ReportReasons.postReasons,
+            type: "resource",
+            postId: widget.post.id,
+            userID: widget.user.id);
+      },
+    );
+    // showDialog(context: context, builder: (context) => ReportPopup());
   }
 
   @override
@@ -161,6 +178,63 @@ class _PostCardState extends State<PostCard> {
                     )
                   ],
                 ),
+              ),
+              PopupMenuButton<int>(
+                padding: const EdgeInsets.all(0),
+                onSelected: (item) {
+                  if (item == 1) {
+                    print('Edit tapped');
+                  } else if (item == 2) {
+                    print('Delete tapped');
+                  } else if (item == 3) {
+                    _openReportModal();
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 1,
+                    child: Center(
+                      child: SizedBox(
+                          width: 150,
+                          child: Text(
+                            'Edit',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          )),
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 2,
+                    child: Center(
+                      child: SizedBox(
+                          width: 150,
+                          child: Text(
+                            'Delete',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          )),
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 3,
+                    child: Center(
+                      child: SizedBox(
+                          width: 150,
+                          child: Text(
+                            'Report',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          )),
+                    ),
+                  ),
+                ],
+                icon: const Icon(Icons.more_vert),
               ),
             ],
           ),

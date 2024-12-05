@@ -211,7 +211,7 @@ class AgoraService {
     final url = Uri.parse(agoraConfig.toString());
 
     final headers = {
-      'Authorization': 'Bearer $agoraChatToken',
+      'Authorization': 'Bearer $chatToken',
       'Content-Type': 'application/json',
       'Accept': '*/*',
       'Connection': 'keep-alive',

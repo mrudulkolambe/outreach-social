@@ -73,7 +73,7 @@ class _ProfilePicState extends State<ProfilePic> {
     if (!kIsWeb) {
       bool permissionGranted = await requestGalleryPermission();
       if (!permissionGranted) {
-        openAppSettings();
+        // openAppSettings();
         return;
       }
     }

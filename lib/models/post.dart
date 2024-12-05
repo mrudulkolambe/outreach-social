@@ -88,7 +88,7 @@ class Post {
       required this.commentCount});
 
   factory Post.fromJson(dynamic json) {
-    final id = json["_id"] as String;
+    final id = json["_id"] ?? json["id"] as String;
     final content = json["content"] as String;
     final media =
         List.from(json["media"]).map((e) => Media.fromJson(e)).toList();
@@ -168,7 +168,6 @@ class PostUser {
     };
   }
 }
-
 
 class PostUsersResponse {
   String message;
