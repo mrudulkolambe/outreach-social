@@ -6,13 +6,27 @@ import 'package:outreach/models/call_request.dart';
 import 'package:http/http.dart' as http;
 
 class F {
-  static Future<void> sendNotifications(String call_type, String to_token,
-      String to_avatar, String to_name,String channel_id) async {
+  static Future<void> sendNotifications(
+      String call_type,
+      String to_token,
+      String to_avatar,
+      String to_name,
+      String channel_id,
+      // String caller_token,
+      // String caller_profile_image,
+      // String caller_name
+      
+      ) async {
     CallRequestEntity callRequestEntity = CallRequestEntity(
       call_type: call_type,
       to_token: to_token,
       to_profile_image: to_avatar,
-      to_name: to_name,
+      to_name: to_name, 
+      channel_id: channel_id,
+      // caller Data
+      // caller_token: caller_token,
+      // caller_profile_image: caller_profile_image,
+      // caller_name: caller_name,
     );
     log("model Urls: ${callNoto + to_token}");
     log("model sendNotifications Area: ${callRequestEntity.toJson()}");

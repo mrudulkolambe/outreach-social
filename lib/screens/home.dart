@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:outreach/api/models/story.dart';
 import 'package:outreach/api/services/feed_services.dart';
 import 'package:outreach/api/services/story_services.dart';
@@ -17,7 +15,6 @@ import 'package:outreach/models/post.dart';
 import 'package:outreach/screens/agora/chat.dart';
 import 'package:outreach/screens/agora/chatMainScreen.dart';
 import 'package:outreach/screens/main.dart';
-import 'package:outreach/screens/notification.dart';
 import 'package:outreach/screens/search.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/post_card.dart';
@@ -41,8 +38,6 @@ class MediaItem {
 
   MediaItem({required this.file, required this.type});
 }
-
-final _storage = GetStorage();
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
@@ -86,17 +81,14 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _loadMorePosts() async {
     if (hasMorePost) {
-      final morePostsResponse =
-          await feedService.getFeed(page: _currentPage + 1);
-      if (morePostsResponse != null) {
-        setState(() {
-          _currentPage++;
-          hasMorePost =
-              morePostsResponse.totalPages > morePostsResponse.currentPage;
-          postsList.addAll(morePostsResponse.posts);
-          postController.addAllPosts(morePostsResponse.posts);
-        });
-      }
+      _currentPage++;
+      final morePostsResponse = await feedService.getFeed(page: _currentPage);
+      setState(() {
+        hasMorePost =
+            morePostsResponse!.totalPages > morePostsResponse.currentPage;
+        postsList.addAll(morePostsResponse.posts);
+        postController.addAllPosts(morePostsResponse.posts);
+      });
     } else {
       print("Else Load More Posts");
     }
@@ -121,7 +113,6 @@ class _HomePageState extends State<HomePage>
         groupedStories.addAll(handleStories(storyList.response.user));
         print(groupedStories[0].stories.length);
         postsList = listPostsResponse!.posts;
-        _storage.write('posts1', json.encode(listPostsResponse.posts));
         postController.initAddPosts(listPostsResponse.posts);
         hasMorePost =
             listPostsResponse.totalPages > listPostsResponse.currentPage;
@@ -204,7 +195,7 @@ class _HomePageState extends State<HomePage>
             ),
           ),
           IconButton(
-            onPressed: () => Get.to(() => const NotificationScreen()),
+            onPressed: () {},
             icon: SvgPicture.asset(
               "assets/icons/notification.svg",
             ),
@@ -231,197 +222,196 @@ class _HomePageState extends State<HomePage>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                // SizedBox(
-                //   width: MediaQuery.of(context).size.width,
-                //   height: 125,
-                //   child: Row(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     mainAxisAlignment: MainAxisAlignment.start,
-                //     children: [
-                //       SizedBox(
-                //         key: Key("GROUPED_STORIES_${groupedStories.length}"),
-                //         width: MediaQuery.of(context).size.width - 20,
-                //         height: 125,
-                //         child: AdvStory(
-                //           buildStoryOnTrayScroll: true,
-                //           preloadStory: true,
-                //           preloadContent: true,
-                //           style: const AdvStoryStyle(),
-                //           storyCount: groupedStories.length,
-                //           trayBuilder: (storyIndex) {
-                //             print("storyIndex $storyIndex");
-                //             return storyIndex == 0
-                //                 ? InkWell(
-                //                     onTap: () {
-                //                       if (storyResponse.own.isEmpty) {
-                //                         Get.offAll(() => const MainStack(
-                //                               page: 5,
-                //                             ));
-                //                       } else {
-                //                         Get.to(
-                //                           () => SelfStoryView(
-                //                             userStories: storyResponse.own,
-                //                           ),
-                //                         );
-                //                       }
-                //                     },
-                //                     onLongPress: () {
-                //                       Get.offAll(() => const MainStack(
-                //                             page: 5,
-                //                           ));
-                //                     },
-                //                     child: Container(
-                //                       height: 103,
-                //                       width: 88,
-                //                       decoration: BoxDecoration(
-                //                         color: const Color.fromRGBO(
-                //                             211, 221, 250, 0.3),
-                //                         borderRadius: BorderRadius.circular(14),
-                //                       ),
-                //                       child: Column(
-                //                         mainAxisAlignment:
-                //                             MainAxisAlignment.center,
-                //                         children: [
-                //                           Container(
-                //                             decoration: BoxDecoration(
-                //                               color: Colors.blue,
-                //                               borderRadius:
-                //                                   BorderRadius.circular(25),
-                //                             ),
-                //                             height: 25,
-                //                             width: 25,
-                //                             child: const Icon(
-                //                               Icons.add,
-                //                               color: Colors.white,
-                //                               size: 22,
-                //                             ),
-                //                           ),
-                //                           const SizedBox(
-                //                             height: 5,
-                //                           ),
-                //                           const Text(
-                //                             "Add your\nstory",
-                //                             textAlign: TextAlign.center,
-                //                             style:
-                //                                 TextStyle(color: Colors.grey),
-                //                           ),
-                //                         ],
-                //                       ),
-                //                     ),
-                //                   )
-                //                 : AdvStoryTray(
-                //                     username: SizedBox(
-                //                       width: 88,
-                //                       child: Text(
-                //                         textAlign: TextAlign.center,
-                //                         storyIndex == 0
-                //                             ? "Your story"
-                //                             : groupedStories[storyIndex]
-                //                                 .username,
-                //                         style: const TextStyle(
-                //                           fontSize: 12,
-                //                           fontWeight: FontWeight.w600,
-                //                           overflow: TextOverflow.ellipsis,
-                //                         ),
-                //                       ),
-                //                     ),
-                //                     borderRadius: 20,
-                //                     size: const Size(88, 103),
-                //                     shape: BoxShape.rectangle,
-                //                     url: groupedStories[storyIndex].imageUrl !=
-                //                                 null ||
-                //                             groupedStories[storyIndex]
-                //                                     .imageUrl !=
-                //                                 ""
-                //                         ? groupedStories[storyIndex].imageUrl!
-                //                         : "assets/icons/user-placeholder.png",
-                //                   );
-                //           },
-                //           storyBuilder: (storyIndex) {
-                //             return Story(
-                //               header: Padding(
-                //                 padding:
-                //                     const EdgeInsets.symmetric(horizontal: 20),
-                //                 child: Row(
-                //                   children: [
-                //                     ClipRRect(
-                //                       borderRadius: BorderRadius.circular(25),
-                //                       child: groupedStories[storyIndex]
-                //                                       .imageUrl ==
-                //                                   null ||
-                //                               groupedStories[storyIndex]
-                //                                       .imageUrl ==
-                //                                   ""
-                //                           ? Image.asset(
-                //                               "assets/icons/user-placeholder.png")
-                //                           : Image.network(
-                //                               fit: BoxFit.cover,
-                //                               groupedStories[storyIndex]
-                //                                   .imageUrl!,
-                //                               height: 50,
-                //                               width: 50,
-                //                             ),
-                //                     ),
-                //                     const SizedBox(
-                //                       width: 20,
-                //                     ),
-                //                     Text(
-                //                       "@${groupedStories[storyIndex].username}",
-                //                       style: const TextStyle(
-                //                           fontWeight: FontWeight.w600,
-                //                           color: Colors.white,
-                //                           fontSize: 16),
-                //                     )
-                //                   ],
-                //                 ),
-                //               ),
-                //               contentCount:
-                //                   groupedStories[storyIndex].stories.length,
-                //               contentBuilder: (contentIndex) {
-                //                 return groupedStories[storyIndex]
-                //                             .stories[contentIndex]
-                //                             .media
-                //                             .type ==
-                //                         "video"
-                //                     ? VideoContent(
-                //                         timeout: const Duration(seconds: 5),
-                //                         url: groupedStories[storyIndex]
-                //                             .stories[contentIndex]
-                //                             .media
-                //                             .url,
-                //                       )
-                //                     : ImageContent(
-                //                         footer: Padding(
-                //                           padding: const EdgeInsets.symmetric(
-                //                               horizontal: 20),
-                //                           child: Text(
-                //                             groupedStories[storyIndex]
-                //                                 .stories[contentIndex]
-                //                                 .content,
-                //                             style: const TextStyle(
-                //                               fontWeight: FontWeight.w600,
-                //                               color: Colors.white,
-                //                               fontSize: 16,
-                //                             ),
-                //                           ),
-                //                         ),
-                //                         url: groupedStories[storyIndex]
-                //                             .stories[contentIndex]
-                //                             .media
-                //                             .url,
-                //                       );
-                //               },
-                //             );
-                //           },
-                //         ),
-                //       ),
-                //       const SizedBox(
-                //         width: 16,
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 125,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        key: Key("GROUPED_STORIES_${groupedStories.length}"),
+                        width: MediaQuery.of(context).size.width - 20,
+                        height: 125,
+                        child: AdvStory(
+                          buildStoryOnTrayScroll: true,
+                          preloadStory: true,
+                          preloadContent: true,
+                          style: const AdvStoryStyle(),
+                          storyCount: groupedStories.length,
+                          trayBuilder: (storyIndex) {
+                            print("storyIndex $storyIndex");
+                            return storyIndex == 0
+                                ? InkWell(
+                                    onTap: () {
+                                      if (storyResponse.own.isEmpty) {
+                                        Get.offAll(() => const MainStack(
+                                              page: 5,
+                                            ));
+                                      } else {
+                                        Get.to(
+                                          () => SelfStoryView(
+                                            userStories: storyResponse.own,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    onLongPress: () {
+                                      Get.offAll(() => const MainStack(
+                                            page: 5,
+                                          ));
+                                    },
+                                    child: Container(
+                                      height: 103,
+                                      width: 88,
+                                      decoration: BoxDecoration(
+                                        color: const Color.fromRGBO(
+                                            211, 221, 250, 0.3),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue,
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
+                                            ),
+                                            height: 25,
+                                            width: 25,
+                                            child: const Icon(
+                                              Icons.add,
+                                              color: Colors.white,
+                                              size: 22,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          const Text(
+                                            "Add your\nstory",
+                                            textAlign: TextAlign.center,
+                                            style:
+                                                TextStyle(color: Colors.grey),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : AdvStoryTray(
+                                    username: SizedBox(
+                                      width: 88,
+                                      child: Text(
+                                        textAlign: TextAlign.center,
+                                        storyIndex == 0
+                                            ? "Your story"
+                                            : groupedStories[storyIndex]
+                                                .username,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                    borderRadius: 20,
+                                    size: const Size(88, 103),
+                                    shape: BoxShape.rectangle,
+                                    url: groupedStories[storyIndex].imageUrl !=
+                                                null ||
+                                            groupedStories[storyIndex]
+                                                    .imageUrl !=
+                                                ""
+                                        ? groupedStories[storyIndex].imageUrl!
+                                        : "assets/icons/user-placeholder.png",
+                                  );
+                          },
+                          storyBuilder: (storyIndex) {
+                            return Story(
+                              header: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(25),
+                                      child: groupedStories[storyIndex]
+                                                      .imageUrl ==
+                                                  null ||
+                                              groupedStories[storyIndex]
+                                                      .imageUrl ==
+                                                  ""
+                                          ? Image.asset(
+                                              "assets/icons/user-placeholder.png")
+                                          : Image.network(
+                                              fit: BoxFit.cover,
+                                              groupedStories[storyIndex]
+                                                  .imageUrl!,
+                                              height: 50,
+                                              width: 50,
+                                            ),
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      "@${groupedStories[storyIndex].username}",
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                          fontSize: 16),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              contentCount:
+                                  groupedStories[storyIndex].stories.length,
+                              contentBuilder: (contentIndex) {
+                                return groupedStories[storyIndex]
+                                            .stories[contentIndex]
+                                            .media
+                                            .type ==
+                                        "video"
+                                    ? VideoContent(
+                                        timeout: const Duration(seconds: 5),
+                                        url: groupedStories[storyIndex]
+                                            .stories[contentIndex]
+                                            .media
+                                            .url,
+                                      )
+                                    : ImageContent(
+                                        footer: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20),
+                                          child: Text(
+                                            groupedStories[storyIndex]
+                                                .stories[contentIndex]
+                                                .content,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
+                                        url: groupedStories[storyIndex]
+                                            .stories[contentIndex]
+                                            .media
+                                            .url,
+                                      );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                    ],
+                  ),
+                ),
                 GetBuilder(
                   init: SavingController(),
                   builder: (savingController) {
@@ -491,6 +481,7 @@ class _HomePageState extends State<HomePage>
               ],
             ),
           ),
+          child:Container(),
         ),
       ),
     );

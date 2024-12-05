@@ -29,8 +29,10 @@ import 'package:permission_handler/permission_handler.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await fireBaseCallingNoto();
-  await FirebasemsgHandler.config();
+  fireBaseCallingNoto().whenComplete(() {
+    FirebasemsgHandler.config();
+  });
+
   runApp(const MyApp());
 }
 
@@ -47,8 +49,12 @@ Future fireBaseCallingNoto() async {
 }
 
 Future<bool> checkStoragePermission() async {
-  var status = await Permission.storage.request();
-  return status.isGranted;
+  var status = await [
+    Permission.storage,
+    Permission.camera,
+    Permission.microphone
+  ].request();
+  return status.values.every((element) => element.isGranted);
 }
 
 class MyApp extends StatelessWidget {
@@ -120,6 +126,11 @@ class _SplashScreenState extends State<SplashScreen>
           } else {
             final token = await user.getIdToken(true);
             try {
+              await _agoraService.createAttribute(
+                userName: userData.name!,
+                userImage: userData.imageUrl!,
+                cId: userData.id,
+              );
               await _agoraService.loginToAgoraChat(userData.id, token);
               Get.offAll(() => const MainStack());
             } catch (e) {

@@ -14,10 +14,12 @@ import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/user.dart';
+import 'package:outreach/controller/video_call_controlller.dart';
 import 'package:outreach/controller/voice_call_controller.dart';
 import 'package:outreach/models/call_request.dart';
 import 'package:outreach/models/interest.dart';
 import 'package:outreach/screens/agora/chat.dart';
+import 'package:outreach/screens/agora/video_call_state/video.dart';
 import 'package:outreach/screens/agora/voice_call_state/call.dart';
 import 'package:outreach/screens/your_posts.dart';
 import 'package:outreach/utils/f.dart';
@@ -31,6 +33,7 @@ import 'package:outreach/widgets/profile/details_elem.dart';
 import 'package:outreach/widgets/styled_button.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
 
 class UserProfile extends StatefulWidget {
   final String userId;
@@ -78,6 +81,30 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
+  void videoCall(
+    String call_type,
+    String to_token,
+    String to_avatar,
+    String to_name,
+    String channel_id,
+  ) async {
+    final VideoCallControlller videoController =
+        Get.put(VideoCallControlller());
+
+    await F.sendNotifications(
+        call_type, to_token, to_avatar, to_name, channel_id);
+
+    Get.to(
+      () => VideoCallPage(
+        to_token: userData!.id,
+        to_name: userData!.name,
+        to_profile_image: userData!.imageUrl,
+        call_role:
+            videoController.callerRole.value, // callerRole is not defined
+      ),
+    );
+  }
+
   void audioCall(
     String call_type,
     String to_token,
@@ -87,26 +114,19 @@ class _UserProfileState extends State<UserProfile> {
   ) async {
     final VoiceCallController callController = Get.put(VoiceCallController());
 
-    callController.personalID.value = userController.userData!.id;
-    callController.nextPersonID.value = userData!.id;
-
     await F.sendNotifications(
-      call_type,
-      to_token,
-      to_avatar,
-      to_name,
-      channel_id,
-    );
+        call_type, to_token, to_avatar, to_name, channel_id);
 
     Get.to(
       () => VoiceCallPage(
         to_token: userData!.id,
         to_name: userData!.name,
         to_profile_image: userData!.imageUrl,
-        call_role:
-            callController.callerRole.value == "anchor" ? "anchor" : "audience",
+        call_role: callController.callerRole.value,
       ),
     );
+
+    log("audioCall: $to_token $to_avatar $to_name $channel_id");
   }
 
   @override
@@ -268,11 +288,37 @@ class _UserProfileState extends State<UserProfile> {
                       onTap: () {
                         final VoiceCallController callController =
                             Get.put(VoiceCallController());
-                        audioCall("voice", userData!.id, userData!.imageUrl!,
-                            userData!.name!, callController.uniqueChannelName.value);
+
+                        audioCall(
+                          "voice",
+                          userData!.id,
+                          userController.userData!.imageUrl ?? "null",
+                          userController.userData!.name ?? "null",
+                          callController.uniqueChannelName.value,
+                        );
                       },
                       child: const StyledButton(
                         text: "Calling Button",
+                        loading: false,
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+                    InkWell(
+                      onTap: () {
+                        final VideoCallControlller videoController =
+                            Get.put(VideoCallControlller());
+
+                        videoCall(
+                          "video",
+                          userData!.id,
+                          userController.userData!.imageUrl ?? "null",
+                          userController.userData!.name ?? "null",
+                          videoController.uniqueChannelName.value,
+                        );
+                      },
+                      child: const StyledButton(
+                        text: "Video Call",
                         loading: false,
                       ),
                     ),

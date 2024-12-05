@@ -191,7 +191,7 @@ class AgoraService {
       final response = await http.post(Uri.parse(agoraChatTokenAPI));
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
-
+        print('ChatToken fetched successfully: ${jsonData['chatToken']}');
         return agoraChatToken = jsonData['chatToken'] ?? '';
       } else {
         throw Exception('Failed to fetch chatToken: ${response.statusCode}');
@@ -207,6 +207,7 @@ class AgoraService {
     required String password,
   }) async {
     final chatToken = await fetchChatToken();
+    log("message Line 191 $chatToken");
     final url = Uri.parse(agoraConfig.toString());
 
     final headers = {
@@ -251,7 +252,7 @@ class AgoraService {
       'Accept': '*/*',
       'Connection': 'keep-alive',
       'Accept-Encoding': 'gzip, deflate, br',
-      'Host': 'a41.chat.agora.io',
+      'Host': 'a71.chat.agora.io',
     };
 
     final body = {
@@ -264,6 +265,8 @@ class AgoraService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('Attribute created successfully: ${response.body}');
+
+        log("on Line 268 $agoraChatToken");
       } else {
         print(
             'Failed to create attribute: ${response.statusCode} - ${response.body}');
@@ -500,13 +503,13 @@ class AgoraService {
     }
   }
 
-  Future<void> sendNotifications(
-      String type,
-      String recipientId,
-      String recipientImage,
-      String recipientName,
-      String conversationId) async {
+  // Future<void> sendNotifications(
+  //     String type,
+  //     String recipientId,
+  //     String recipientImage,
+  //     String recipientName,
+  //     String conversationId) async {
 
-    log("Sending notification of type $type to $recipientId and $conversationId with $recipientImage and $recipientName");
-  }
+  //   log("Sending notification of type $type to $recipientId and $conversationId with $recipientImage and $recipientName");
+  // }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outreach/controller/video_call_controlller.dart';
 import 'package:outreach/controller/voice_call_controller.dart';
 
 class VoiceCallPage extends GetView<VoiceCallController> {
@@ -21,6 +22,8 @@ class VoiceCallPage extends GetView<VoiceCallController> {
 
   @override
   Widget build(BuildContext context) {
+    
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Obx(
@@ -53,7 +56,7 @@ class VoiceCallPage extends GetView<VoiceCallController> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        "${controller.callStatus.value}...",
+                        "${controller.callStatus.value}",
                         style:
                             const TextStyle(color: Colors.white, fontSize: 16),
                       ),
@@ -70,32 +73,41 @@ class VoiceCallPage extends GetView<VoiceCallController> {
                     children: [
                       FloatingActionButton(
                         heroTag: 'micButton',
-                        onPressed: () {
-                          controller.openMicrophone.value = !controller.openMicrophone.value;
-                        },
-                        backgroundColor:
-                            controller.openMicrophone.value ? Colors.green : Colors.grey,
+                        onPressed: controller.toggleMic,
+                        backgroundColor: controller.openMicrophone.value
+                            ? Colors.green
+                            : Colors.grey,
                         child: Icon(
-                          controller.openMicrophone.value ? Icons.mic : Icons.mic_off,
+                          controller.openMicrophone.value
+                              ? Icons.mic
+                              : Icons.mic_off,
                           color: Colors.white,
                         ),
                       ),
                       FloatingActionButton(
                         heroTag: 'callButton',
-                        onPressed: controller.isJoined.value ? controller.leaveChannel : controller.joinChannel,
-                        backgroundColor: Colors.red,
+                        onPressed: controller.isJoined.value
+                            ? () {
+                                controller.leaveChannel();
+                                Get.back();
+                              }
+                            : controller.joinChannel,
+                        backgroundColor: controller.isJoined.value
+                            ? Colors.red
+                            : Colors.green,
                         child: Icon(
-                          controller.isJoined.value ? Icons.call_end : Icons.call,
+                          controller.isJoined.value
+                              ? Icons.call_end
+                              : Icons.call,
                           color: Colors.white,
                         ),
                       ),
                       FloatingActionButton(
                         heroTag: 'speakerButton',
-                        onPressed: () {
-                          controller.isOpenSpeaker.value = !controller.isOpenSpeaker.value;
-                        },
-                        backgroundColor:
-                            controller.isOpenSpeaker.value ? Colors.green : Colors.grey,
+                        onPressed: controller.toggleSpeaker,
+                        backgroundColor: controller.isOpenSpeaker.value
+                            ? Colors.green
+                            : Colors.grey,
                         child: Icon(
                           controller.isOpenSpeaker.value
                               ? Icons.volume_up
