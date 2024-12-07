@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:outreach/api/constants/constants.dart';
 import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/agora_chat_service.dart';
 import 'package:outreach/api/services/user_services.dart';
@@ -19,7 +21,6 @@ import 'package:outreach/controller/user.dart';
 import 'package:outreach/firebase_options.dart';
 import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/auth/username.dart';
-import 'package:outreach/screens/home.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/onboarding.dart';
 import 'package:outreach/utils/firebasemsg_handler.dart';
@@ -32,7 +33,13 @@ void main() async {
   fireBaseCallingNoto().whenComplete(() {
     FirebasemsgHandler.config();
   });
-
+  await ChatClient.getInstance.init(
+    ChatOptions(
+      appKey: agoraAppID,
+      autoLogin: true,
+      debugModel: true,
+    ),
+  );
   runApp(const MyApp());
 }
 
@@ -138,7 +145,8 @@ class _SplashScreenState extends State<SplashScreen>
                 Get.offAll(() => const MainStack());
               } else {
                 log("Agora Chat login error: $e");
-                ToastManager.showToast("Chat login failed. Please try again.", context);
+                ToastManager.showToast(
+                    "Chat login failed. Please try again.", context);
               }
             } catch (e) {
               log("Agora Chat initialization error: $e");

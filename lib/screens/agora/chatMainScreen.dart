@@ -1,8 +1,14 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/services/agora_chat_service.dart';
+import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/spacing.dart';
+import 'package:outreach/controller/user.dart';
+import 'package:outreach/models/post.dart';
 import 'package:outreach/screens/agora/chat.dart';
 import 'package:outreach/widgets/styled_textfield.dart';
 
@@ -21,18 +27,45 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
   String? _error;
   final TextEditingController _searchController = TextEditingController();
   List<ChatConversation> _filteredConversations = [];
+  bool showSearchResults = false;
+
+  //search
+  Timer? _debounce;
+  List<PostUser> users = [];
+  final UserService userService = UserService();
+  UserController userController = Get.put(UserController());
+  bool fetching = false;
 
   @override
   void initState() {
     super.initState();
     _fetchConversations();
     _searchController.addListener(_filterConversations);
+    searchUsers(''); // Fetch all users initially
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+
     super.dispose();
+  }
+
+  void searchUsers(String query) async {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 200), () async {
+      if (userController.userData != null) {
+        setState(() {
+          fetching = true;
+        });
+        final usersList =
+            await userService.globalSearch(query, userController.userData!.id);
+        setState(() {
+          users = usersList ?? [];
+          fetching = false;
+        });
+      }
+    });
   }
 
   Future<void> _fetchConversations() async {
@@ -58,7 +91,6 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
       if (conversations.isNotEmpty) {
         final attributes = await AgoraService()
             .getAttributesInBatch(conversations.map((c) => c.id).toList());
-        print(attributes["66c1c4e387e2c395e6b5f21e"]!.userName);
         if (!mounted) return;
 
         setState(() {
@@ -110,13 +142,14 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
 
   void _filterConversations() {
     final query = _searchController.text.toLowerCase();
+    searchUsers(query);
     setState(() {
       if (query.isEmpty) {
         _filteredConversations = List.from(_conversations);
       } else {
         _filteredConversations = _conversations.where((conversation) {
           final attributes = _userAttributes[conversation.id];
-          final userName = attributes?.userName.toLowerCase() ?? '';
+          final userName = attributes?.userName.toLowerCase() ?? ' ';
           return userName.contains(query) ||
               conversation.id.toLowerCase().contains(query);
         }).toList();
@@ -156,6 +189,38 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
     return const CircleAvatar(child: Icon(Icons.person));
   }
 
+  Widget _buildUserItem(PostUser user) {
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundImage: user.imageUrl != null && user.imageUrl!.isNotEmpty
+            ? NetworkImage(user.imageUrl!)
+            : null,
+        child: user.imageUrl == null || user.imageUrl!.isEmpty
+            ? const Icon(Icons.person)
+            : null,
+      ),
+      title: Text(user.username ?? ""),
+      onTap: () async {
+        // Create conversation only when user taps to chat
+        AgoraService agoraService = AgoraService();
+        final conversation = await agoraService.getConversation(user.id ?? "");
+        agoraService.createAttribute(
+          userName: user.username ?? "",
+          userImage: user.imageUrl ?? "",
+          cId: user.id,
+        );
+        Get.to(
+          () => ChatScreen(
+            recipientId: user.id ?? "",
+            recipientName: user.username ?? "",
+            recipientImage: user.imageUrl ?? "",
+            conversation: conversation,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,22 +239,9 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
               StyledTextField(
                 controller: _searchController,
                 keyboardType: TextInputType.text,
-                hintText: "Search",
+                hintText: "Search Friends",
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Messages",
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Expanded(
                 child: _isLoading || _isLoadingAttributes
                     ? const Center(child: CircularProgressIndicator())
@@ -198,14 +250,7 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
-                                  _error!,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
+                                Text(_error!),
                                 ElevatedButton(
                                   onPressed: _fetchConversations,
                                   child: const Text('Retry'),
@@ -213,18 +258,77 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
                               ],
                             ),
                           )
-                        : _conversations.isEmpty
-                            ? const Center(
-                                child: Text('No conversations found'),
-                              )
-                            : ListView.separated(
-                                itemCount: _filteredConversations.length,
-                                separatorBuilder: (_, __) =>
-                                    const Divider(height: 1),
-                                itemBuilder: (context, index) =>
-                                    _buildConversationItem(
-                                        _filteredConversations[index]),
-                              ),
+                        : SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Conversations Section
+                                const Text(
+                                  "Messages",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blueAccent,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                _filteredConversations.isEmpty
+                                    ? const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Center(
+                                            child:
+                                                Text('No conversations found')),
+                                      )
+                                    : ListView.separated(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount:
+                                            _filteredConversations.length,
+                                        separatorBuilder: (_, __) =>
+                                            const Divider(height: 1),
+                                        itemBuilder: (context, index) =>
+                                            _buildConversationItem(
+                                          _filteredConversations[index],
+                                        ),
+                                      ),
+                                const SizedBox(height: 20),
+                                // Global Users Section
+                                const Text(
+                                  "Find New Friends",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blueAccent,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                fetching
+                                    ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : users.isEmpty
+                                        ? const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Center(
+                                                child: Text(
+                                                    'Find New People\'s For Chat')),
+                                          )
+                                        : ListView.separated(
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            itemCount: users.length,
+                                            separatorBuilder: (_, __) =>
+                                                const Divider(height: 1),
+                                            itemBuilder: (context, index) =>
+                                                _buildUserItem(
+                                              users[index],
+                                            ),
+                                          ),
+                              ],
+                            ),
+                          ),
               ),
             ],
           ),
