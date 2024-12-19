@@ -211,34 +211,36 @@ class _PostCardState extends State<PostCard> {
                   }
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 1,
-                    child: Center(
-                      child: SizedBox(
-                          width: 150,
-                          child: Text(
-                            'Edit',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.center,
-                          )),
+                  if (widget.user.id == widget.post.user.id)
+                    const PopupMenuItem(
+                      value: 1,
+                      child: Center(
+                        child: SizedBox(
+                            width: 150,
+                            child: Text(
+                              'Edit',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            )),
+                      ),
                     ),
-                  ),
-                  const PopupMenuItem(
-                    value: 2,
-                    child: Center(
-                      child: SizedBox(
-                          width: 150,
-                          child: Text(
-                            'Delete',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.center,
-                          )),
+                  if (widget.user.id == widget.post.user.id)
+                    const PopupMenuItem(
+                      value: 2,
+                      child: Center(
+                        child: SizedBox(
+                            width: 150,
+                            child: Text(
+                              'Delete',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            )),
+                      ),
                     ),
-                  ),
                   const PopupMenuItem(
                     value: 3,
                     child: Center(

@@ -98,6 +98,7 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
       print(e);
     }
   }
+
   final UserController userController = Get.put(UserController());
 
   @override
@@ -151,11 +152,10 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
         child: Column(
           children: [
             ForumCard(
-              forum: widget.forum,
-              forumPost: widget.forumPost,
-              type: "details",
-              user: userController.userData!.id
-            ),
+                forum: widget.forum,
+                forumPost: widget.forumPost,
+                type: "details",
+                user: userController.userData!.id),
             GetBuilder<FeedCommentController>(
                 init: FeedCommentController(),
                 builder: (controller) {
@@ -173,7 +173,7 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
                                 children: [
                                   Row(
                                     children: [
-                                      widget.forumPost.user.imageUrl == null
+                                      forumComment.author.imageUrl == null
                                           ? Container(
                                               height: 40,
                                               width: 40,
@@ -185,11 +185,9 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
                                               ),
                                               child: Center(
                                                 child: Text(
-                                                  widget.forum.public
-                                                      ? widget
-                                                          .forumPost.user.name
-                                                          .substring(0, 1)
-                                                      : "A",
+                                                  forumComment.author.name
+                                                      .characters.first
+                                                      .toUpperCase(),
                                                   style: const TextStyle(
                                                     color: Colors.white,
                                                   ),
@@ -198,7 +196,7 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
                                             )
                                           : CircularShimmerImage(
                                               imageUrl:
-                                                  widget.forum.userId.imageUrl!,
+                                                  forumComment.author.imageUrl,
                                               size: 40,
                                             ),
                                       const SizedBox(
@@ -209,18 +207,14 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            widget.forum.public
-                                                ? widget.forum.userId.name!
-                                                : "Anonymous",
+                                            forumComment.author.name,
                                             style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 16,
                                             ),
                                           ),
                                           Text(
-                                            widget.forum.public
-                                                ? "@${widget.forum.userId.username}"
-                                                : "@anonymous",
+                                            "@${forumComment.author.username}",
                                             style: const TextStyle(
                                               color: grey,
                                             ),
@@ -229,13 +223,13 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
                                       ),
                                     ],
                                   ),
-                                  widget.forumPost.liked
-                                      ? SvgPicture.asset(
-                                          "assets/icons/like-filled.svg",
-                                        )
-                                      : SvgPicture.asset(
-                                          "assets/icons/like.svg",
-                                        ),
+                                  // widget.forumPost.liked
+                                  //     ? SvgPicture.asset(
+                                  //         "assets/icons/like-filled.svg",
+                                  //       )
+                                  //     : SvgPicture.asset(
+                                  //         "assets/icons/like.svg",
+                                  //       ),
                                 ],
                               ),
                               SizedBox(
