@@ -60,7 +60,7 @@ class UserNotification {
   String id;
   String title;
   String description;
-  PostUser to;
+  PostUser? to;
   PostUser? from;
   String? post;
   String type;
@@ -70,8 +70,8 @@ class UserNotification {
     required this.id,
     required this.title,
     required this.description,
-    required this.to,
-    required this.from,
+    this.to,
+    this.from,
     required this.post,
     required this.type,
     required this.timestamp,
@@ -81,8 +81,20 @@ class UserNotification {
     final id = json["_id"] as String;
     final title = json["title"] as String;
     final description = json["description"] as String;
-    final to = PostUser.fromJson(json["to"]);
-    final from = PostUser.fromJson(json["from"]);
+    final to = json["to"] == null
+        ? PostUser(
+            name: "Anonymous",
+            username: "@anonymous",
+            id: "a_outreach",
+          )
+        : PostUser.fromJson(json["to"]);
+    final from = json["from"] == null
+        ? PostUser(
+            name: "Anonymous",
+            username: "@anonymous",
+            id: "a_outreach",
+          )
+        : PostUser.fromJson(json["from"]);
     final post = json["post"];
     final type = json["type"];
     final timestamp = json["timestamp"];

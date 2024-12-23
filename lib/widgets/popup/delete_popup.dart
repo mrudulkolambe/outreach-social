@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/services/feed_services.dart';
+import 'package:outreach/api/services/forum_services.dart';
+import 'package:outreach/api/services/resource_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/widgets/styled_button.dart';
 
@@ -16,6 +18,8 @@ class DeleteConfirmPopup extends StatefulWidget {
 
 class _DeleteConfirmPopupState extends State<DeleteConfirmPopup> {
   final FeedService feedService = FeedService();
+  final ForumServices forumServices = ForumServices();
+  final ResourceServices resourceServices = ResourceServices();
   bool loading = false;
   void handleDelete() async {
     setState(() {
@@ -23,6 +27,10 @@ class _DeleteConfirmPopupState extends State<DeleteConfirmPopup> {
     });
     if (widget.type == "feed") {
       await feedService.deletePost(widget.id);
+    } else if (widget.type == "forum") {
+      await forumServices.deletePost(widget.id);
+    } else if (widget.type == "resource") {
+      await resourceServices.deletePost(widget.id);
     }
     setState(() {
       loading = false;

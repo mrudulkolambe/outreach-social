@@ -152,10 +152,11 @@ class _ForumPostDetailsState extends State<ForumPostDetails> {
         child: Column(
           children: [
             ForumCard(
-                forum: widget.forum,
-                forumPost: widget.forumPost,
-                type: "details",
-                user: userController.userData!.id),
+              forum: widget.forum,
+              forumPost: widget.forumPost,
+              type: "details",
+              user: userController.userData!.id,
+            ),
             GetBuilder<FeedCommentController>(
                 init: FeedCommentController(),
                 builder: (controller) {

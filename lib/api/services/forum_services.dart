@@ -73,6 +73,7 @@ class ForumServices {
 
   Future<ForumPost?> createForumPost(
       String forumID, Map<String, dynamic> body) async {
+    log(jsonEncode(body));
     final response =
         await ApiService().post('$createForumPostAPI/$forumID', body);
     if (response != null && response.statusCode == 200 ||

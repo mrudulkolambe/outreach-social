@@ -343,12 +343,6 @@ class AgoraService {
     try {
       await initialize();
 
-      // final currentUser = FirebaseAuth.instance.currentUser;
-      // final currentToken = await currentUser?.getIdToken();
-      if (currentUser == null) {
-        throw Exception('No user logged in');
-      }
-
       try {
         await registerUser(
           username: currentUser,
@@ -426,10 +420,8 @@ class AgoraService {
           direction: ChatSearchDirection.Up,
         );
 
-        if (messages != null) {
-          log("Successfully loaded ${messages.length} messages");
-          return messages;
-        }
+        log("Successfully loaded ${messages.length} messages");
+        return messages;
       }
       log("No messages found or conversation is null");
       return [];

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:outreach/api/constants/constants.dart';
 import 'package:outreach/api/models/resource.dart';
@@ -33,6 +34,19 @@ class ResourceServices {
     }
   }
 
+  Future<int> deletePost(String id) async {
+    final deletePost = await ApiService().delete('$deleteResourcefeedAPI/$id');
+    log(deletePost!.body);
+    if (deletePost.statusCode == 200) {
+      // postController.deletePost(id);
+      ToastManager.showToastApp("Post deleted successfully!");
+      return 200;
+    } else {
+      ToastManager.showToastApp("Something went wrong");
+      return 500;
+    }
+  }
+
   Future<ResourcePostsResponse?> getPosts({
     int page = 1,
     int limit = 10,
@@ -41,7 +55,7 @@ class ResourceServices {
         await ApiService().get('$getResourceFeedAPI?page=$page&limit=$limit');
     if (response != null && response.statusCode == 200 ||
         response != null && response.statusCode == 201) {
-      print(jsonDecode(response.body)["response"]);
+      log(response.body);
       final results = ResourcePostsResponse.fromJson(jsonDecode(response.body));
       return results;
     } else {

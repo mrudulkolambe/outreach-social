@@ -20,12 +20,13 @@ class ForumCard extends StatefulWidget {
   final String type;
   final String user;
 
-  const ForumCard(
-      {super.key,
-      required this.forum,
-      required this.forumPost,
-      required this.type,
-      required this.user});
+  const ForumCard({
+    super.key,
+    required this.forum,
+    required this.forumPost,
+    required this.type,
+    required this.user,
+  });
 
   @override
   _ForumCardState createState() => _ForumCardState();

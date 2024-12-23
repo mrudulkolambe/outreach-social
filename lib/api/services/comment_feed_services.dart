@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:outreach/api/constants/constants.dart';
 import 'package:outreach/api/models/feed_comments.dart';
@@ -8,8 +9,9 @@ class CommentFeedServices {
   Future<FeedComment?> createComment(postID, body) async {
     final response =
         await ApiService().post('$createFeedCommentAPI/$postID', body);
-    if (response != null && response.statusCode == 200 ||
-        response != null && response.statusCode == 201) {
+    log(response!.body);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      log(response.body);
       final commentResponse =
           FeedCommentResponse.fromJson(jsonDecode(response.body));
       return commentResponse.comment;

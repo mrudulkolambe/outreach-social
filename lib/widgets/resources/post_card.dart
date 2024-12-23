@@ -13,6 +13,7 @@ import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/utils/report_reasons.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/bottomsheet/post_comment.dart';
+import 'package:outreach/widgets/popup/delete_popup.dart';
 import 'package:outreach/widgets/popup/report_popup.dart';
 import 'package:outreach/widgets/posts/mediacard.dart';
 
@@ -83,6 +84,18 @@ class _PostCardState extends State<PostCard> {
       },
     );
     // showDialog(context: context, builder: (context) => ReportPopup());
+  }
+
+  void _confirmDelete() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return DeleteConfirmPopup(
+          id: widget.post.id,
+          type: "resource",
+        );
+      },
+    );
   }
 
   @override
@@ -185,40 +198,42 @@ class _PostCardState extends State<PostCard> {
                   if (item == 1) {
                     print('Edit tapped');
                   } else if (item == 2) {
-                    print('Delete tapped');
+                    _confirmDelete();
                   } else if (item == 3) {
                     _openReportModal();
                   }
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 1,
-                    child: Center(
-                      child: SizedBox(
-                          width: 150,
-                          child: Text(
-                            'Edit',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.center,
-                          )),
+                  if (widget.user.id == widget.post.user.id)
+                    const PopupMenuItem(
+                      value: 1,
+                      child: Center(
+                        child: SizedBox(
+                            width: 150,
+                            child: Text(
+                              'Edit',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            )),
+                      ),
                     ),
-                  ),
-                  const PopupMenuItem(
-                    value: 2,
-                    child: Center(
-                      child: SizedBox(
-                          width: 150,
-                          child: Text(
-                            'Delete',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.center,
-                          )),
+                  if (widget.user.id == widget.post.user.id)
+                    const PopupMenuItem(
+                      value: 2,
+                      child: Center(
+                        child: SizedBox(
+                            width: 150,
+                            child: Text(
+                              'Delete',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            )),
+                      ),
                     ),
-                  ),
                   const PopupMenuItem(
                     value: 3,
                     child: Center(
@@ -262,6 +277,18 @@ class _PostCardState extends State<PostCard> {
           const SizedBox(
             height: 10,
           ),
+          if (widget.post.title != null)
+            Row(
+              children: [
+                Text(
+                  widget.post.title!,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
           Row(
             children: [
               Expanded(

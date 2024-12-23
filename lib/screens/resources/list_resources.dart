@@ -25,7 +25,7 @@ class _ListResourcesState extends State<ListResources> {
   bool hasMorePost = false;
   final ScrollController _scrollController = ScrollController();
   final ResourcesController resourcesController = ResourcesController();
-
+  String searchQuery = "";
   @override
   void initState() {
     initData();
@@ -47,7 +47,7 @@ class _ListResourcesState extends State<ListResources> {
       resourceCategories = response;
       filter = response.first.id;
       _currentPage = 1;
-      resourcePosts = postsFetched!.feeds;
+      resourcePosts = postsFetched.feeds;
       resourcesController.initAdd(postsFetched.feeds);
       hasMorePost = postsFetched.totalPages > postsFetched.currentPage;
     });
@@ -119,6 +119,12 @@ class _ListResourcesState extends State<ListResources> {
                                   borderSide: BorderSide.none,
                                 ),
                               ),
+                              onChanged: (value) {
+                                setState(() {
+                                  searchQuery = value
+                                      .toLowerCase(); // Convert to lowercase for case-insensitive search
+                                });
+                              },
                             ),
                           ),
                         ),
@@ -224,6 +230,18 @@ class _ListResourcesState extends State<ListResources> {
                                           ? Column(
                                               children: [
                                                 ...resourcePosts
+                                                    .where((element) {
+                                                      return (searchQuery
+                                                              .isEmpty ||
+                                                          element.title!
+                                                              .toLowerCase()
+                                                              .contains(
+                                                                  searchQuery) ||
+                                                          element.content
+                                                              .toLowerCase()
+                                                              .contains(
+                                                                  searchQuery));
+                                                    })
                                                     .where(
                                                       (element) {
                                                         return element
@@ -247,6 +265,18 @@ class _ListResourcesState extends State<ListResources> {
                                           : Column(
                                               children: [
                                                 ...resourceController.resources
+                                                    .where((element) {
+                                                      return (searchQuery
+                                                              .isEmpty ||
+                                                          element.title!
+                                                              .toLowerCase()
+                                                              .contains(
+                                                                  searchQuery) ||
+                                                          element.content
+                                                              .toLowerCase()
+                                                              .contains(
+                                                                  searchQuery));
+                                                    })
                                                     .where(
                                                       (element) {
                                                         return element

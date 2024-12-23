@@ -126,7 +126,7 @@ class ResourcePostsResponse {
 
 class ResourcePost {
   String id;
-  String title;
+  String? title;
   String content;
   String category;
   List<Media> media;
@@ -137,7 +137,7 @@ class ResourcePost {
 
   ResourcePost({
     required this.id,
-    required this.title,
+    this.title,
     required this.content,
     required this.category,
     required this.media,

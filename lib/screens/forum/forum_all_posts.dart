@@ -1,5 +1,7 @@
 // ignore_for_file: unnecessary_null_comparison
 
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -14,6 +16,7 @@ import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/forum_post.dart';
 import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
+import 'package:outreach/screens/forum/create_post.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/forum/forum_card.dart';
 import 'package:outreach/widgets/navbar.dart';
@@ -40,7 +43,7 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
 
   SavingState _saving = SavingState.no;
 
-  List<File> _mediaFiles = [];
+  final List<File> _mediaFiles = [];
 
   @override
   void initState() {
@@ -136,21 +139,18 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
             if (_mediaFiles.isNotEmpty) {
               final uploadedData = await _uploadMedia();
               if (uploadedData == null) {
-                ToastManager.showToast("Upload failed", context);
+                ToastManager.showToastApp("Upload failed");
                 return;
               }
               urls = uploadedData;
             }
+            log(jsonEncode(urls));
             final body = {
               "public": !private,
               "content": descriptionController.text,
               "media": urls,
             };
             await ForumServices().createForumPost(widget.forum.id, body);
-            setState(() {
-              _mediaFiles = [];
-              descriptionController.text = "";
-            });
           }
 
           Future<void> pickMedia() async {
@@ -540,7 +540,7 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
                 ),
               ),
               InkWell(
-                onTap: _openBottomSheet,
+                onTap: () => Get.to(() => AddForumPost(forum: widget.forum)),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
                   decoration: BoxDecoration(
