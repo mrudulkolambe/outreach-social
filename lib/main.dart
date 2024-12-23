@@ -37,7 +37,6 @@ void main() async {
     ChatOptions(
       appKey: agoraAppID,
       autoLogin: true,
-      debugModel: true,
     ),
   );
   runApp(const MyApp());

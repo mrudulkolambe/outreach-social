@@ -66,7 +66,6 @@ class AgoraService {
         ChatOptions(
           appKey: agoraAppID,
           autoLogin: false,
-          debugModel: true,
         ),
       );
 
