@@ -77,7 +77,7 @@ class _LoginState extends State<Login> {
         Get.offAll(() => const Username());
       } else {
         final token = await credential.user?.getIdToken(true);
-        await agoraService.loginToAgoraChat(userData.id, token);
+        // await agoraService.loginToAgoraChat(userData.id, token);
         await saveFcmToken();
         Get.offAll(() => const MainStack());
       }

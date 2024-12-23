@@ -41,4 +41,15 @@ class ApiService {
     });
     return response;
   }
+
+  Future<http.Response?> delete(String endpoint) async {
+    final url = Uri.parse(endpoint);
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+    final response = await http.delete(url, headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${await user.getIdToken(true)}'
+    });
+    return response;
+  }
 }

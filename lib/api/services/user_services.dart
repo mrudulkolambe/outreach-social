@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -21,6 +22,7 @@ class UserService {
   Future<UserData?> currentUser() async {
     final response = await ApiService().get(currentUserAPI);
     if (response != null) {
+      log(response.body);
       if (response.statusCode == 200) {
         final data = UserResponse.fromJson(jsonDecode(response.body));
         userController.updateUser(data.user);

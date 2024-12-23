@@ -1,10 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outreach/api/services/feed_services.dart';
 import 'package:outreach/constants/colors.dart';
-import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/user.dart';
+import 'package:outreach/models/post.dart';
 import 'package:outreach/widgets/navbar.dart';
-import 'package:outreach/widgets/posts/profile.dart';
+import 'package:outreach/widgets/post_card.dart';
 
 class YourPosts extends StatefulWidget {
   const YourPosts({super.key});
@@ -14,9 +17,65 @@ class YourPosts extends StatefulWidget {
 }
 
 class _YourPostsState extends State<YourPosts> {
+  final FeedService feedService = FeedService();
+  final ScrollController _scrollController = ScrollController();
+  final UserController userController = Get.put(UserController());
+  List<Post> postList = [];
+  bool hasMorePosts = false;
+  int _currentPage = 1;
+  Key columnKey = const Key("main_column");
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(morePosts);
+    init();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> morePosts() async {
+    if (_scrollController.position.maxScrollExtent ==
+        _scrollController.position.pixels) {
+      _loadMorePosts();
+    }
+  }
+
+  Future<void> _loadMorePosts() async {
+    if (hasMorePosts) {
+      _currentPage++;
+      final morePostsResponse = await feedService.getUserFeed(
+        page: _currentPage,
+        user: userController.userData!.id,
+      );
+      print(morePostsResponse!.totalPages);
+      setState(() {
+        hasMorePosts =
+            morePostsResponse.totalPages > morePostsResponse.currentPage;
+        postList.addAll(morePostsResponse.posts);
+        columnKey = Key(Random().toString());
+      });
+    } else {
+      print("Else Load More Posts");
+    }
+  }
+
+  void init() async {
+    final feedResponse = await feedService.getUserFeed(
+      page: 1,
+      user: userController.userData!.id,
+    );
+    postList.addAll(feedResponse!.posts);
+    columnKey = Key(Random().toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         surfaceTintColor: appbarColor,
         backgroundColor: appbarColor,
@@ -30,30 +89,31 @@ class _YourPostsState extends State<YourPosts> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
-              child: SizedBox(
-                height: 45,
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: "Search...",
-                    prefixIcon: Icon(
-                      Icons.search_rounded,
-                      size: 20,
-                    ),
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 0,
-                      horizontal: 20,
-                    ),
-                    fillColor: Color.fromRGBO(239, 239, 240, 1),
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
+            //   child: SizedBox(
+            //     height: 45,
+            //     child: TextFormField(
+            //       decoration: const InputDecoration(
+            //         hintText: "Search...",
+            //         prefixIcon: Icon(
+            //           Icons.search_rounded,
+            //           size: 20,
+            //         ),
+            //         contentPadding: EdgeInsets.symmetric(
+            //           vertical: 0,
+            //           horizontal: 20,
+            //         ),
+            //         fillColor: Color.fromRGBO(239, 239, 240, 1),
+            //         filled: true,
+            //         border: OutlineInputBorder(
+            //           borderSide: BorderSide.none,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+
             const SizedBox(
               height: 10,
             ),
@@ -61,19 +121,19 @@ class _YourPostsState extends State<YourPosts> {
                 child: SizedBox(
               width: MediaQuery.of(context).size.width,
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: horizontal_p),
-                child: GetBuilder<UserController>(
-                    init: UserController(),
-                    builder: (userController) {
-                      return Column(
-                        children: [
-                          ...userController.userData!.feeds.map(
-                            (e) => ProfilePosts(post: e, user: userController.userData!,),
-                          )
-                        ],
-                      );
-                    }),
-              ),
+                  controller: _scrollController,
+                  child: Column(
+                    key: columnKey,
+                    children: [
+                      ...postList.map((e) {
+                        return PostCard(
+                          post: e,
+                          user: userController.userData!,
+                          index: 1,
+                        );
+                      })
+                    ],
+                  )),
             ))
           ],
         ),

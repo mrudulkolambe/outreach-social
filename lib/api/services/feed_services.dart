@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -42,6 +43,22 @@ class FeedService {
     return null;
   }
 
+  Future<PostsResponse?> getUserFeed(
+      {int page = 1, int limit = 10, String? user}) async {
+    print("USER $user");
+    final response =
+        await ApiService().get('$getUserFeedAPI/$user?page=$page&limit=$limit');
+    if (response != null && response.statusCode == 200 ||
+        response != null && response.statusCode == 201) {
+      print(response.body);
+      final postsData = PostsResponse.fromJson(jsonDecode(response.body));
+      return postsData;
+    } else {
+      ToastManager.showToastApp("Something went wrong");
+    }
+    return null;
+  }
+
   Future<int> likeOnPost(Post post) async {
     final tempPost = Post(
         id: post.id,
@@ -60,6 +77,19 @@ class FeedService {
       final updatedPostData =
           PostResponse.fromJson(jsonDecode(updatedPost.body));
       postController.updatePost(updatedPostData.post);
+      return 200;
+    } else {
+      ToastManager.showToastApp("Something went wrong");
+      return 500;
+    }
+  }
+
+  Future<int> deletePost(String id) async {
+    final deletePost = await ApiService().delete('$deleteFeedAPI/$id');
+    log(deletePost!.body);
+    if (deletePost.statusCode == 200) {
+      postController.deletePost(id);
+      ToastManager.showToastApp("Post deleted successfully!");
       return 200;
     } else {
       ToastManager.showToastApp("Something went wrong");

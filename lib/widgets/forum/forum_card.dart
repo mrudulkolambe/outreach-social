@@ -10,6 +10,7 @@ import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/screens/forum/forum_post_details.dart';
 import 'package:outreach/utils/report_reasons.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
+import 'package:outreach/widgets/popup/delete_popup.dart';
 import 'package:outreach/widgets/popup/report_popup.dart';
 import 'package:outreach/widgets/posts/mediacard.dart';
 
@@ -66,6 +67,18 @@ class _ForumCardState extends State<ForumCard> {
       },
     );
     // showDialog(context: context, builder: (context) => ReportPopup());
+  }
+
+  void _confirmDelete() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return DeleteConfirmPopup(
+          id: widget.forumPost.id,
+          type: "forum",
+        );
+      },
+    );
   }
 
   @override
@@ -182,26 +195,56 @@ class _ForumCardState extends State<ForumCard> {
                   ],
                 ),
               ),
-              PopupMenuButton<int>(
-                padding: const EdgeInsets.all(0),
-                onSelected: (item) {
-                  if (item == 1) {
-                    print('Edit tapped');
-                  } else if (item == 2) {
-                    print('Delete tapped');
-                  } else if (item == 3) {
-                    _openReportModal();
-                  }
-                },
-                itemBuilder: (context) => [
-                  if (widget.user == widget.forumPost.user.id)
+              if (widget.type == "primary")
+                PopupMenuButton<int>(
+                  padding: const EdgeInsets.all(0),
+                  onSelected: (item) {
+                    if (item == 1) {
+                      print('Edit tapped');
+                    } else if (item == 2) {
+                      _confirmDelete();
+                    } else if (item == 3) {
+                      _openReportModal();
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    if (widget.user == widget.forumPost.user.id)
+                      const PopupMenuItem(
+                        value: 1,
+                        child: Center(
+                          child: SizedBox(
+                              width: 150,
+                              child: Text(
+                                'Edit',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                                textAlign: TextAlign.center,
+                              )),
+                        ),
+                      ),
+                    if (widget.user == widget.forumPost.user.id)
+                      const PopupMenuItem(
+                        value: 2,
+                        child: Center(
+                          child: SizedBox(
+                              width: 150,
+                              child: Text(
+                                'Delete',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                                textAlign: TextAlign.center,
+                              )),
+                        ),
+                      ),
                     const PopupMenuItem(
-                      value: 1,
+                      value: 3,
                       child: Center(
                         child: SizedBox(
                             width: 150,
                             child: Text(
-                              'Edit',
+                              'Report',
                               style: TextStyle(
                                 fontSize: 16,
                               ),
@@ -209,38 +252,9 @@ class _ForumCardState extends State<ForumCard> {
                             )),
                       ),
                     ),
-                  if (widget.user == widget.forumPost.user.id)
-                    const PopupMenuItem(
-                      value: 2,
-                      child: Center(
-                        child: SizedBox(
-                            width: 150,
-                            child: Text(
-                              'Delete',
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                              textAlign: TextAlign.center,
-                            )),
-                      ),
-                    ),
-                  const PopupMenuItem(
-                    value: 3,
-                    child: Center(
-                      child: SizedBox(
-                          width: 150,
-                          child: Text(
-                            'Report',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.center,
-                          )),
-                    ),
-                  ),
-                ],
-                icon: const Icon(Icons.more_vert),
-              ),
+                  ],
+                  icon: const Icon(Icons.more_vert),
+                ),
             ],
           ),
           if (widget.type == "details")
@@ -352,7 +366,7 @@ class _ForumCardState extends State<ForumCard> {
                                   forum: widget.forum,
                                 ),
                               ),
-                      child: Text(
+                      child: const Text(
                         "Reply",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,

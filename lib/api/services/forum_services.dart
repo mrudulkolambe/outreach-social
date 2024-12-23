@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:get/get.dart';
 import 'package:outreach/api/constants/constants.dart';
@@ -76,11 +77,24 @@ class ForumServices {
         await ApiService().post('$createForumPostAPI/$forumID', body);
     if (response != null && response.statusCode == 200 ||
         response != null && response.statusCode == 201) {
+      log(response.body);
       final results = ForumPostResponse.fromJson(jsonDecode(response.body));
       return results.forumPost;
     } else {
       print(response!.reasonPhrase);
       return null;
+    }
+  }
+
+  Future<int> deletePost(String id) async {
+    final deletePost = await ApiService().delete('$deleteForumfeedAPI/$id');
+    if (deletePost!.statusCode == 200) {
+      // postController.deletePost(id);
+      ToastManager.showToastApp("Post deleted successfully!");
+      return 200;
+    } else {
+      ToastManager.showToastApp("Something went wrong");
+      return 500;
     }
   }
 

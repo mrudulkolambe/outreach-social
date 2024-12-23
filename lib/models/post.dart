@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:outreach/api/models/upload.dart';
 
 class PostResponse {
@@ -145,6 +147,7 @@ class PostUser {
   });
 
   factory PostUser.fromJson(dynamic json) {
+    log(json.toString());
     final name = json["name"] as String;
     final username = json["username"] as String;
     final imageUrl = json["imageUrl"];

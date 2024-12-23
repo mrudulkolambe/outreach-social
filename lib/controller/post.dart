@@ -13,18 +13,20 @@ class PostController extends GetxController {
     loadCachedPosts();
   }
 
-final List<Post> emptyPost = [];
+  final List<Post> emptyPost = [];
 
-void loadCachedPosts() async {
-  final cachedPosts = await box.read('posts1');
-  if (cachedPosts != null) {
-    final List<dynamic> decodedPosts = jsonDecode(cachedPosts);
-    posts = decodedPosts.map((item) => Post.fromJson(item as Map<String, dynamic>)).toList();
-  } else {
-    posts = emptyPost;
+  void loadCachedPosts() async {
+    final cachedPosts = await box.read('posts1');
+    if (cachedPosts != null) {
+      final List<dynamic> decodedPosts = jsonDecode(cachedPosts);
+      posts = decodedPosts
+          .map((item) => Post.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } else {
+      posts = emptyPost;
+    }
+    update();
   }
-  update();
-}
 
   void addPosts(Post data) {
     posts.add(data);
@@ -48,5 +50,11 @@ void loadCachedPosts() async {
       posts[index] = data;
       update();
     }
+  }
+
+  void deletePost(String id) {
+    int index = posts.indexWhere((post) => post.id == id);
+    posts.removeAt(index);
+    update();
   }
 }

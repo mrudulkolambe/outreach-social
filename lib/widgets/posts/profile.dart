@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:outreach/api/models/user.dart';
+import 'package:outreach/api/services/feed_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/models/post.dart';
 import 'package:outreach/utils/report_reasons.dart';
@@ -21,6 +22,7 @@ class ProfilePosts extends StatefulWidget {
 }
 
 class _ProfilePostsState extends State<ProfilePosts> {
+  final FeedService feedService = FeedService();
   void _openCommentBottomsheet() {
     showModalBottomSheet(
       useSafeArea: false,
@@ -45,10 +47,11 @@ class _ProfilePostsState extends State<ProfilePosts> {
       context: context,
       builder: (context) {
         return ReportPopup(
-            reasons: ReportReasons.postReasons,
-            type: "post",
-            postId: widget.post.id,
-            userID: widget.user.id);
+          reasons: ReportReasons.postReasons,
+          type: "post",
+          postId: widget.post.id,
+          userID: widget.user.id,
+        );
       },
     );
     // showDialog(context: context, builder: (context) => ReportPopup());
@@ -58,8 +61,13 @@ class _ProfilePostsState extends State<ProfilePosts> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: grey.withOpacity(0.2), width: 1))),
+        border: Border(
+          bottom: BorderSide(
+            color: grey.withOpacity(0.2),
+            width: 1,
+          ),
+        ),
+      ),
       padding: const EdgeInsets.symmetric(
         vertical: 15,
       ),
@@ -209,12 +217,6 @@ class _ProfilePostsState extends State<ProfilePosts> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (widget.post.media.isNotEmpty)
-                // Text(
-                //     widget.post.media.length.toString(),
-                //     style: const TextStyle(
-                //       fontSize: 12,
-                //     ),
-                //   ),
                 Container(
                   color: Colors.grey.withOpacity(0.2),
                   height: 80,
@@ -239,8 +241,8 @@ class _ProfilePostsState extends State<ProfilePosts> {
           Row(
             children: [
               InkWell(
-                onTap: () {
-                  // FeedService().likeOnPost(widget.post);
+                onTap: () async {
+                  FeedService().likeOnPost(widget.post);
                 },
                 child: Row(
                   children: [

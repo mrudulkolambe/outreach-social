@@ -170,9 +170,9 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _initialize() async {
-    await saveFcmToken();
     await Future.delayed(const Duration(seconds: 4));
     await _initializeServices();
+    await saveFcmToken();
   }
 
   @override

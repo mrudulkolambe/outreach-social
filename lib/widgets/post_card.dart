@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/feed_services.dart';
@@ -13,9 +14,9 @@ import 'package:outreach/models/post.dart';
 import 'package:outreach/utils/report_reasons.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/bottomsheet/post_comment.dart';
+import 'package:outreach/widgets/popup/delete_popup.dart';
 import 'package:outreach/widgets/popup/report_popup.dart';
 import 'package:outreach/widgets/posts/mediacard.dart';
-import 'package:outreach/widgets/posts/profile.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
@@ -32,7 +33,15 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   bool _isExpanded = false;
   static const int _maxLines = 2;
+  int likedCount = 0;
+  bool liked = false;
   bool showHeart = false;
+  @override
+  void initState() {
+    super.initState();
+    likedCount = widget.post.likesCount;
+    liked = widget.post.liked;
+  }
 
   void _openCommentBottomsheet() {
     showModalBottomSheet(
@@ -58,13 +67,13 @@ class _PostCardState extends State<PostCard> {
       context: context,
       builder: (context) {
         return ReportPopup(
-            reasons: ReportReasons.postReasons,
-            type: "post",
-            postId: widget.post.id,
-            userID: widget.user.id);
+          reasons: ReportReasons.postReasons,
+          type: "post",
+          postId: widget.post.id,
+          userID: widget.user.id,
+        );
       },
     );
-    // showDialog(context: context, builder: (context) => ReportPopup());
   }
 
   String _getTruncatedText(String text) {
@@ -84,6 +93,18 @@ class _PostCardState extends State<PostCard> {
   bool _isTextLong(String text) {
     final words = text.split(' ');
     return words.length > _maxLines * 10;
+  }
+
+  void _confirmDelete() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return DeleteConfirmPopup(
+          id: widget.post.id,
+          type: "feed",
+        );
+      },
+    );
   }
 
   @override
@@ -205,6 +226,7 @@ class _PostCardState extends State<PostCard> {
                   if (item == 1) {
                     print('Edit tapped');
                   } else if (item == 2) {
+                    _confirmDelete();
                     print('Delete tapped');
                   } else if (item == 3) {
                     _openReportModal();
@@ -339,11 +361,20 @@ class _PostCardState extends State<PostCard> {
             children: [
               InkWell(
                 onTap: () {
+                  setState(() {
+                    if (widget.post.liked) {
+                      likedCount = widget.post.likesCount - 1;
+                      liked = false;
+                    } else {
+                      likedCount = widget.post.likesCount + 1;
+                      liked = true;
+                    }
+                  });
                   FeedService().likeOnPost(widget.post);
                 },
                 child: Row(
                   children: [
-                    widget.post.liked
+                    liked
                         ? SvgPicture.asset(
                             "assets/icons/like-filled.svg",
                           )
@@ -353,7 +384,7 @@ class _PostCardState extends State<PostCard> {
                     const SizedBox(
                       width: 5,
                     ),
-                    Text(widget.post.likesCount.toString())
+                    Text(likedCount.toString())
                   ],
                 ),
               ),

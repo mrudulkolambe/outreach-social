@@ -93,7 +93,6 @@ class _JoinedForumState extends State<JoinedForum> {
           ),
         ),
       ),
-      bottomNavigationBar: const Navbar(),
     );
   }
 }

@@ -40,7 +40,7 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
 
   SavingState _saving = SavingState.no;
 
-  final List<File> _mediaFiles = [];
+  List<File> _mediaFiles = [];
 
   @override
   void initState() {
@@ -146,7 +146,11 @@ class _ForumAllPostsState extends State<ForumAllPosts> {
               "content": descriptionController.text,
               "media": urls,
             };
-            ForumServices().createForumPost(widget.forum.id, body);
+            await ForumServices().createForumPost(widget.forum.id, body);
+            setState(() {
+              _mediaFiles = [];
+              descriptionController.text = "";
+            });
           }
 
           Future<void> pickMedia() async {
