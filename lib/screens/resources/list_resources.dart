@@ -48,7 +48,6 @@ class _ListResourcesState extends State<ListResources> {
       filter = response.first.id;
       _currentPage = 1;
       resourcePosts = postsFetched.feeds;
-      resourcesController.initAdd(postsFetched.feeds);
       hasMorePost = postsFetched.totalPages > postsFetched.currentPage;
     });
   }
@@ -204,103 +203,60 @@ class _ListResourcesState extends State<ListResources> {
                         const SizedBox(
                           height: 8,
                         ),
-                        if (userController.userData != null)
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height -
-                                8 -
-                                20 -
-                                45 -
-                                80 -
-                                70 -
-                                45,
-                            child: GetBuilder<ResourcesController>(
-                                init: ResourcesController(),
-                                builder: (resourceController) {
-                                  return RefreshIndicator(
-                                    onRefresh: () {
-                                      return initData();
-                                    },
-                                    child: SingleChildScrollView(
-                                      controller: _scrollController,
-                                      key: Key(resourceController.resources
-                                          .toString()),
-                                      child: resourceController
-                                              .resources.isEmpty
-                                          ? Column(
-                                              children: [
-                                                ...resourcePosts
-                                                    .where((element) {
-                                                      return (searchQuery
-                                                              .isEmpty ||
-                                                          element.title!
-                                                              .toLowerCase()
-                                                              .contains(
-                                                                  searchQuery) ||
-                                                          element.content
-                                                              .toLowerCase()
-                                                              .contains(
-                                                                  searchQuery));
-                                                    })
-                                                    .where(
-                                                      (element) {
-                                                        return element
-                                                                .category ==
-                                                            filter;
-                                                      },
-                                                    )
-                                                    .toList()
-                                                    .asMap()
-                                                    .entries
-                                                    .map((resource) {
-                                                      return PostCard(
-                                                        post: resource.value,
-                                                        index: resource.key,
-                                                        user: userController
-                                                            .userData!,
-                                                      );
-                                                    })
-                                              ],
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height -
+                              8 -
+                              20 -
+                              45 -
+                              80 -
+                              70 -
+                              45,
+                          child: GetBuilder<ResourcesController>(
+                              init: ResourcesController(),
+                              builder: (resourceController) {
+                                return RefreshIndicator(
+                                  onRefresh: () {
+                                    return initData();
+                                  },
+                                  child: SingleChildScrollView(
+                                    controller: _scrollController,
+                                    key: Key(resourceController.resources
+                                        .toString()),
+                                    child: Column(
+                                      children: [
+                                        ...resourceController.resources
+                                            .where((element) {
+                                              return (searchQuery.isEmpty ||
+                                                  element.title!
+                                                      .toLowerCase()
+                                                      .contains(searchQuery) ||
+                                                  element.content
+                                                      .toLowerCase()
+                                                      .contains(searchQuery));
+                                            })
+                                            .where(
+                                              (element) {
+                                                return element.category ==
+                                                    filter;
+                                              },
                                             )
-                                          : Column(
-                                              children: [
-                                                ...resourceController.resources
-                                                    .where((element) {
-                                                      return (searchQuery
-                                                              .isEmpty ||
-                                                          element.title!
-                                                              .toLowerCase()
-                                                              .contains(
-                                                                  searchQuery) ||
-                                                          element.content
-                                                              .toLowerCase()
-                                                              .contains(
-                                                                  searchQuery));
-                                                    })
-                                                    .where(
-                                                      (element) {
-                                                        return element
-                                                                .category ==
-                                                            filter;
-                                                      },
-                                                    )
-                                                    .toList()
-                                                    .asMap()
-                                                    .entries
-                                                    .map((resource) {
-                                                      return PostCard(
-                                                        post: resource.value,
-                                                        index: resource.key,
-                                                        user: userController
-                                                            .userData!,
-                                                      );
-                                                    })
-                                              ],
-                                            ),
+                                            .toList()
+                                            .asMap()
+                                            .entries
+                                            .map((resource) {
+                                              return PostCard(
+                                                post: resource.value,
+                                                index: resource.key,
+                                                user: userController.userData!,
+                                              );
+                                            })
+                                      ],
                                     ),
-                                  );
-                                }),
-                          ),
+                                  ),
+                                );
+                              }),
+                        ),
                       ],
                     ),
                     Positioned(

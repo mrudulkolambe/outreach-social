@@ -21,8 +21,9 @@ import 'package:permission_handler/permission_handler.dart';
 
 class AddForumPost extends StatefulWidget {
   final Forum forum;
+  final ForumPost? post;
 
-  const AddForumPost({super.key, required this.forum});
+  const AddForumPost({super.key, required this.forum, this.post});
 
   @override
   State<AddForumPost> createState() => _AddForumPostState();
@@ -36,9 +37,6 @@ class _AddForumPostState extends State<AddForumPost> {
   UserController userController = Get.put(UserController());
   ForumServices feedService = ForumServices();
 
-  List<String> _tags = [];
-  final RegExp _tagRegExp = RegExp(r'\B#\w+');
-
   final List<String> availableTags =
       interestsOptions.map((item) => item.tag).toList();
   List<String> filteredTags = [];
@@ -48,58 +46,6 @@ class _AddForumPostState extends State<AddForumPost> {
 
   double cursorX = 0.0;
   double cursorY = 0.0;
-  void _onTextChanged(String text) {
-    final cursorPosition = descriptionController.selection.baseOffset;
-
-    if (cursorPosition < 0 || text.isEmpty) {
-      setState(() {
-        showSuggestions = false;
-        filteredTags = [];
-      });
-      return;
-    }
-
-    // Find the last `#` before the cursor position
-    int hashtagIndex = text.lastIndexOf('#', cursorPosition - 1);
-    if (hashtagIndex != -1) {
-      currentHashtagStartIndex = hashtagIndex;
-      final enteredTag = text.substring(hashtagIndex + 1, cursorPosition);
-
-      // Show suggestions for matching tags
-      setState(() {
-        filteredTags = availableTags
-            .where(
-                (tag) => tag.toLowerCase().startsWith(enteredTag.toLowerCase()))
-            .toList();
-        showSuggestions = filteredTags.isNotEmpty;
-      });
-    } else {
-      setState(() {
-        showSuggestions = false;
-        filteredTags = [];
-      });
-    }
-  }
-
-  void _onTagSelected(String tag) {
-    final text = descriptionController.text;
-    final cursorPosition = descriptionController.selection.baseOffset;
-    final newText = text.replaceRange(
-      currentHashtagStartIndex,
-      cursorPosition,
-      '#$tag ',
-    );
-
-    descriptionController.text = newText;
-    descriptionController.selection = TextSelection.fromPosition(
-      TextPosition(offset: currentHashtagStartIndex + tag.length + 2),
-    );
-
-    setState(() {
-      showSuggestions = false;
-      filteredTags = [];
-    });
-  }
 
   Future<void> pickMedia() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -125,6 +71,28 @@ class _AddForumPostState extends State<AddForumPost> {
     } else {
       return false;
     }
+  }
+
+  void updatePost() async {
+    setState(() {
+      loading = true;
+    });
+    final body = {
+      "public": !private,
+      "content": descriptionController.text,
+    };
+    feedService.updateForumPost(
+        widget.forum.id, {"updateData": body}, widget.post!.id);
+    if (mounted) {
+      setState(() {
+        _mediaFiles = [];
+        descriptionController.text = "";
+      });
+    }
+    setState(() {
+      loading = false;
+    });
+    Get.to(() => ForumAllPosts(forum: widget.forum));
   }
 
   void createPost() async {
@@ -163,9 +131,6 @@ class _AddForumPostState extends State<AddForumPost> {
     urls = uploadData!.media.map((item) => item.toJson()).toList();
     downloadUrls.addAll(urls);
     savingController.setSavingState(SavingState.uploaded);
-    setState(() {
-      _tags = [];
-    });
     Future.delayed(const Duration(seconds: 2), () {
       savingController.setSavingState(SavingState.no);
     });
@@ -173,43 +138,15 @@ class _AddForumPostState extends State<AddForumPost> {
     return downloadUrls;
   }
 
-  TextSpan _buildRichText() {
-    final text = descriptionController.text;
-    final List<InlineSpan> spans = [];
-    final hashtagRegex = RegExp(r"(#[a-zA-Z0-9_]+)");
-    final matches = hashtagRegex.allMatches(text);
-
-    int lastMatchEnd = 0;
-
-    for (final match in matches) {
-      if (match.start > lastMatchEnd) {
-        spans.add(TextSpan(
-          text: text.substring(lastMatchEnd, match.start),
-          style: const TextStyle(color: Colors.black, fontSize: 16),
-        ));
-      }
-
-      spans.add(TextSpan(
-        text: match.group(0),
-        style: const TextStyle(
-          backgroundColor: Colors.yellow,
-          color: Colors.blue,
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-        ),
-      ));
-
-      lastMatchEnd = match.end;
+  @override
+  void initState() {
+    if (mounted && widget.post != null) {
+      setState(() {
+        private = !widget.post!.public;
+        descriptionController.text = widget.post!.content;
+      });
     }
-
-    if (lastMatchEnd < text.length) {
-      spans.add(TextSpan(
-        text: text.substring(lastMatchEnd),
-        style: const TextStyle(color: Colors.black, fontSize: 16),
-      ));
-    }
-
-    return TextSpan(children: spans);
+    super.initState();
   }
 
   @override
@@ -219,16 +156,20 @@ class _AddForumPostState extends State<AddForumPost> {
       appBar: AppBar(
         surfaceTintColor: appbarColor,
         backgroundColor: appbarColor,
-        title: const Text(
-          "Create Post",
-          style: TextStyle(fontSize: 20),
+        title: Text(
+          widget.post != null ? "Update Post" : "Create Post",
+          style: const TextStyle(fontSize: 20),
         ),
         actions: [
           TextButton(
             onPressed: () {
               if (descriptionController.text.isNotEmpty ||
                   _mediaFiles.isNotEmpty) {
-                createPost();
+                if (widget.post != null) {
+                  updatePost();
+                } else {
+                  createPost();
+                }
               } else {
                 ToastManager.showToast(
                   "No media selected",

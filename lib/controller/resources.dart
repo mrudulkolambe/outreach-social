@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/state_manager.dart';
 import 'package:outreach/api/models/resource.dart';
 
@@ -14,23 +16,27 @@ class ResourcesController extends GetxController {
     update();
   }
 
+  void deletePost(String id) {
+    int index = resources.indexWhere((post) => post.id == id);
+    resources.removeAt(index);
+    update();
+  }
+
   void initAdd(List<ResourcePost> data) {
     print("Controller Data $data");
-    resources = [];
-    resources.addAll(data);
+    resources = data;
     update();
   }
 
   void updatePost(ResourcePost data) {
-    List<ResourcePost> resourcePosts = resources.map((resourcePost) {
-      if (resourcePost.id == data.id) {
-        print("MATCHED");
-        return data;
-      } else {
-        return resourcePost;
-      }
-    }).toList();
-    resources = resourcePosts;
-    update();
+    log(resources.toString());
+    log(data.id.toString());
+    log(resources.map((item) => item.id).toString());
+    int index = resources.indexWhere((post) => post.id == data.id);
+    print(index);
+    if (index != -1) {
+      resources[index] = data;
+      update();
+    }
   }
 }

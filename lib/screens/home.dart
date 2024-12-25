@@ -86,12 +86,14 @@ class _HomePageState extends State<HomePage>
     if (hasMorePost) {
       _currentPage++;
       final morePostsResponse = await feedService.getFeed(page: _currentPage);
-      setState(() {
-        hasMorePost =
-            morePostsResponse!.totalPages > morePostsResponse.currentPage;
-        postsList.addAll(morePostsResponse.posts);
-        postController.addAllPosts(morePostsResponse.posts);
-      });
+      if (mounted) {
+        setState(() {
+          hasMorePost =
+              morePostsResponse!.totalPages > morePostsResponse.currentPage;
+          postsList.addAll(morePostsResponse.posts);
+          postController.addAllPosts(morePostsResponse.posts);
+        });
+      }
     } else {
       print("Else Load More Posts");
     }
@@ -99,31 +101,34 @@ class _HomePageState extends State<HomePage>
 
   Future<void> initializeState() async {
     try {
-      setState(() {
-        loading = true;
-      });
+      if (mounted) {
+        setState(() {
+          loading = true;
+        });
+      }
       final listPostsResponse = await feedService.getFeed(page: 1);
       final storyList = await storyServices.getUserStories();
-      setState(() {
-        _currentPage = 1;
-        storyResponse = storyList!.response;
-        groupedStories = [];
-        if (storyResponse.own.isNotEmpty) {
-          groupedStories.add(UserStoryGroup(
-              username: storyResponse.own.first.userId.username,
-              stories: storyResponse.own));
-        } else {
-          groupedStories.add(UserStoryGroup(
-              username: userController.userData!.username!, stories: []));
-        }
-        groupedStories.addAll(handleStories(storyList.response.user));
-        print(groupedStories[0].stories.length);
-        postsList = listPostsResponse!.posts;
-        postController.initAddPosts(listPostsResponse.posts);
-        hasMorePost =
-            listPostsResponse.totalPages > listPostsResponse.currentPage;
-        loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _currentPage = 1;
+          storyResponse = storyList!.response;
+          groupedStories = [];
+          if (storyResponse.own.isNotEmpty) {
+            groupedStories.add(UserStoryGroup(
+                username: storyResponse.own.first.userId.username,
+                stories: storyResponse.own));
+          } else {
+            groupedStories.add(UserStoryGroup(
+                username: userController.userData!.username!, stories: []));
+          }
+          groupedStories.addAll(handleStories(storyList.response.user));
+          postsList = listPostsResponse!.posts;
+          postController.initAddPosts(listPostsResponse.posts);
+          hasMorePost =
+              listPostsResponse.totalPages > listPostsResponse.currentPage;
+          loading = false;
+        });
+      }
     } catch (e) {
       print(e);
     }
@@ -202,7 +207,8 @@ class _HomePageState extends State<HomePage>
             ),
           ),
           IconButton(
-            onPressed: () => Get.to(() => NotificationScreen(user: userController.userData!.id)),
+            onPressed: () => Get.to(
+                () => NotificationScreen(user: userController.userData!.id)),
             icon: SvgPicture.asset(
               "assets/icons/notification.svg",
             ),

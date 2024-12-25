@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -11,13 +12,16 @@ import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/models/interest.dart';
+import 'package:outreach/models/post.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/platform_constraints/media_preview_mobile.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class AddPost extends StatefulWidget {
-  const AddPost({super.key});
+  final Post? post;
+
+  const AddPost({super.key, this.post});
 
   @override
   State<AddPost> createState() => _AddPostState();
@@ -54,22 +58,26 @@ class _AddPostState extends State<AddPost> {
     }
 
     // Find the last `#` before the cursor position
-    int hashtagIndex = text.lastIndexOf('#', cursorPosition - 1);
-    if (hashtagIndex != -1) {
-      currentHashtagStartIndex = hashtagIndex;
-      final enteredTag = text.substring(hashtagIndex + 1, cursorPosition);
+    if (cursorPosition != 0) {
+      int hashtagIndex = text.lastIndexOf('#', cursorPosition - 1);
+      if (hashtagIndex != -1) {
+        currentHashtagStartIndex = hashtagIndex;
+        final enteredTag = text.substring(hashtagIndex + 1, cursorPosition);
 
-      // Show suggestions for matching tags
-      setState(() {
-        filteredTags =
-            availableTags.where((tag) => tag.toLowerCase().startsWith(enteredTag.toLowerCase())).toList();
-        showSuggestions = filteredTags.isNotEmpty;
-      });
-    } else {
-      setState(() {
-        showSuggestions = false;
-        filteredTags = [];
-      });
+        // Show suggestions for matching tags
+        setState(() {
+          filteredTags = availableTags
+              .where((tag) =>
+                  tag.toLowerCase().startsWith(enteredTag.toLowerCase()))
+              .toList();
+          showSuggestions = filteredTags.isNotEmpty;
+        });
+      } else {
+        setState(() {
+          showSuggestions = false;
+          filteredTags = [];
+        });
+      }
     }
   }
 
@@ -117,6 +125,23 @@ class _AddPostState extends State<AddPost> {
     } else {
       return false;
     }
+  }
+
+  void updatePost() async {
+    print("UPDATEPOST");
+    log(descriptionController.text);
+    final body = {
+      "public": !private,
+      "content": descriptionController.text,
+    };
+    feedService.updateFeed({"updateData": body}, widget.post!.id);
+    if (mounted) {
+      setState(() {
+        _mediaFiles = [];
+        descriptionController.text = "";
+      });
+    }
+    Get.offAll(() => const MainStack());
   }
 
   void createPost() async {
@@ -200,22 +225,38 @@ class _AddPostState extends State<AddPost> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    if (widget.post != null) {
+      setState(() {
+        descriptionController.text = widget.post!.content;
+        private = !widget.post!.public;
+      });
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         surfaceTintColor: appbarColor,
         backgroundColor: appbarColor,
-        title: const Text(
-          "Create Post",
-          style: TextStyle(fontSize: 20),
+        title: Text(
+          widget.post != null ? "Update Post" : "Create Post",
+          style: const TextStyle(fontSize: 20),
         ),
         actions: [
           TextButton(
             onPressed: () {
               if (descriptionController.text.isNotEmpty ||
                   _mediaFiles.isNotEmpty) {
-                createPost();
+                if (widget.post != null) {
+                  updatePost();
+                } else {
+                  createPost();
+                }
               } else {
                 ToastManager.showToast(
                   "No media selected",
@@ -223,9 +264,9 @@ class _AddPostState extends State<AddPost> {
                 );
               }
             },
-            child: const Text(
-              "Post",
-              style: TextStyle(
+            child: Text(
+              widget.post != null ? "Update" : "Post",
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 color: accent,
                 fontSize: 16,
@@ -377,8 +418,7 @@ class _AddPostState extends State<AddPost> {
                     onHover: (details) {
                       setState(() {
                         cursorX = details.localPosition.dx;
-                        cursorY = details.localPosition.dy -
-                            20;
+                        cursorY = details.localPosition.dy - 20;
                       });
                     },
                     child: TextFormField(

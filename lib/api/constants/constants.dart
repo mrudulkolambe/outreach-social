@@ -18,6 +18,7 @@ const String createSupportAPI = '$supportEndpoint/register';
 const String feedEndpoint = '$baseUrl/feed';
 
 const String createFeedAPI = '$feedEndpoint/create';
+const String updateFeedAPI = '$feedEndpoint/update';
 const String getFeedAPI = '$feedEndpoint/get';
 const String getUserFeedAPI = '$feedEndpoint/get';
 const String likeStatusFeedAPI = '$feedEndpoint/like';
@@ -33,6 +34,7 @@ const String leaveForumAPI = '$forumEndpoint/leave';
 const String forumPostEndpoint = '$forumEndpoint/forum-post';
 const String getForumPostAPI = forumPostEndpoint;
 const String createForumPostAPI = forumPostEndpoint;
+const String updateForumPostAPI = "$forumPostEndpoint/update";
 const String likeStatusForumFeedAPI = '$forumPostEndpoint/like';
 const String deleteForumfeedAPI = forumPostEndpoint;
 
@@ -50,6 +52,7 @@ const String getResourceCategoryAPI = '$resourceCategoryEndpoint/get';
 const String resourceFeedEndpoint = '$baseUrl/resource';
 const String getResourceFeedAPI = '$resourceFeedEndpoint/get';
 const String createResourceFeedAPI = '$resourceFeedEndpoint/create';
+const String updateResourceFeedAPI = '$resourceFeedEndpoint/update';
 const String likeResourceFeedAPI = '$resourceFeedEndpoint/like';
 const String deleteResourcefeedAPI = "$resourceFeedEndpoint/delete";
 

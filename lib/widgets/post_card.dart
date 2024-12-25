@@ -11,6 +11,7 @@ import 'package:outreach/api/services/feed_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/models/post.dart';
+import 'package:outreach/screens/add_post.dart';
 import 'package:outreach/utils/report_reasons.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/bottomsheet/post_comment.dart';
@@ -225,9 +226,11 @@ class _PostCardState extends State<PostCard> {
                 onSelected: (item) {
                   if (item == 1) {
                     print('Edit tapped');
+                    Get.to(() => AddPost(
+                          post: widget.post,
+                        ));
                   } else if (item == 2) {
                     _confirmDelete();
-                    print('Delete tapped');
                   } else if (item == 3) {
                     _openReportModal();
                   }

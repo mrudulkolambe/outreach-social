@@ -87,6 +87,21 @@ class ForumServices {
     }
   }
 
+  Future<ForumPost?> updateForumPost(
+      String forumID, Map<String, dynamic> body, String id) async {
+    log(jsonEncode(body));
+    final response = await ApiService().patch('$updateForumPostAPI/$id', body);
+    if (response != null && response.statusCode == 200 ||
+        response != null && response.statusCode == 201) {
+      log(response.body);
+      final results = ForumPostResponse.fromJson(jsonDecode(response.body));
+      return results.forumPost;
+    } else {
+      print(response!.reasonPhrase);
+      return null;
+    }
+  }
+
   Future<int> deletePost(String id) async {
     final deletePost = await ApiService().delete('$deleteForumfeedAPI/$id');
     if (deletePost!.statusCode == 200) {

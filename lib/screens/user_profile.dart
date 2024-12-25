@@ -82,17 +82,16 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   void videoCall(
-    String call_type,
-    String to_token,
-    String to_avatar,
-    String to_name,
-    String channel_id,
+    String callType,
+    String toToken,
+    String toAvatar,
+    String toName,
+    String channelId,
   ) async {
     final VideoCallControlller videoController =
         Get.put(VideoCallControlller());
 
-    await F.sendNotifications(
-        call_type, to_token, to_avatar, to_name, channel_id);
+    await F.sendNotifications(callType, toToken, toAvatar, toName, channelId);
 
     Get.to(
       () => VideoCallPage(
@@ -106,16 +105,15 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   void audioCall(
-    String call_type,
-    String to_token,
-    String to_avatar,
-    String to_name,
-    String channel_id,
+    String callType,
+    String toToken,
+    String toAvatar,
+    String toName,
+    String channelId,
   ) async {
     final VoiceCallController callController = Get.put(VoiceCallController());
 
-    await F.sendNotifications(
-        call_type, to_token, to_avatar, to_name, channel_id);
+    await F.sendNotifications(callType, toToken, toAvatar, toName, channelId);
 
     Get.to(
       () => VoiceCallPage(
@@ -126,7 +124,7 @@ class _UserProfileState extends State<UserProfile> {
       ),
     );
 
-    log("audioCall: $to_token $to_avatar $to_name $channel_id");
+    log("audioCall: $toToken $toAvatar $toName $channelId");
   }
 
   @override
@@ -371,10 +369,14 @@ class _UserProfileState extends State<UserProfile> {
                       ],
                     ),
                     const SizedBox(height: 5),
-                    ...userData!.feeds.reversed
-                        .map((e) => ProfilePosts(post: e, user: userController.userData!,)),
+                    ...userData!.feeds.reversed.map((e) => ProfilePosts(
+                          post: e,
+                          user: userController.userData!,
+                        )),
                     InkWell(
-                      onTap: () => Get.to(() => const YourPosts()),
+                      onTap: () => Get.to(() => YourPosts(
+                            user: userController.userData!.id,
+                          )),
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: const Row(

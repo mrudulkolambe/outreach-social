@@ -30,6 +30,21 @@ class FeedService {
     return null;
   }
 
+  Future<Post?> updateFeed(Map<String, dynamic> body, String id) async {
+    log(body.toString());
+    final response = await ApiService().patch("$updateFeedAPI/$id", body);
+    print(response!.statusCode);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final updatedPostResponse =
+          PostResponse.fromJson(jsonDecode(response.body));
+      postController.updatePost(updatedPostResponse.post);
+      return updatedPostResponse.post;
+    } else {
+      ToastManager.showToastApp("Something went wrong");
+    }
+    return null;
+  }
+
   Future<PostsResponse?> getFeed({int page = 1, int limit = 10}) async {
     final response =
         await ApiService().get('$getFeedAPI?page=$page&limit=$limit');

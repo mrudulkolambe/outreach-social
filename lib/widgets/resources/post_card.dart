@@ -4,12 +4,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outreach/api/models/resource.dart';
 import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/resource_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
+import 'package:outreach/screens/add_post.dart';
+import 'package:outreach/screens/resources/add_post.dart';
 import 'package:outreach/utils/report_reasons.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/bottomsheet/post_comment.dart';
@@ -31,8 +34,17 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool _isExpanded = false;
+  int likedCount = 0;
+  bool liked = false;
   static const int _maxLines = 2;
   bool showHeart = false;
+
+  @override
+  void initState() {
+    super.initState();
+    likedCount = widget.post.likesCount;
+    liked = widget.post.liked;
+  }
 
   void _openCommentBottomsheet() {
     showModalBottomSheet(
@@ -97,6 +109,8 @@ class _PostCardState extends State<PostCard> {
       },
     );
   }
+
+  final ResourceServices resourceServices = ResourceServices();
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +210,9 @@ class _PostCardState extends State<PostCard> {
                 padding: const EdgeInsets.all(0),
                 onSelected: (item) {
                   if (item == 1) {
-                    print('Edit tapped');
+                    Get.to(() => ResourceAddPost(
+                          resourcePost: widget.post,
+                        ));
                   } else if (item == 2) {
                     _confirmDelete();
                   } else if (item == 3) {
@@ -344,11 +360,20 @@ class _PostCardState extends State<PostCard> {
             children: [
               InkWell(
                 onTap: () {
-                  ResourceServices().likeOnPost(widget.post);
+                  setState(() {
+                    if (widget.post.liked) {
+                      likedCount = widget.post.likesCount - 1;
+                      liked = false;
+                    } else {
+                      likedCount = widget.post.likesCount + 1;
+                      liked = true;
+                    }
+                  });
+                  resourceServices.likeOnPost(widget.post);
                 },
                 child: Row(
                   children: [
-                    widget.post.liked
+                    liked
                         ? SvgPicture.asset(
                             "assets/icons/like-filled.svg",
                           )
@@ -358,7 +383,7 @@ class _PostCardState extends State<PostCard> {
                     const SizedBox(
                       width: 5,
                     ),
-                    Text(widget.post.likesCount.toString())
+                    Text(likedCount.toString())
                   ],
                 ),
               ),

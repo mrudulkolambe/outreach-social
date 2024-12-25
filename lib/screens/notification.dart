@@ -85,7 +85,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       body: SafeArea(
         child: notificationList.isEmpty
             ? const Center(
-                child: CircularProgressIndicator(),
+                child: Text("No notifications"),
               )
             : ListView.separated(
                 padding: const EdgeInsets.symmetric(

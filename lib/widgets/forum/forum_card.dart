@@ -7,6 +7,7 @@ import 'package:outreach/api/models/forum.dart';
 import 'package:outreach/api/services/forum_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
+import 'package:outreach/screens/forum/create_post.dart';
 import 'package:outreach/screens/forum/forum_post_details.dart';
 import 'package:outreach/utils/report_reasons.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
@@ -201,6 +202,8 @@ class _ForumCardState extends State<ForumCard> {
                   padding: const EdgeInsets.all(0),
                   onSelected: (item) {
                     if (item == 1) {
+                      Get.to(() => AddForumPost(
+                          forum: widget.forum, post: widget.forumPost));
                       print('Edit tapped');
                     } else if (item == 2) {
                       _confirmDelete();

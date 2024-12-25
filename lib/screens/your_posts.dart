@@ -10,7 +10,9 @@ import 'package:outreach/widgets/navbar.dart';
 import 'package:outreach/widgets/post_card.dart';
 
 class YourPosts extends StatefulWidget {
-  const YourPosts({super.key});
+  final String user;
+
+  const YourPosts({super.key, required this.user});
 
   @override
   State<YourPosts> createState() => _YourPostsState();
@@ -49,7 +51,7 @@ class _YourPostsState extends State<YourPosts> {
       _currentPage++;
       final morePostsResponse = await feedService.getUserFeed(
         page: _currentPage,
-        user: userController.userData!.id,
+        user: widget.user,
       );
       print(morePostsResponse!.totalPages);
       setState(() {
@@ -66,9 +68,10 @@ class _YourPostsState extends State<YourPosts> {
   void init() async {
     final feedResponse = await feedService.getUserFeed(
       page: 1,
-      user: userController.userData!.id,
+      user: widget.user,
     );
-    postList.addAll(feedResponse!.posts);
+    log(feedResponse!.posts.length);
+    postList.addAll(feedResponse.posts);
     columnKey = Key(Random().toString());
   }
 

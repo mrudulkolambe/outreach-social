@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:get/get.dart';
 import 'package:outreach/api/constants/constants.dart';
 import 'package:outreach/api/models/resource.dart';
 import 'package:outreach/api/services/api_services.dart';
@@ -8,7 +9,8 @@ import 'package:outreach/controller/resources.dart';
 import 'package:outreach/utils/toast_manager.dart';
 
 class ResourceServices {
-  final ResourcesController resourcesController = ResourcesController();
+  final ResourcesController resourcesController =
+      Get.put(ResourcesController());
 
   Future<List<ResourceCategory>> getResourceCategory() async {
     final response = await ApiService().get(getResourceCategoryAPI);
@@ -34,11 +36,26 @@ class ResourceServices {
     }
   }
 
+  Future<ResourcePost?> updatePost(Map<String, dynamic> body, String id) async {
+    log("UPDATE ${body.toString()}");
+    final response =
+        await ApiService().patch("$updateResourceFeedAPI/$id", body);
+    log("UPDATE ${response!.body}");
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final results = ResourcePostResponse.fromJson(jsonDecode(response.body));
+      resourcesController.updatePost(results.feed!);
+      return results.feed;
+    } else {
+      print(response.reasonPhrase);
+      return null;
+    }
+  }
+
   Future<int> deletePost(String id) async {
     final deletePost = await ApiService().delete('$deleteResourcefeedAPI/$id');
     log(deletePost!.body);
     if (deletePost.statusCode == 200) {
-      // postController.deletePost(id);
+      resourcesController.deletePost(id);
       ToastManager.showToastApp("Post deleted successfully!");
       return 200;
     } else {
@@ -55,8 +72,15 @@ class ResourceServices {
         await ApiService().get('$getResourceFeedAPI?page=$page&limit=$limit');
     if (response != null && response.statusCode == 200 ||
         response != null && response.statusCode == 201) {
-      log(response.body);
       final results = ResourcePostsResponse.fromJson(jsonDecode(response.body));
+      log("Controller Data ${results.feeds.length.toString()}");
+      if (page == 1) {
+        log("Controller Data 1 ${results.feeds.length.toString()}");
+        resourcesController.initAdd(results.feeds);
+      } else {
+        log("Controller Data else ${results.feeds.length.toString()}");
+        resourcesController.addAll(results.feeds);
+      }
       return results;
     } else {
       print(response!.reasonPhrase);
@@ -81,7 +105,7 @@ class ResourceServices {
     final updatedPost =
         await ApiService().patch('$likeResourceFeedAPI/${post.id}', {});
     if (updatedPost != null) {
-      print(updatedPost.body);
+      log(updatedPost.body);
       final updatedPostData =
           ResourcePostResponse.fromJson(jsonDecode(updatedPost.body));
       resourcesController.updatePost(updatedPostData.feed!);

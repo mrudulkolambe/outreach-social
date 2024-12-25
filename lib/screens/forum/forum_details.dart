@@ -122,6 +122,9 @@ class _ForumDetailsState extends State<ForumDetails> {
 
   @override
   Widget build(BuildContext context) {
+    const double buttonHeight = 50;
+    const double buttonBottomPadding = 20;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -146,10 +149,9 @@ class _ForumDetailsState extends State<ForumDetails> {
             snap: true,
             initialChildSize: 0.7,
             minChildSize: 0.7,
-            maxChildSize: 0.7,
+            maxChildSize: 1.0,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
-                height: MediaQuery.of(context).size.height * 0.7,
                 padding: const EdgeInsets.symmetric(
                   horizontal: horizontal_p,
                   vertical: 20,
@@ -161,116 +163,76 @@ class _ForumDetailsState extends State<ForumDetails> {
                     topRight: Radius.circular(20),
                   ),
                 ),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Column(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          Row(
-                            children: [
-                              const Text(
-                                'Created by',
-                                style: TextStyle(color: grey),
+                          const Text(
+                            'Created by',
+                            style: TextStyle(color: grey),
+                          ),
+                          const SizedBox(width: 5),
+                          CircularShimmerImage(
+                            imageUrl: widget.forum.userId.imageUrl,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              "@${widget.forum.userId.username}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
                               ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              CircularShimmerImage(
-                                imageUrl: widget.forum.userId.imageUrl,
-                                size: 24,
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Expanded(
-                                  child: Text(
-                                "@${widget.forum.userId.username}",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600),
-                              ))
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                "${widget.forum.joined.length} members",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                  color: grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          if(widget.forum.joined.isEmpty) Row(
-                            children: [
-                              ...widget.forum.joined.map((member) {
-                                return Row(
-                                  children: [
-                                    CircularShimmerImage(
-                                      imageUrl:
-                                          "https://s3-alpha-sig.figma.com/img/7e3b/a4fa/4ba8d958b31942e64de879a7d7e4146a?Expires=1720396800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=qf4L5rrqnOW8paVNhj-yqAMRA3I-mQl3jKYiW9fbNUommV~9P0bwUQSUga7dhWZ~bk2Ksmu2kudd2zaWAJdMMpj~BwCIkdP6A0ZZKkV~Iu3Rs1zLJcpTluRb0YL1pqXkl3KvnvqAomkq3MZeff9oCBmsgXZk3~pZ9ZKRMcexPPiTuDL-JeEfIh56PGZa1pPma-WX6MP~9PmXM5qoSbvWoCs~~S1lziFRzVoo9SycSCCd3SAGvue0UQ-5xHb7Wr00tN1jCNq6vmPQy3NNGZmUsu4f6hNxlSPuTtrgI97wx3Ik7XqfdQJWPOCxkvJsdds73ERhdJY2YKr~PUmdv7xnZA__",
-                                      size: 32,
-                                    ),
-                                    SizedBox(
-                                      width: 2,
-                                    ),
-                                  ],
-                                );
-                              }),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          const Row(
-                            children: [
-                              Text(
-                                "Description",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  widget.forum.description,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                    InkWell(
-                      onTap: joinedForum,
-                      child: const StyledButton(
-                        loading: false,
-                        text: "Join now",
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Text(
+                            "${widget.forum.joined.length} members",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              color: grey,
+                            ),
+                          ),
+                        ],
                       ),
-                    )
-                  ],
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Description",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        widget.forum.description,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(
+                          height: buttonHeight + buttonBottomPadding + 20),
+                    ],
+                  ),
                 ),
               );
             },
+          ),
+          Positioned(
+            bottom: buttonBottomPadding,
+            left: horizontal_p,
+            right: horizontal_p,
+            child: InkWell(
+                onTap: joinedForum,
+                child: const StyledButton(loading: false, text: "Join now")),
           ),
         ],
       ),

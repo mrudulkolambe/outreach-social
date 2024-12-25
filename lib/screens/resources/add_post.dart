@@ -17,7 +17,9 @@ import 'package:outreach/widgets/styled_textfield.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ResourceAddPost extends StatefulWidget {
-  const ResourceAddPost({super.key});
+  final ResourcePost? resourcePost;
+
+  const ResourceAddPost({super.key, this.resourcePost});
 
   @override
   State<ResourceAddPost> createState() => _ResourceAddPostState();
@@ -41,10 +43,19 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
 
   void initData() async {
     final response = await resourceServices.getResourceCategory();
-    setState(() {
-      resourceCategories = response;
-      category = response.first.id;
-    });
+    if (mounted) {
+      setState(() {
+        resourceCategories = response;
+        category = response.first.id;
+      });
+      if (widget.resourcePost != null) {
+        setState(() {
+          category = widget.resourcePost!.category;
+          titleController.text = widget.resourcePost!.title ?? "";
+          descriptionController.text = widget.resourcePost!.content;
+        });
+      }
+    }
   }
 
   Future<void> pickMedia() async {
@@ -71,6 +82,24 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
     } else {
       return false;
     }
+  }
+
+  void updatePost() async {
+    final body = {
+      "content": descriptionController.text,
+      "category": category,
+      "title": titleController.text
+    };
+    resourceServices.updatePost({"updateData": body}, widget.resourcePost!.id);
+    if (mounted) {
+      setState(() {
+        _mediaFiles = [];
+        descriptionController.text = "";
+      });
+    }
+    Get.offAll(() => const MainStack(
+          page: 3,
+        ));
   }
 
   void createPost() async {
@@ -120,16 +149,22 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
       appBar: AppBar(
         surfaceTintColor: appbarColor,
         backgroundColor: appbarColor,
-        title: const Text(
-          "Share your resource",
-          style: TextStyle(fontSize: 20),
+        title: Text(
+          widget.resourcePost != null
+              ? "Update your resource"
+              : "Share your resource",
+          style: const TextStyle(fontSize: 20),
         ),
         actions: [
           TextButton(
             onPressed: () {
               if (descriptionController.text.isNotEmpty ||
                   _mediaFiles.isNotEmpty) {
-                createPost();
+                if (widget.resourcePost != null) {
+                  updatePost();
+                } else {
+                  createPost();
+                }
               } else {
                 ToastManager.showToast(
                   "No media selected",
@@ -137,9 +172,9 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
                 );
               }
             },
-            child: const Text(
-              "Post",
-              style: TextStyle(
+            child: Text(
+              widget.resourcePost != null ? "Update" : "Post",
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 color: accent,
                 fontSize: 16,
@@ -245,16 +280,16 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
                     }).toList(),
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                StyledTextField(
-                  controller: titleController,
-                  keyboardType: TextInputType.name,
-                  hintText: "Resource title",
-                  label: "Write the title",
-                  next: true,
-                ),
+              const SizedBox(
+                height: 10,
+              ),
+              StyledTextField(
+                controller: titleController,
+                keyboardType: TextInputType.name,
+                hintText: "Resource title",
+                label: "Write the title",
+                next: true,
+              ),
               const SizedBox(
                 height: 5,
               ),
