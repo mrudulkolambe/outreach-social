@@ -284,44 +284,44 @@ class _UserProfileState extends State<UserProfile> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    InkWell(
-                      onTap: () {
-                        final VoiceCallController callController =
-                            Get.put(VoiceCallController());
+                    // InkWell(
+                    //   onTap: () {
+                    //     final VoiceCallController callController =
+                    //         Get.put(VoiceCallController());
 
-                        audioCall(
-                          "voice",
-                          userData!.id,
-                          userController.userData!.imageUrl ?? "null",
-                          userController.userData!.name ?? "null",
-                          callController.uniqueChannelName.value,
-                        );
-                      },
-                      child: const StyledButton(
-                        text: "Calling Button",
-                        loading: false,
-                      ),
-                    ),
+                    //     audioCall(
+                    //       "voice",
+                    //       userData!.id,
+                    //       userController.userData!.imageUrl ?? "null",
+                    //       userController.userData!.name ?? "null",
+                    //       callController.uniqueChannelName.value,
+                    //     );
+                    //   },
+                    //   child: const StyledButton(
+                    //     text: "Calling Button",
+                    //     loading: false,
+                    //   ),
+                    // ),
 
                     const SizedBox(height: 10),
-                    InkWell(
-                      onTap: () {
-                        final VideoCallControlller videoController =
-                            Get.put(VideoCallControlller());
+                    // InkWell(
+                    //   onTap: () {
+                    //     final VideoCallControlller videoController =
+                    //         Get.put(VideoCallControlller());
 
-                        videoCall(
-                          "video",
-                          userData!.id,
-                          userController.userData!.imageUrl ?? "null",
-                          userController.userData!.name ?? "null",
-                          videoController.uniqueChannelName.value,
-                        );
-                      },
-                      child: const StyledButton(
-                        text: "Video Call",
-                        loading: false,
-                      ),
-                    ),
+                    //     videoCall(
+                    //       "video",
+                    //       userData!.id,
+                    //       userController.userData!.imageUrl ?? "null",
+                    //       userController.userData!.name ?? "null",
+                    //       videoController.uniqueChannelName.value,
+                    //     );
+                    //   },
+                    //   child: const StyledButton(
+                    //     text: "Video Call",
+                    //     loading: false,
+                    //   ),
+                    // ),
                     const SizedBox(height: 8),
                     const Divider(),
                     const Row(

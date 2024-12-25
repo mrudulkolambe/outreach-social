@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -161,7 +163,7 @@ class VideoCallPage extends GetView<VideoCallControlller> {
                                     ),
                                     onTap: () {
                                       controller.leaveChannel();
-                                     
+                                      Get.back();
                                     },
                                   ),
                                   Container(
@@ -180,6 +182,7 @@ class VideoCallPage extends GetView<VideoCallControlller> {
                                 ]),
                                 Column(children: [
                                   GestureDetector(
+                                    // ignore: sort_child_properties_last
                                     child: Container(
                                       width: 60,
                                       height: 60,

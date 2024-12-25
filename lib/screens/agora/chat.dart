@@ -9,6 +9,11 @@ import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:http/http.dart' as http;
+import 'package:outreach/controller/video_call_controlller.dart';
+import 'package:outreach/controller/voice_call_controller.dart';
+import 'package:outreach/screens/agora/video_call_state/video.dart';
+import 'package:outreach/screens/agora/voice_call_state/call.dart';
+import 'package:outreach/utils/f.dart';
 
 class ChatScreen extends StatefulWidget {
   final String recipientId;
@@ -94,6 +99,66 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  void videoCall() async {
+    Get.delete<VideoCallControlller>(); // Reset controller first
+    final VideoCallControlller videoController = Get.put(VideoCallControlller());
+    
+    try {
+      await F.sendNotifications(
+        "video",
+        widget.recipientId,
+        widget.recipientImage ?? "null",
+        widget.recipientName,
+        videoController.uniqueChannelName.value,
+      );
+
+      Get.to(
+        () => VideoCallPage(
+          to_token: widget.recipientId,
+          to_name: widget.recipientName,
+          to_profile_image: widget.recipientImage,
+          call_role: videoController.callerRole.value,
+        ),
+      )?.then((_) {
+        // Clean up controller when returning from call screen
+        Get.delete<VideoCallControlller>();
+      });
+    } catch (e) {
+      Get.delete<VideoCallControlller>();
+      _showError('Failed to initiate video call');
+    }
+  }
+
+  void audioCall() async {
+    Get.delete<VoiceCallController>(); // Reset controller first
+    final VoiceCallController callController = Get.put(VoiceCallController());
+    
+    try {
+      await F.sendNotifications(
+        "voice",
+        widget.recipientId,
+        widget.recipientImage ?? "null",
+        widget.recipientName,
+        callController.uniqueChannelName.value,
+      );
+
+      Get.to(
+        () => VoiceCallPage(
+          to_token: widget.recipientId,
+          to_name: widget.recipientName,
+          to_profile_image: widget.recipientImage,
+          call_role: callController.callerRole.value,
+        ),
+      )?.then((_) {
+        // Clean up controller when returning from call screen
+        Get.delete<VoiceCallController>();
+      });
+    } catch (e) {
+      Get.delete<VoiceCallController>();
+      _showError('Failed to initiate voice call');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,6 +174,17 @@ class _ChatScreenState extends State<ChatScreen> {
             Text(widget.recipientName),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.phone),
+            onPressed: audioCall,
+          ),
+          IconButton(
+            icon: const Icon(Icons.videocam),
+            onPressed: videoCall,
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: ChatMessagesView(
         conversation: _conversation,
@@ -127,6 +203,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    // Clean up any remaining controller instances
+    Get.delete<VideoCallControlller>();
+    Get.delete<VoiceCallController>();
+    // ...existing dispose code...
     ChatClient.getInstance.chatManager
       ..removeEventHandler("UNIQUE_HANDLER_ID")
       ..removeMessageEvent("UNIQUE_HANDLER_ID");

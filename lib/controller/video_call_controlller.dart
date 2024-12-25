@@ -143,7 +143,7 @@ class VideoCallControlller extends GetxController {
         isShowAvatar.value = true;
         openMicrophone.value = false;
         stopCallTimer();
-        Get.back();
+        // Get.back();
       },
       onRtcStats: (connection, stats) {
         print("onRtcStats: ${connection.toJson()}, $stats");
@@ -214,7 +214,7 @@ class VideoCallControlller extends GetxController {
     switchCamera.value = true;
     await engine.stopLastmileProbeTest();
     await player.stop();
-    Get.back();
+    // Get.back();
   }
 
   // Future<void> switchCameraToggle() async {
