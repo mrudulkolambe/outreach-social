@@ -113,7 +113,13 @@ class _UserProfileState extends State<UserProfile> {
   ) async {
     final VoiceCallController callController = Get.put(VoiceCallController());
 
-    await F.sendNotifications(callType, toToken, toAvatar, toName, channelId);
+    // await F.sendNotifications(
+    //   call_type,
+    //   to_token,
+    //   to_avatar,
+    //   to_name,
+    //   channel_id,
+    // );
 
     Get.to(
       () => VoiceCallPage(
@@ -300,8 +306,6 @@ class _UserProfileState extends State<UserProfile> {
                     //     loading: false,
                     //   ),
                     // ),
-
-                    const SizedBox(height: 10),
                     // InkWell(
                     //   onTap: () {
                     //     final VideoCallControlller videoController =
