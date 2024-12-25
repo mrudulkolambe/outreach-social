@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:outreach/api/services/agora_chat_service.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
+import 'package:outreach/controller/user.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:http/http.dart' as http;
 import 'package:outreach/controller/video_call_controlller.dart';
@@ -99,64 +100,60 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void videoCall() async {
+  void videoCall(
+    String call_type,
+    String to_token,
+  ) async {
     Get.delete<VideoCallControlller>(); // Reset controller first
-    final VideoCallControlller videoController = Get.put(VideoCallControlller());
-    
-    try {
-      await F.sendNotifications(
-        "video",
-        widget.recipientId,
-        widget.recipientImage ?? "null",
-        widget.recipientName,
-        videoController.uniqueChannelName.value,
-      );
+    final VideoCallControlller videoController =
+        Get.put(VideoCallControlller());
+    final UserController userController = Get.put(UserController());
 
-      Get.to(
-        () => VideoCallPage(
-          to_token: widget.recipientId,
-          to_name: widget.recipientName,
-          to_profile_image: widget.recipientImage,
-          call_role: videoController.callerRole.value,
-        ),
-      )?.then((_) {
-        // Clean up controller when returning from call screen
-        Get.delete<VideoCallControlller>();
-      });
-    } catch (e) {
-      Get.delete<VideoCallControlller>();
-      _showError('Failed to initiate video call');
-    }
+    await F.sendNotifications(
+      call_type,
+      to_token,
+      userController.userData!.imageUrl ?? "null",
+      userController.userData!.name ?? "null",
+      videoController.uniqueChannelName.value,
+    );
+
+    Get.to(
+      () => VideoCallPage(
+        to_token: widget.recipientId,
+        to_name: widget.recipientName,
+        to_profile_image: widget.recipientImage,
+        call_role:
+            videoController.callerRole.value, // callerRole is not defined
+      ),
+    );
   }
 
-  void audioCall() async {
+  void audioCall(
+    String call_type,
+    String to_token,
+  ) async {
     Get.delete<VoiceCallController>(); // Reset controller first
     final VoiceCallController callController = Get.put(VoiceCallController());
-    
-    try {
-      await F.sendNotifications(
-        "voice",
-        widget.recipientId,
-        widget.recipientImage ?? "null",
-        widget.recipientName,
-        callController.uniqueChannelName.value,
-      );
+    final UserController userController = Get.put(UserController());
 
-      Get.to(
-        () => VoiceCallPage(
-          to_token: widget.recipientId,
-          to_name: widget.recipientName,
-          to_profile_image: widget.recipientImage,
-          call_role: callController.callerRole.value,
-        ),
-      )?.then((_) {
-        // Clean up controller when returning from call screen
-        Get.delete<VoiceCallController>();
-      });
-    } catch (e) {
-      Get.delete<VoiceCallController>();
-      _showError('Failed to initiate voice call');
-    }
+    await F.sendNotifications(
+      call_type,
+      to_token,
+      userController.userData!.imageUrl ?? "null",
+      userController.userData!.name ?? "null",
+      callController.uniqueChannelName.value,
+    );
+
+    Get.to(
+      () => VoiceCallPage(
+        to_token: widget.recipientId,
+        to_name: widget.recipientName,
+        to_profile_image: widget.recipientImage,
+        call_role: callController.callerRole.value,
+      ),
+    );
+
+    log("audioCall: $to_token");
   }
 
   @override
@@ -177,11 +174,21 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.phone),
-            onPressed: audioCall,
+            onPressed: () {
+              audioCall(
+                "voice",
+                widget.recipientId,
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.videocam),
-            onPressed: videoCall,
+            onPressed: () {
+              videoCall(
+                "video",
+                widget.recipientId,
+              );
+            },
           ),
           const SizedBox(width: 8),
         ],
@@ -190,7 +197,8 @@ class _ChatScreenState extends State<ChatScreen> {
         conversation: _conversation,
         willSendMessage: (message) {
           log("Sending message: ${message.body}");
-          sendMessageNotificaiton(message.body.toJson().entries.last.value.toString(),
+          sendMessageNotificaiton(
+              message.body.toJson().entries.last.value.toString(),
               message.to.toString());
           return message;
         },
@@ -205,8 +213,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void dispose() {
     // Clean up any remaining controller instances
     Get.delete<VideoCallControlller>();
-    Get.delete<VoiceCallController>();
-    // ...existing dispose code...
+    Get.delete<VoiceCallController>(); 
     ChatClient.getInstance.chatManager
       ..removeEventHandler("UNIQUE_HANDLER_ID")
       ..removeMessageEvent("UNIQUE_HANDLER_ID");

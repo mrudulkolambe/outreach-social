@@ -121,7 +121,7 @@ class VoiceCallController extends GetxController {
         isJoined.value = false;
         openMicrophone.value = false;
         stopCallTimer();
-        // Get.back();
+        Get.back();
       },
       onRtcStats: (connection, stats) {
         print("onRtcStats: ${connection.toJson()}, $stats");
