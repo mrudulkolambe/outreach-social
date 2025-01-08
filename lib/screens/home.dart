@@ -285,7 +285,17 @@ class _HomePageState extends State<HomePage>
                                             width: 88,
                                             decoration: BoxDecoration(
                                               color: const Color.fromRGBO(
-                                                  211, 221, 250, 0.3),
+                                                211,
+                                                221,
+                                                250,
+                                                0.3,
+                                              ),
+                                              border: storyResponse.own.isEmpty
+                                                  ? Border.all(width: 0)
+                                                  : Border.all(
+                                                      width: 2,
+                                                      color: accent,
+                                                    ),
                                               borderRadius:
                                                   BorderRadius.circular(14),
                                             ),
@@ -411,7 +421,8 @@ class _HomePageState extends State<HomePage>
                                               footer: Padding(
                                                 padding:
                                                     const EdgeInsets.symmetric(
-                                                        horizontal: 20),
+                                                  horizontal: 20,
+                                                ),
                                                 child: Text(
                                                   groupedStories[storyIndex]
                                                       .stories[contentIndex]
@@ -553,13 +564,19 @@ class _SelfStoryViewState extends State<SelfStoryView> {
                 return StoryItem.pageVideo(widget.userStories[index].media.url,
                     controller: controller,
                     imageFit: BoxFit.contain,
-                    caption: Text(widget.userStories[index].content));
+                    caption: Text(
+                      widget.userStories[index].content,
+                      style: const TextStyle(color: Colors.white),
+                    ));
               } else if (widget.userStories[index].media.type == "image") {
                 return StoryItem.pageImage(
                     url: widget.userStories[index].media.url,
                     imageFit: BoxFit.contain,
                     controller: controller,
-                    caption: Text(widget.userStories[index].content));
+                    caption: Text(
+                      widget.userStories[index].content,
+                      style: const TextStyle(color: Colors.white),
+                    ));
               }
               return null;
             },

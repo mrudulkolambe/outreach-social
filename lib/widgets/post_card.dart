@@ -241,11 +241,11 @@ class _PostCardState extends State<PostCard> {
                       value: 1,
                       child: Center(
                         child: SizedBox(
-                            width: 150,
+                            width: 120,
                             child: Text(
                               'Edit',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                               ),
                               textAlign: TextAlign.center,
                             )),
@@ -256,30 +256,31 @@ class _PostCardState extends State<PostCard> {
                       value: 2,
                       child: Center(
                         child: SizedBox(
-                            width: 150,
+                            width: 120,
                             child: Text(
                               'Delete',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                               ),
                               textAlign: TextAlign.center,
                             )),
                       ),
                     ),
-                  const PopupMenuItem(
-                    value: 3,
-                    child: Center(
-                      child: SizedBox(
-                          width: 150,
-                          child: Text(
-                            'Report',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.center,
-                          )),
+                  if (widget.user.id != widget.post.user.id)
+                    const PopupMenuItem(
+                      value: 3,
+                      child: Center(
+                        child: SizedBox(
+                            width: 120,
+                            child: Text(
+                              'Report',
+                              style: TextStyle(
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            )),
+                      ),
                     ),
-                  ),
                 ],
                 icon: const Icon(Icons.more_vert),
               ),

@@ -31,7 +31,6 @@ class ResourceServices {
       final results = ResourcePostResponse.fromJson(jsonDecode(response.body));
       return results.feed;
     } else {
-      print(response!.reasonPhrase);
       return null;
     }
   }
@@ -46,7 +45,6 @@ class ResourceServices {
       resourcesController.updatePost(results.feed!);
       return results.feed;
     } else {
-      print(response.reasonPhrase);
       return null;
     }
   }
@@ -83,13 +81,11 @@ class ResourceServices {
       }
       return results;
     } else {
-      print(response!.reasonPhrase);
       return null;
     }
   }
 
   Future<int> likeOnPost(ResourcePost post) async {
-    print(post.id);
     final tempPost = ResourcePost(
       title: post.title,
       id: post.id,

@@ -217,11 +217,11 @@ class _ForumCardState extends State<ForumCard> {
                         value: 1,
                         child: Center(
                           child: SizedBox(
-                              width: 150,
+                              width: 120,
                               child: Text(
                                 'Edit',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                 ),
                                 textAlign: TextAlign.center,
                               )),
@@ -232,30 +232,31 @@ class _ForumCardState extends State<ForumCard> {
                         value: 2,
                         child: Center(
                           child: SizedBox(
-                              width: 150,
+                              width: 120,
                               child: Text(
                                 'Delete',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                 ),
                                 textAlign: TextAlign.center,
                               )),
                         ),
                       ),
-                    const PopupMenuItem(
-                      value: 3,
-                      child: Center(
-                        child: SizedBox(
-                            width: 150,
-                            child: Text(
-                              'Report',
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                              textAlign: TextAlign.center,
-                            )),
+                    if (widget.user != widget.forumPost.user.id)
+                      const PopupMenuItem(
+                        value: 3,
+                        child: Center(
+                          child: SizedBox(
+                              width: 120,
+                              child: Text(
+                                'Report',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.center,
+                              )),
+                        ),
                       ),
-                    ),
                   ],
                   icon: const Icon(Icons.more_vert),
                 ),
