@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -13,8 +13,7 @@ import 'package:outreach/controller/post.dart';
 import 'package:outreach/controller/saving.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/models/post.dart';
-import 'package:outreach/screens/agora/chat.dart';
-import 'package:outreach/screens/agora/chatMainScreen.dart';
+import 'package:outreach/screens/chats/list.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/notification.dart';
 import 'package:outreach/screens/search.dart';
@@ -115,13 +114,35 @@ class _HomePageState extends State<HomePage>
           groupedStories = [];
           if (storyResponse.own.isNotEmpty) {
             groupedStories.add(UserStoryGroup(
-                username: storyResponse.own.first.userId.username,
-                stories: storyResponse.own));
+              username: storyResponse.own.first.userId.username,
+              stories: storyResponse.own,
+            ));
           } else {
             groupedStories.add(UserStoryGroup(
                 username: userController.userData!.username!, stories: []));
           }
-          groupedStories.addAll(handleStories(storyList.response.user));
+          log(storyList.response.user
+              .where((element) {
+                return !element.public;
+              })
+              .toList()
+              .toString());
+          if (storyList.response.user.where(
+            (element) {
+              return !element.public;
+            },
+          ).isNotEmpty) {
+            groupedStories.add(UserStoryGroup(
+                username: "anonymous",
+                stories: storyList.response.user.where(
+                  (element) {
+                    return !element.public;
+                  },
+                ).toList()));
+          }
+          groupedStories.addAll(handleStories(storyList.response.user
+              .where((element) => element.public)
+              .toList()));
           postsList = listPostsResponse!.posts;
           postController.initAddPosts(listPostsResponse.posts);
           hasMorePost =
@@ -214,7 +235,7 @@ class _HomePageState extends State<HomePage>
             ),
           ),
           IconButton(
-            onPressed: () => Get.to(() => const ChatMainScreen()),
+            onPressed: () => Get.to(() => const ZIMKitListPage()),
             icon: SvgPicture.asset(
               "assets/icons/message.svg",
             ),
@@ -351,14 +372,14 @@ class _HomePageState extends State<HomePage>
                                           size: const Size(88, 103),
                                           shape: BoxShape.rectangle,
                                           url: groupedStories[storyIndex]
-                                                          .imageUrl !=
+                                                          .imageUrl ==
                                                       null ||
                                                   groupedStories[storyIndex]
-                                                          .imageUrl !=
+                                                          .imageUrl ==
                                                       ""
-                                              ? groupedStories[storyIndex]
-                                                  .imageUrl!
-                                              : "assets/icons/user-placeholder.png",
+                                              ? "assets/icons/user-placeholder.png"
+                                              : groupedStories[storyIndex]
+                                                  .imageUrl!,
                                         );
                                 },
                                 storyBuilder: (storyIndex) {
@@ -378,7 +399,10 @@ class _HomePageState extends State<HomePage>
                                                             .imageUrl ==
                                                         ""
                                                 ? Image.asset(
-                                                    "assets/icons/user-placeholder.png")
+                                                    "assets/icons/user-placeholder.png",
+                                                    height: 50,
+                                                    width: 50,
+                                                  )
                                                 : Image.network(
                                                     fit: BoxFit.cover,
                                                     groupedStories[storyIndex]

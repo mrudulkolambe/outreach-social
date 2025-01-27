@@ -8,8 +8,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:outreach/firebase_options.dart';
-import 'package:outreach/screens/agora/video_call_state/video.dart';
-import 'package:outreach/screens/agora/voice_call_state/call.dart';
 
 class FirebasemsgHandler {
   FirebasemsgHandler._();
@@ -17,7 +15,7 @@ class FirebasemsgHandler {
   static AndroidNotificationChannel channel_call =
       const AndroidNotificationChannel(
     'com.outreach.outreach_notification_channel_id',
-    'Outreach Call Notification', 
+    'Outreach Call Notification',
     importance: Importance.max,
     enableLights: true,
     playSound: true,
@@ -47,8 +45,8 @@ class FirebasemsgHandler {
         print(initialMessage);
       }
       var initializationSettingsAndroid =
-          AndroidInitializationSettings("ic_launcher");
-      var darwinInitializationSettings = DarwinInitializationSettings();
+          const AndroidInitializationSettings("ic_launcher");
+      var darwinInitializationSettings = const DarwinInitializationSettings();
       var initializationSettings = InitializationSettings(
           android: initializationSettingsAndroid,
           iOS: darwinInitializationSettings);
@@ -66,20 +64,7 @@ class FirebasemsgHandler {
               log("payloadData['toToken'] ${payloadData['toName']}");
               log("payloadData['toToken'] ${payloadData['channelId']}");
               if (payloadData['callType'] == 'voice') {
-                Get.to(() => VoiceCallPage(
-                      to_token: payloadData['toToken'],
-                      to_name: payloadData['toName'],
-                      to_profile_image: payloadData['toProfileImage'],
-                      call_role: "audience",
-                    ));
-              } else if (payloadData['callType'] == 'video') {
-                Get.to(() => VideoCallPage(
-                      to_token: payloadData['toToken'],
-                      to_name: payloadData['toName'],
-                      to_profile_image: payloadData['toProfileImage'],
-                      call_role: "audience",
-                    ));
-              }
+              } else if (payloadData['callType'] == 'video') {}
             } else if (details.actionId == 'reject') {
               FirebasemsgHandler.flutterLocalNotificationsPlugin.cancel(0);
               // F.sendNotifications(
@@ -100,10 +85,8 @@ class FirebasemsgHandler {
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         print("\n notification on onMessage function \n");
-  
-        if (message != null) {
-          handleNotification(message);
-        }
+
+        handleNotification(message);
       });
     } on Exception catch (e) {
       print("$e");
@@ -129,7 +112,7 @@ class FirebasemsgHandler {
   }
 
   static Future _reserveNotification(RemoteMessage message) async {
-    if (message.data != null && message.data['call_type'] != null) {
+    if (message.data['call_type'] != null) {
       var data = message.data;
       var toToken = data['to_token'];
       var toName = data['to_name'] ?? 'Unknown';
@@ -193,23 +176,22 @@ class FirebasemsgHandler {
 
         // Auto cancel call after 30 seconds if not answered
         // Future.delayed(const Duration(seconds: 50), () {
-          // F.sendNotifications(
-          //   "cancel",
-          //   toToken,
-          //   toProfileImage,
-          //   toName,
-          //   channelId,
-          // );
-          // flutterLocalNotificationsPlugin.cancel(0);
+        // F.sendNotifications(
+        //   "cancel",
+        //   toToken,
+        //   toProfileImage,
+        //   toName,
+        //   channelId,
+        // );
+        // flutterLocalNotificationsPlugin.cancel(0);
         // });
       }
     } else if (message.data['call_type'] == 'cancel') {
       FirebasemsgHandler.flutterLocalNotificationsPlugin.cancelAll();
       // FirebasemsgHandler.flutterLocalNotificationsPlugin.cancel(0);
 
-
-
-      if(Get.currentRoute.contains("/VideoCallPage") || Get.currentRoute.contains("/VoiceCallPage")){
+      if (Get.currentRoute.contains("/VideoCallPage") ||
+          Get.currentRoute.contains("/VoiceCallPage")) {
         Get.back();
         print("Get.currentRoute.isNotEmpty");
       }
@@ -237,7 +219,7 @@ class FirebasemsgHandler {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     print("message data: ${message.data}");
-    print("message data: ${message}");
+    print("message data: $message");
     print("message data: ${message.notification}");
 
     handleNotification(message);

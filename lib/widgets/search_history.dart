@@ -39,12 +39,13 @@ class SearchHistoryCard extends StatelessWidget {
             children: [
               Text(
                 "@${user.username}",
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
               ),
-              const Text(
-                "20 followers",
-                style: TextStyle(color: grey, fontSize: 12),
-              ),
+              // const Text(
+              //   "20 followers",
+              //   style: TextStyle(color: grey, fontSize: 12),
+              // ),
             ],
           ),
           trailing: IconButton(

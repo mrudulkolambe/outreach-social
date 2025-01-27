@@ -1,29 +1,14 @@
 // main.dart
 // ignore_for_file: use_build_context_synchronously
-import 'dart:convert';
-import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:outreach/api/constants/constants.dart';
 import 'package:outreach/api/models/user.dart';
-import 'package:outreach/api/services/agora_chat_service.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/user.dart';
-import 'package:outreach/controller/video_call_controlller.dart';
-import 'package:outreach/controller/voice_call_controller.dart';
-import 'package:outreach/models/call_request.dart';
 import 'package:outreach/models/interest.dart';
-import 'package:outreach/screens/agora/chat.dart';
-import 'package:outreach/screens/agora/video_call_state/video.dart';
-import 'package:outreach/screens/agora/voice_call_state/call.dart';
 import 'package:outreach/screens/your_posts.dart';
-import 'package:outreach/utils/f.dart';
-import 'package:outreach/utils/firebasemsg_handler.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
 import 'package:outreach/widgets/interest/interest_choice.dart';
@@ -31,9 +16,8 @@ import 'package:outreach/widgets/navbar.dart';
 import 'package:outreach/widgets/posts/profile.dart';
 import 'package:outreach/widgets/profile/details_elem.dart';
 import 'package:outreach/widgets/styled_button.dart';
-
-import 'package:http/http.dart' as http;
-import 'package:permission_handler/permission_handler.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_zimkit/zego_zimkit.dart';
 
 class UserProfile extends StatefulWidget {
   final String userId;
@@ -81,61 +65,8 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-  void videoCall(
-    String callType,
-    String toToken,
-    String toAvatar,
-    String toName,
-    String channelId,
-  ) async {
-    final VideoCallControlller videoController =
-        Get.put(VideoCallControlller());
-
-    await F.sendNotifications(callType, toToken, toAvatar, toName, channelId);
-
-    Get.to(
-      () => VideoCallPage(
-        to_token: userData!.id,
-        to_name: userData!.name,
-        to_profile_image: userData!.imageUrl,
-        call_role:
-            videoController.callerRole.value, // callerRole is not defined
-      ),
-    );
-  }
-
-  void audioCall(
-    String callType,
-    String toToken,
-    String toAvatar,
-    String toName,
-    String channelId,
-  ) async {
-    final VoiceCallController callController = Get.put(VoiceCallController());
-
-    // await F.sendNotifications(
-    //   call_type,
-    //   to_token,
-    //   to_avatar,
-    //   to_name,
-    //   channel_id,
-    // );
-
-    Get.to(
-      () => VoiceCallPage(
-        to_token: userData!.id,
-        to_name: userData!.name,
-        to_profile_image: userData!.imageUrl,
-        call_role: callController.callerRole.value,
-      ),
-    );
-
-    log("audioCall: $toToken $toAvatar $toName $channelId");
-  }
-
   @override
   Widget build(BuildContext context) {
-    AgoraService agoraService = AgoraService();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -265,22 +196,62 @@ class _UserProfileState extends State<UserProfile> {
                     // Message Button
                     InkWell(
                       onTap: () async {
-                        await agoraService.createAttribute(
-                          userName: userData!.name!,
-                          userImage: userData!.imageUrl!,
-                          cId: userData!.id,
-                        );
-
-                        final conversation =
-                            await agoraService.getConversation(userData!.id);
-                        Get.to(
-                          () => ChatScreen(
-                            recipientId: userData!.id,
-                            recipientName: userData!.name!,
-                            recipientImage: userData!.imageUrl,
-                            conversation: conversation,
-                          ),
-                        );
+                        Get.to(() => ZIMKitMessageListPage(
+                              appBarActions: [
+                                ZegoSendCallInvitationButton(
+                                  isVideoCall: false,
+                                  clickableBackgroundColor: Colors.transparent,
+                                  iconSize: const Size(40, 40),
+                                  icon: ButtonIcon(
+                                    icon: const Icon(
+                                      Icons.call_outlined,
+                                      color: accent,
+                                    ),
+                                  ),
+                                  unclickableBackgroundColor:
+                                      Colors.transparent,
+                                  buttonSize: const Size(40, 40),
+                                  resourceID: "outreach-zim",
+                                  invitees: [
+                                    ZegoUIKitUser(
+                                      id: userData!.id,
+                                      name: userData!.username!,
+                                    )
+                                  ],
+                                ),
+                                ZegoSendCallInvitationButton(
+                                  isVideoCall: true,
+                                  clickableBackgroundColor: Colors.transparent,
+                                  iconSize: const Size(40, 40),
+                                  icon: ButtonIcon(
+                                    icon: const Icon(
+                                      Icons.videocam_outlined,
+                                      color: accent,
+                                    ),
+                                  ),
+                                  unclickableBackgroundColor:
+                                      Colors.transparent,
+                                  buttonSize: const Size(40, 40),
+                                  resourceID: "outreach-zim",
+                                  invitees: [
+                                    ZegoUIKitUser(
+                                      id: userData!.id,
+                                      name: userData!.username!,
+                                    )
+                                  ],
+                                ),
+                              ],
+                              showMoreButton: false,
+                              inputDecoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Enter your message here...",
+                              ),
+                              showPickFileButton: false,
+                              showPickMediaButton: false,
+                              showRecordButton: false,
+                              conversationID: userData!.id,
+                              conversationType: ZIMConversationType.peer,
+                            ));
                       },
                       child: const StyledButton(
                         text: "Message",
@@ -375,11 +346,11 @@ class _UserProfileState extends State<UserProfile> {
                     const SizedBox(height: 5),
                     ...userData!.feeds.reversed.map((e) => ProfilePosts(
                           post: e,
-                          user: userController.userData!,
+                          user: userData!,
                         )),
                     InkWell(
                       onTap: () => Get.to(() => YourPosts(
-                            user: userController.userData!.id,
+                            user: widget.userId,
                           )),
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 10),

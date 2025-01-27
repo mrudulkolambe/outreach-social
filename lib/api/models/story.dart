@@ -54,17 +54,18 @@ class UserStory {
   bool deleted;
   String createdAt;
   String updatedAt;
+  bool public;
 
-  UserStory({
-    required this.id,
-    required this.userId,
-    required this.content,
-    required this.media,
-    required this.timestamp,
-    required this.deleted,
-    required this.createdAt,
-    required this.updatedAt,
-  });
+  UserStory(
+      {required this.id,
+      required this.userId,
+      required this.content,
+      required this.media,
+      required this.timestamp,
+      required this.deleted,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.public});
 
   factory UserStory.fromJson(dynamic json) {
     final id = json["_id"] as String;
@@ -75,8 +76,19 @@ class UserStory {
     final deleted = json["deleted"] as bool;
     final createdAt = json["createdAt"] as String;
     final updatedAt = json["updatedAt"] as String;
+    final public = json["public"] as bool;
 
-    return UserStory(id: id, userId: user,content: content, media: media, timestamp: timestamp, deleted: deleted, createdAt: createdAt, updatedAt: updatedAt );
+    return UserStory(
+      id: id,
+      userId: user,
+      content: content,
+      media: media,
+      timestamp: timestamp,
+      deleted: deleted,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      public: public,
+    );
   }
 }
 

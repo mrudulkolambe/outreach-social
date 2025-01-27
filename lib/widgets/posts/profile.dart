@@ -154,7 +154,6 @@ class _ProfilePostsState extends State<ProfilePosts> {
                         if (item == 1) {
                           print('Edit tapped');
                         } else if (item == 2) {
-                          print('Delete tapped');
                         } else if (item == 3) {
                           _openReportModal();
                         }

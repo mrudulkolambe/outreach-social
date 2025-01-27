@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/constants/constants.dart';
 import 'package:outreach/api/models/user.dart';
-import 'package:outreach/api/services/agora_chat_service.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
@@ -34,7 +33,6 @@ class _CreateAccountState extends State<CreateAccount> {
   final TextEditingController confPassword = TextEditingController();
 
   final userService = UserService();
-  AgoraService agoraService = AgoraService();
 
   bool loading = false;
 
@@ -50,7 +48,7 @@ class _CreateAccountState extends State<CreateAccount> {
 
     // Log the response status code and reason phrase
     log('Response status: ${response.statusCode}');
-    log('Response reason: ${token}');
+    log('Response reason: $token');
     log('Response reason: ${response.reasonPhrase}');
     log('Response body: ${await response.stream.bytesToString()}');
 
@@ -68,7 +66,6 @@ class _CreateAccountState extends State<CreateAccount> {
     }
   }
 
-  
   void createAcc() async {
     if (passwordController.text == confPassword.text) {
       setState(() {
@@ -86,7 +83,8 @@ class _CreateAccountState extends State<CreateAccount> {
 
         UserData? userData = await userService.currentUser();
         if (userData != null) {
-          await agoraService.loginToAgoraChat(userData.id, token);
+          // TODO: ZEGO LOGIN
+          // await agoraService.loginToAgoraChat(userData.id, token);
           // await agoraService.registerUser(username: userData.id, password: token);
           log("UserNameasdas ${userData.id}");
         } else {

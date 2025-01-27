@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,11 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:outreach/api/constants/constants.dart';
 import 'package:outreach/api/models/user.dart';
-import 'package:outreach/api/services/agora_chat_service.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
+import 'package:outreach/constants/zego_config.dart';
 import 'package:outreach/controller/post.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/firebase_options.dart';
@@ -25,21 +23,43 @@ import 'package:outreach/screens/main.dart';
 import 'package:outreach/screens/onboarding.dart';
 import 'package:outreach/utils/firebasemsg_handler.dart';
 import 'package:outreach/utils/toast_manager.dart';
+import 'package:outreach/zego_notification.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
+import 'package:zego_zimkit/zego_zimkit.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   fireBaseCallingNoto().whenComplete(() {
     FirebasemsgHandler.config();
   });
-  await ChatClient.getInstance.init(
-    ChatOptions(
-      appKey: agoraAppID,
-      autoLogin: true,
-    ),
-  );
-  runApp(const MyApp());
+
+  ZIMKit().init(
+      appID: ZegoConfig.appId,
+      appSign: ZegoConfig.appSign,
+      notificationConfig: ZegoZIMKitNotificationConfig(
+        resourceID: 'outreach-zim',
+        supportOfflineMessage: true,
+        androidNotificationConfig: ZegoZIMKitAndroidNotificationConfig(
+          channelID: 'outreach-zim', //  'ZIM Message'
+          channelName: "outreach", //  'Message'
+        ),
+      ));
+
+  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
+
+  ZegoUIKit().initLog().then((value) {
+    ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
+      [ZegoUIKitSignalingPlugin()],
+    );
+
+    runApp(MyApp(navigatorKey: navigatorKey));
+  });
+
+  NotificationManager().init();
 }
 
 Future fireBaseCallingNoto() async {
@@ -63,12 +83,19 @@ Future<bool> checkStoragePermission() async {
   return status.values.every((element) => element.isGranted);
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  final GlobalKey<NavigatorState> navigatorKey;
+  const MyApp({super.key, required this.navigatorKey});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      navigatorKey: widget.navigatorKey,
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
       title: 'Outreach',
@@ -95,7 +122,6 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   final PostController postController = Get.put(PostController());
   final userService = UserService();
-  final AgoraService _agoraService = AgoraService();
   UserController userController = Get.put(UserController());
   StreamSubscription<User?>? _authSubscription;
 
@@ -130,26 +156,20 @@ class _SplashScreenState extends State<SplashScreen>
             ToastManager.showToast("Please fill the form first", context);
             Get.offAll(() => const Username());
           } else {
-            final token = await user.getIdToken(true);
-            try {
-              await _agoraService.createAttribute(
-                userName: userData.name!,
-                userImage: userData.imageUrl!,
-                cId: userData.id,
-              );
-              await _agoraService.loginToAgoraChat(userData.id, token);
-              Get.offAll(() => const MainStack());
-            } catch (e) {
-              if (e.toString().contains("already logged in")) {
-                Get.offAll(() => const MainStack());
-              } else {
-                log("Agora Chat login error: $e");
-                ToastManager.showToast(
-                    "Chat login failed. Please try again.", context);
-              }
-            } catch (e) {
-              log("Agora Chat initialization error: $e");
-            }
+            await ZIMKit()
+                .connectUser(id: userData.id, name: userData.username!)
+                .then((value) async {
+              log(value.toString());
+              // await saveFcmToken();
+            });
+            ZegoUIKitPrebuiltCallInvitationService().init(
+              appID: ZegoConfig.appId,
+              appSign: ZegoConfig.appSign,
+              userID: userData.id,
+              userName: userData.username!,
+              plugins: [ZegoUIKitSignalingPlugin()],
+            );
+            Get.offAll(() => const MainStack());
           }
         } else {
           Get.offAll(() => const OnBoarding());
@@ -177,7 +197,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void dispose() {
     _authSubscription?.cancel();
-    _agoraService.dispose();
+    // _agoraService.dispose();
     super.dispose();
   }
 

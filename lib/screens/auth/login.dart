@@ -19,7 +19,7 @@ import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/styled_button.dart';
 import 'package:outreach/widgets/styled_textfield.dart';
-import 'package:outreach/api/services/agora_chat_service.dart';
+import 'package:zego_zimkit/zego_zimkit.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -35,7 +35,6 @@ class _LoginState extends State<Login> {
   bool loading = false;
 
   UserService userService = UserService();
-  final AgoraService agoraService = AgoraService();
 
   Future<void> saveFcmToken() async {
     final fcmToken = await FirebaseMessaging.instance.getToken();
@@ -55,9 +54,6 @@ class _LoginState extends State<Login> {
       loading = true;
     });
     try {
-      print("object");
-      print(emailController.text);
-      print(passwordController.text);
       await FirebaseAuth.instance.signOut();
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text,
@@ -65,7 +61,6 @@ class _LoginState extends State<Login> {
       );
       print("credential $credential");
       final UserData? userData = await userService.currentUser();
-      print("userData $userData");
       if (!mounted) return;
 
       if (userData == null) {
@@ -76,13 +71,14 @@ class _LoginState extends State<Login> {
           userData.name == "") {
         Get.offAll(() => const Username());
       } else {
-        final token = await credential.user?.getIdToken(true);
-        // await agoraService.loginToAgoraChat(userData.id, token);
-        await saveFcmToken();
-        Get.offAll(() => const MainStack());
+        await ZIMKit()
+            .connectUser(id: userData.id, name: userData.username!)
+            .then((value) async {
+          await saveFcmToken();
+          Get.offAll(() => const MainStack());
+        });
       }
     } on FirebaseAuthException catch (e) {
-      print(e.message);
       if (e.code == 'user-not-found') {
         ToastManager.showToast(
           'No user found for that email.',
@@ -148,10 +144,13 @@ class _LoginState extends State<Login> {
             userData.name == "") {
           Get.offAll(() => const Username());
         } else {
-          final token =
-              await FirebaseAuth.instance.currentUser?.getIdToken(true);
-          await agoraService.loginToAgoraChat(userData.id, token);
-          Get.offAll(() => const MainStack());
+          // final token =
+          //     await FirebaseAuth.instance.currentUser?.getIdToken(true);
+          await ZIMKit()
+              .connectUser(id: userData.id, name: userData.username!)
+              .then((value) {
+            Get.offAll(() => const MainStack());
+          });
         }
       } catch (e) {
         ToastManager.showToast(
@@ -188,9 +187,12 @@ class _LoginState extends State<Login> {
           userData.name == "") {
         Get.offAll(() => const Username());
       } else {
-        final token = await FirebaseAuth.instance.currentUser?.getIdToken(true);
-        await agoraService.loginToAgoraChat(userData.id, token);
-        Get.offAll(() => const MainStack());
+        // final token = await FirebaseAuth.instance.currentUser?.getIdToken(true);
+        await ZIMKit()
+            .connectUser(id: userData.id, name: userData.username!)
+            .then((value) {
+          Get.offAll(() => const MainStack());
+        });
       }
 
       setState(() {

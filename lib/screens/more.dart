@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:outreach/api/services/agora_chat_service.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/screens/auth/login.dart';
 import 'package:outreach/screens/help_support.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
@@ -14,12 +14,11 @@ class MoreScreen extends StatefulWidget {
 }
 
 class _MoreScreenState extends State<MoreScreen> {
-  final AgoraService agoraService = AgoraService();
   bool _isLoggingOut = false;
 
   Future<void> handleLogout() async {
     if (_isLoggingOut) return; // Prevent multiple logout attempts
-    
+
     setState(() {
       _isLoggingOut = true;
     });
@@ -27,7 +26,9 @@ class _MoreScreenState extends State<MoreScreen> {
     try {
       // First try to logout from Agora
       try {
-        await agoraService.logout();
+        /// de-initialization ZegoUIKitPrebuiltCallInvitationService
+        /// when app's user is logged out
+        ZegoUIKitPrebuiltCallInvitationService().uninit();
       } catch (e) {
         print("Agora logout error: $e");
         // Continue with Firebase logout even if Agora fails
@@ -35,7 +36,7 @@ class _MoreScreenState extends State<MoreScreen> {
 
       // Then logout from Firebase
       await FirebaseAuth.instance.signOut();
-      
+
       // Navigate to login screen
       Get.offAll(() => const Login());
     } catch (e) {
@@ -95,16 +96,17 @@ class _MoreScreenState extends State<MoreScreen> {
                 ),
               ),
               InkWell(
-                onTap: _isLoggingOut ? null : handleLogout,  // Disable during logout
+                onTap: _isLoggingOut
+                    ? null
+                    : handleLogout, // Disable during logout
                 child: ListTile(
                   title: const Text("Logout"),
-                  trailing: _isLoggingOut 
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2)
-                      )
-                    : const Icon(Icons.chevron_right_rounded),
+                  trailing: _isLoggingOut
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Icon(Icons.chevron_right_rounded),
                 ),
               ),
             ],
