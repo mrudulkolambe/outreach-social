@@ -145,6 +145,7 @@ class _SplashScreenState extends State<SplashScreen>
         if (!mounted) return;
         if (user != null) {
           final UserData? userData = await userService.currentUser();
+          print(userData);
           if (!mounted) return;
 
           if (userData == null) {
@@ -155,7 +156,7 @@ class _SplashScreenState extends State<SplashScreen>
               userData.name == "") {
             ToastManager.showToast("Please fill the form first", context);
             Get.offAll(() => const Username());
-          } else {
+          } else if (userData.username!.isNotEmpty) {
             await ZIMKit()
                 .connectUser(id: userData.id, name: userData.username!)
                 .then((value) async {

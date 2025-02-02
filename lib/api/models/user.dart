@@ -68,12 +68,14 @@ class UserData {
   String? bio;
   List<String> interest;
   int? rewardPoints;
+  int? feedCount;
   bool block;
   List<Post> feeds;
   int? followers;
   int? following;
   bool? isFollowing;
   String? fcmToken;
+  List<LeaderBoardUser>? leaderBoard;
 
   UserData({
     required this.id,
@@ -87,15 +89,18 @@ class UserData {
     this.bio,
     required this.interest,
     this.rewardPoints,
+    this.feedCount,
     required this.block,
     required this.feeds,
     this.followers,
     this.following,
     this.isFollowing,
     this.fcmToken,
+    this.leaderBoard,
   });
 
   factory UserData.fromJson(dynamic json) {
+    print("MAIN_USER_${json["topUsers"]}");
     final String id = json["_id"];
     final bool isProfileCompleted = json["isProfileCompleted"];
     final String provider = json["provider"];
@@ -111,10 +116,16 @@ class UserData {
     final List<Post> feeds = json["feeds"] == null
         ? []
         : List.from(json["feeds"]).map((e) => Post.fromJson(e)).toList();
+    final List<LeaderBoardUser> leaderBoard = json["topUsers"] == null
+        ? []
+        : List.from(json["topUsers"])
+            .map((e) => LeaderBoardUser.fromJson(e))
+            .toList();
     final int? rewardPoints = json["rewardPoints"];
     final bool block = json["block"];
     final int? followers = json["followers"];
     final int? following = json["following"];
+    final int? feedCount = json["feedCount"];
     final String? fcmToken = json["fcmToken"];
 
     return UserData(
@@ -133,8 +144,42 @@ class UserData {
       block: block,
       followers: followers,
       following: following,
+      feedCount: feedCount,
       interest: interest,
       fcmToken: fcmToken,
+      leaderBoard: leaderBoard,
     );
+  }
+}
+
+class LeaderBoardUser {
+  final String? imageUrl;
+  final String? name;
+  final String? username;
+  final int rewardPoints;
+
+  LeaderBoardUser({
+    this.imageUrl,
+    this.name,
+    this.username,
+    required this.rewardPoints,
+  });
+
+  factory LeaderBoardUser.fromJson(Map<String, dynamic> json) {
+    return LeaderBoardUser(
+      imageUrl: json['imageUrl'] as String?,
+      name: json['name'] as String?,
+      username: json['username'] as String?,
+      rewardPoints: (json['rewardPoints'] ?? 0) as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "imageUrl": imageUrl,
+      "name": name,
+      "username": username,
+      "rewardPoints": rewardPoints,
+    };
   }
 }

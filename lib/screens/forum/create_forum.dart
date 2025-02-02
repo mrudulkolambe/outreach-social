@@ -16,6 +16,7 @@ import 'package:outreach/screens/forum/forum.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/styled_button.dart';
 import 'package:outreach/widgets/styled_textfield.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateForum extends StatefulWidget {
   const CreateForum({super.key});
@@ -52,8 +53,11 @@ class _CreateForumState extends State<CreateForum> {
     });
     final userID = FirebaseAuth.instance.currentUser!.uid;
     if (image != null) {
-      final imageResult =
-          await UploadServices().uploadSingleFile(image!, 'forum/$userID');
+      var uuid = const Uuid();
+      String uuidV4 = uuid.v4();
+
+      final imageResult = await UploadServices()
+          .uploadSingleFile(image!, 'forum/$userID/$uuidV4');
       await ForumServices().createForum({
         'public': !private,
         'name': forumName.text,

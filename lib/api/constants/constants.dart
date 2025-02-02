@@ -1,6 +1,6 @@
 // const String baseUrl = 'https://2d4c-103-127-20-196.ngrok-free.app';
 const String baseUrl = 'https://outreach-backend-development.vercel.app';
-const String uploadBaseURL = "http://15.207.14.199:8080";
+const String uploadBaseURL = "https://outreach-upload.vercel.app";
 
 const String userEndpoint = '$baseUrl/user';
 

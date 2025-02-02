@@ -44,6 +44,7 @@ class _UserProfileState extends State<UserProfile> {
       widget.userId,
       userController.userData!.id,
     );
+    print("FEED COUNT: ${response?.feedCount}");
     setState(() {
       userData = response;
       followLoading = false;
@@ -122,7 +123,7 @@ class _UserProfileState extends State<UserProfile> {
                               StatsElem(
                                 count: userData == null
                                     ? 0
-                                    : userData!.feeds.length,
+                                    : userData!.feedCount ?? 0,
                                 title: "Posts",
                               ),
                               StatsElem(
@@ -309,25 +310,27 @@ class _UserProfileState extends State<UserProfile> {
                         ),
                       ],
                     ),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 3.5,
-                        mainAxisSpacing: 15,
-                        crossAxisSpacing: 8,
+                    if (userData!.interest.isEmpty) const Text("No interests"),
+                    if (userData!.interest.isNotEmpty)
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 3.5,
+                          mainAxisSpacing: 15,
+                          crossAxisSpacing: 8,
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                          return InterestChoice(
+                            interestType:
+                                handleInterests(userData!.interest)[index],
+                            selected: userData!.interest,
+                          );
+                        },
+                        itemCount: handleInterests(userData!.interest).length,
                       ),
-                      itemBuilder: (BuildContext context, int index) {
-                        return InterestChoice(
-                          interestType:
-                              handleInterests(userData!.interest)[index],
-                          selected: userData!.interest,
-                        );
-                      },
-                      itemCount: handleInterests(userData!.interest).length,
-                    ),
                     const SizedBox(height: 8),
                     const Divider(),
                     const SizedBox(height: 8),
@@ -344,33 +347,36 @@ class _UserProfileState extends State<UserProfile> {
                       ],
                     ),
                     const SizedBox(height: 5),
-                    ...userData!.feeds.reversed.map((e) => ProfilePosts(
-                          post: e,
-                          user: userData!,
-                        )),
-                    InkWell(
-                      onTap: () => Get.to(() => YourPosts(
-                            user: widget.userId,
+                    if (userData!.feeds.isEmpty) const Text("No posts"),
+                    if (userData!.feeds.isNotEmpty)
+                      ...userData!.feeds.reversed.map((e) => ProfilePosts(
+                            post: e,
+                            user: userData!,
                           )),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "See all Post",
-                              style: TextStyle(color: accent),
-                            ),
-                            SizedBox(width: 4),
-                            Icon(
-                              Icons.chevron_right_rounded,
-                              size: 20,
-                              color: accent,
-                            ),
-                          ],
+                    if (userData!.feeds.isNotEmpty)
+                      InkWell(
+                        onTap: () => Get.to(() => YourPosts(
+                              user: widget.userId,
+                            )),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "See all Post",
+                                style: TextStyle(color: accent),
+                              ),
+                              SizedBox(width: 4),
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                size: 20,
+                                color: accent,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
                     const Divider(),
                     const SizedBox(height: 8),
                     const Row(
@@ -392,8 +398,8 @@ class _UserProfileState extends State<UserProfile> {
                         1: IntrinsicColumnWidth(),
                         2: FlexColumnWidth(),
                       },
-                      children: const [
-                        TableRow(
+                      children: [
+                        const TableRow(
                           decoration: BoxDecoration(color: Colors.grey),
                           children: [
                             TableCell(
@@ -416,28 +422,30 @@ class _UserProfileState extends State<UserProfile> {
                             ),
                           ],
                         ),
-                        TableRow(
-                          children: [
-                            TableCell(
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text("Rank"),
+                        ...userData!.leaderBoard!.asMap().entries.map((item) {
+                          return TableRow(
+                            children: [
+                              TableCell(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text((item.key + 1).toString()),
+                                ),
                               ),
-                            ),
-                            TableCell(
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text("Afolabi Ogunleye"),
+                              const TableCell(
+                                child: Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text("Afolabi Ogunleye"),
+                                ),
                               ),
-                            ),
-                            TableCell(
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text("2563"),
+                              const TableCell(
+                                child: Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text("2563"),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          );
+                        }),
                       ],
                     ),
                   ],
