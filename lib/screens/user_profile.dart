@@ -11,6 +11,7 @@ import 'package:outreach/models/interest.dart';
 import 'package:outreach/screens/your_posts.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
+import 'package:outreach/widgets/circular_image.dart';
 import 'package:outreach/widgets/interest/interest_choice.dart';
 import 'package:outreach/widgets/navbar.dart';
 import 'package:outreach/widgets/posts/profile.dart';
@@ -431,16 +432,49 @@ class _UserProfileState extends State<UserProfile> {
                                   child: Text((item.key + 1).toString()),
                                 ),
                               ),
-                              const TableCell(
+                              TableCell(
                                 child: Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text("Afolabi Ogunleye"),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      item.value.imageUrl != null
+                                          ? CircularImage(
+                                              size: 30,
+                                              path: item.value.imageUrl!,
+                                            )
+                                          : Container(
+                                              height: 30,
+                                              width: 30,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                color: accent,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  item.value.name!
+                                                      .substring(0, 1),
+                                                ),
+                                              ),
+                                            ),
+                                      const SizedBox(
+                                        width: 8,
+                                      ),
+                                      Text(
+                                        "@${item.value.username!}",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              const TableCell(
+                              TableCell(
                                 child: Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text("2563"),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child:
+                                      Text(item.value.rewardPoints.toString()),
                                 ),
                               ),
                             ],

@@ -70,13 +70,12 @@ class _ProfilePicState extends State<ProfilePic> {
   }
 
   Future<void> chooseImage() async {
-    if (!kIsWeb) {
-      bool permissionGranted = await requestGalleryPermission();
-      if (!permissionGranted) {
-        // openAppSettings();
-        return;
-      }
-    }
+    // bool permissionGranted = await requestGalleryPermission();
+    // print(permissionGranted);
+    // if (!permissionGranted) {
+    //   // openAppSettings();
+    //   return;
+    // }
 
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
 

@@ -102,11 +102,15 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
         ));
   }
 
+  bool loading = false;
   void createPost() async {
     List<Map<String, String>> urls = [];
     if (_mediaFiles.isNotEmpty) {
       urls = await _uploadMedia();
     }
+    setState(() {
+      loading = true;
+    });
     final body = {
       "content": descriptionController.text,
       "category": category,
@@ -116,8 +120,10 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
     resourceServices.createPost(body);
     if (mounted) {
       setState(() {
+        ToastManager.showToast("Submitted for approval", context);
         _mediaFiles = [];
         descriptionController.text = "";
+        loading = false;
       });
     }
     Get.offAll(() => const MainStack(
@@ -173,7 +179,11 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
               }
             },
             child: Text(
-              widget.resourcePost != null ? "Update" : "Post",
+              loading
+                  ? "Uploading"
+                  : widget.resourcePost != null
+                      ? "Update"
+                      : "Post",
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 color: accent,

@@ -222,29 +222,41 @@ class _ForumScreenState extends State<ForumScreen> {
                     ),
                   );
                 }),
-            Positioned(
-              bottom: 40.0,
-              right: 16.0,
-              child: ElevatedButton.icon(
-                onPressed: () => Get.to(() => const CreateForum()),
-                icon: const Icon(
-                  Icons.add_rounded,
-                  color: Colors.white,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () => Get.to(() => const CreateForum()),
+                      icon: const Icon(
+                        Icons.add_rounded,
+                        color: Colors.white,
+                      ),
+                      label: const Text(
+                        "Create Forum",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            accent, // Use the color you used for FloatingActionButton
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 16.0),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                  ],
                 ),
-                label: const Text(
-                  "Create Forum",
-                  style: TextStyle(color: Colors.white),
+                const SizedBox(
+                  width: 10,
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      accent, // Use the color you used for FloatingActionButton
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0, vertical: 16.0),
-                ),
-              ),
+              ],
             ),
           ],
         ),

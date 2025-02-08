@@ -14,7 +14,7 @@ class FeedService {
 
   Future<void> blockedUser() async {
     await FirebaseAuth.instance.signOut();
-    ToastManager.showToastApp("User blocked");
+    // ToastManager.showToastApp("User blocked");
   }
 
   Future<Post?> createFeed(Map<String, dynamic> body) async {

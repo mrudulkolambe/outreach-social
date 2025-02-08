@@ -29,12 +29,13 @@ class _AddStoryState extends State<AddStory> {
   bool private = false;
   UserController userController = Get.put(UserController());
   StoryServices storyServices = StoryServices();
+  bool loading = false;
 
   Future<void> pickMedia() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       // allowedExtensions: ['jpg', 'jpeg', 'png', 'mp4', 'mov'],
-        allowedExtensions: ['jpg', 'jpeg', 'png'],
+      allowedExtensions: ['jpg', 'jpeg', 'png'],
       allowMultiple: false,
     );
 
@@ -46,7 +47,7 @@ class _AddStoryState extends State<AddStory> {
       }).toList();
       _mediaFiles.addAll(newFiles);
     });
-    }
+  }
 
   Future<bool> requestGalleryPermission() async {
     var status = await Permission.storage.request();
@@ -60,27 +61,33 @@ class _AddStoryState extends State<AddStory> {
   void postStory() async {
     Media? uploadResponse;
     if (_mediaFiles.isNotEmpty) {
-      uploadResponse = await _uploadMedia();
-    }
-    print(uploadResponse);
-    final body = {
-      "public": !private,
-      "content": descriptionController.text,
-      "media": uploadResponse,
-    };
-    storyServices.createStory(body);
-    if (mounted) {
       setState(() {
-        _mediaFiles = [];
-        descriptionController.text = "";
+        loading = true;
       });
+      uploadResponse = await _uploadMedia();
+      print(uploadResponse);
+      final body = {
+        "public": !private,
+        "content": descriptionController.text,
+        "media": uploadResponse,
+      };
+      storyServices.createStory(body);
+      if (mounted) {
+        setState(() {
+          loading = false;
+          _mediaFiles = [];
+          descriptionController.text = "";
+        });
+      }
+      Get.offAll(() => const MainStack());
+    } else {
+      ToastManager.showToast("No media choosen", context);
     }
-    Get.offAll(() => const MainStack());
   }
 
   Future<Media> _uploadMedia() async {
     savingController.setSavingState(SavingState.uploading);
-print("upload 0");
+    print("upload 0");
     final uploadData =
         await UploadServices().storyUpload(_mediaFiles[0], "stories");
 
@@ -109,7 +116,7 @@ print("upload 0");
             onPressed: () {
               if (descriptionController.text.isNotEmpty ||
                   _mediaFiles.isNotEmpty) {
-                    print("started");
+                print("started");
                 postStory();
               } else {
                 ToastManager.showToast(
@@ -118,9 +125,9 @@ print("upload 0");
                 );
               }
             },
-            child: const Text(
-              "Post",
-              style: TextStyle(
+            child: Text(
+              loading ? "Uploading" : "Post",
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 color: accent,
                 fontSize: 16,

@@ -16,7 +16,7 @@ class UserService {
 
   Future<void> blockedUser() async {
     await FirebaseAuth.instance.signOut();
-    ToastManager.showToastApp("User blocked");
+    // ToastManager.showToastApp("User blocked");
   }
 
   Future<UserData?> currentUser() async {

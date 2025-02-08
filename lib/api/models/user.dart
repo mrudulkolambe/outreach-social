@@ -167,9 +167,9 @@ class LeaderBoardUser {
 
   factory LeaderBoardUser.fromJson(Map<String, dynamic> json) {
     return LeaderBoardUser(
-      imageUrl: json['imageUrl'] as String?,
-      name: json['name'] as String?,
-      username: json['username'] as String?,
+      imageUrl: json['imageUrl'],
+      name: json['name'],
+      username: json['username'],
       rewardPoints: (json['rewardPoints'] ?? 0) as int,
     );
   }

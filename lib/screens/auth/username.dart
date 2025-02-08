@@ -22,6 +22,7 @@ class _UsernameState extends State<Username> {
   UserService userService = UserService();
   bool loading = false;
   void saveInfo() async {
+    print("called");
     setState(() {
       loading = true;
     });

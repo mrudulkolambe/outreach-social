@@ -127,14 +127,16 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> saveFcmToken() async {
     final fcmToken = await FirebaseMessaging.instance.getToken();
-    final Map<String, String> body = {
-      'fcmToken': fcmToken!,
-    };
-    final status = await userService.updateUser({"updateData": body});
-    if (status == 200) {
-      log("FCM token saved $fcmToken");
+    if (fcmToken != null && fcmToken.isNotEmpty) {
+      final Map<String, String> body = {'fcmToken': fcmToken};
+      final status = await userService.updateUser({"updateData": body});
+      if (status == 200) {
+        log("FCM token saved: $fcmToken");
+      } else {
+        log("FCM token not saved");
+      }
     } else {
-      log("FCM token not saved");
+      log("FCM token is null or empty");
     }
   }
 
@@ -150,19 +152,19 @@ class _SplashScreenState extends State<SplashScreen>
 
           if (userData == null) {
             userService.blockedUser();
-          } else if (userData.username == "" ||
-              userData.username == null ||
+          } else if (userData.username == null ||
+              userData.username!.isEmpty ||
               userData.name == null ||
-              userData.name == "") {
+              userData.name!.isEmpty) {
             ToastManager.showToast("Please fill the form first", context);
             Get.offAll(() => const Username());
-          } else if (userData.username!.isNotEmpty) {
+          } else if (userData.username != null) {
             await ZIMKit()
                 .connectUser(id: userData.id, name: userData.username!)
                 .then((value) async {
               log(value.toString());
-              // await saveFcmToken();
             });
+
             ZegoUIKitPrebuiltCallInvitationService().init(
               appID: ZegoConfig.appId,
               appSign: ZegoConfig.appSign,
@@ -178,6 +180,7 @@ class _SplashScreenState extends State<SplashScreen>
       });
     } catch (e) {
       if (!mounted) return;
+      log("Error in _initializeServices: $e");
       await FirebaseAuth.instance.signOut();
       Get.offAll(() => const Login());
     }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
+import 'package:outreach/main.dart';
 import 'package:outreach/screens/main.dart';
 
 class Congo extends StatefulWidget {
@@ -13,7 +14,7 @@ class Congo extends StatefulWidget {
 
 class _CongoState extends State<Congo> {
   void saveInfo() async {
-    Get.offAll(() => const MainStack());
+    Get.offAll(() => const SplashScreen());
   }
 
   @override

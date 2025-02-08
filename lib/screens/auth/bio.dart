@@ -36,7 +36,7 @@ class _BioState extends State<Bio> {
       _loading = true;
     });
     final statusCode = await userService.updateUser({
-      "updateData": {"bio": bioController.text}
+      "updateData": {"bio": bioController.value.text}
     });
     if (statusCode == 200 || statusCode == 201) {
       if (widget.update) {

@@ -132,7 +132,7 @@ class _ForumCardState extends State<ForumCard> {
           Row(
             children: [
               widget.forum.public
-                  ? widget.forum.userId.imageUrl == null
+                  ? widget.forumPost.user.imageUrl == null
                       ? Container(
                           height: 40,
                           width: 40,
@@ -143,7 +143,7 @@ class _ForumCardState extends State<ForumCard> {
                           child: Center(
                             child: Text(
                               widget.forum.public
-                                  ? widget.forum.userId.name!.substring(0, 1)
+                                  ? widget.forumPost.user.name.substring(0, 1)
                                   : "A",
                               style: const TextStyle(
                                 color: Colors.white,
@@ -152,7 +152,7 @@ class _ForumCardState extends State<ForumCard> {
                           ),
                         )
                       : CircularShimmerImage(
-                          imageUrl: widget.forum.userId.imageUrl!,
+                          imageUrl: widget.forumPost.user.imageUrl!,
                           size: 40,
                         )
                   : Container(
@@ -179,7 +179,7 @@ class _ForumCardState extends State<ForumCard> {
                   children: [
                     Text(
                       widget.forum.public
-                          ? widget.forum.userId.name!
+                          ? widget.forumPost.user.name
                           : "Anonymous",
                       style: const TextStyle(
                         color: Colors.black,
@@ -188,7 +188,7 @@ class _ForumCardState extends State<ForumCard> {
                     ),
                     Text(
                       widget.forum.public
-                          ? "@${widget.forum.userId.username}"
+                          ? "@${widget.forumPost.user.username}"
                           : "@anonymous",
                       style: const TextStyle(
                         color: grey,
