@@ -9,7 +9,6 @@ import 'package:outreach/widgets/bottomsheet/post_comment.dart';
 import 'package:outreach/widgets/circular_image.dart';
 import 'package:outreach/widgets/popup/report_popup.dart';
 import 'package:outreach/widgets/posts/mediacard.dart';
-import 'package:outreach/widgets/posts/profile_video.dart';
 
 class ProfilePosts extends StatefulWidget {
   final Post post;
@@ -36,6 +35,7 @@ class _ProfilePostsState extends State<ProfilePosts> {
         return CommentBottomSheet(
           postId: widget.post.id,
           user: widget.user,
+          isPrivate: !widget.post.public,
         );
       },
     );
@@ -120,30 +120,10 @@ class _ProfilePostsState extends State<ProfilePosts> {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              const Row(
-                                children: [
-                                  Text(
-                                    "2 months ago",
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              )
                             ],
                           ),
                           const SizedBox(
                             width: 8,
-                          ),
-                          const Expanded(
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    "posted on Forum.",
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
                           ),
                         ],
                       ),

@@ -36,7 +36,6 @@ class _AddPostState extends State<AddPost> {
   FeedService feedService = FeedService();
 
   List<String> _tags = [];
-  final RegExp _tagRegExp = RegExp(r'\B#\w+');
 
   final List<String> availableTags =
       interestsOptions.map((item) => item.tag).toList();

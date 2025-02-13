@@ -13,8 +13,10 @@ import 'package:outreach/controller/user.dart';
 import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/platform_constraints/media_preview_mobile.dart';
+import 'package:outreach/widgets/styled_button.dart';
 import 'package:outreach/widgets/styled_textfield.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ResourceAddPost extends StatefulWidget {
   final ResourcePost? resourcePost;
@@ -126,9 +128,85 @@ class _ResourceAddPostState extends State<ResourceAddPost> {
         loading = false;
       });
     }
-    Get.offAll(() => const MainStack(
-          page: 3,
-        ));
+    Get.dialog(
+      barrierDismissible: false,
+      Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: horizontal_p),
+        backgroundColor: Colors.black,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+              horizontal: horizontal_p, vertical: 15),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          width: MediaQuery.of(context).size.width - 2 * horizontal_p,
+          height: 300,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                "assets/illustrations/forum_created.svg",
+                height: 120,
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Please wait sometimes",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 17,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Admin will review your post.",
+                      style: TextStyle(
+                        color: grey,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.4,
+                child: InkWell(
+                  onTap: () => Get.offAll(() => const MainStack(
+                        page: 3,
+                      )),
+                  child: const StyledButton(
+                    loading: false,
+                    text: "Explore Resource",
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<List<Map<String, String>>> _uploadMedia() async {

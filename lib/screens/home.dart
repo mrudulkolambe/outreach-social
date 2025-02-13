@@ -398,8 +398,8 @@ class _HomePageState extends State<HomePage>
                                                     groupedStories[storyIndex]
                                                             .imageUrl ==
                                                         ""
-                                                ? Image.asset(
-                                                    "assets/icons/user-placeholder.png",
+                                                ? SvgPicture.asset(
+                                                    "assets/icons/user-placeholder.svg",
                                                     height: 50,
                                                     width: 50,
                                                   )

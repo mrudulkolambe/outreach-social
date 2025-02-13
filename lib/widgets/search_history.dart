@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:outreach/constants/colors.dart';
 import 'package:outreach/models/post.dart';
 import 'package:outreach/screens/user_profile.dart';
 import 'package:outreach/widgets/circular_image.dart';

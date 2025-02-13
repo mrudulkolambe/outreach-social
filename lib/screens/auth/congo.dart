@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/main.dart';
-import 'package:outreach/screens/main.dart';
 
 class Congo extends StatefulWidget {
   const Congo({super.key});

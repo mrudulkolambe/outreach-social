@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:outreach/api/models/feed_comments.dart';
 import 'package:outreach/api/models/forum.dart';

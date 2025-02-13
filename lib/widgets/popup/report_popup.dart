@@ -107,13 +107,13 @@ class _ReportPopupState extends State<ReportPopup> {
                             ElevatedButton(
                               style: ButtonStyle(
                                 backgroundColor:
-                                    MaterialStateProperty.resolveWith(
+                                    WidgetStateProperty.resolveWith(
                                   (states) => accent.withOpacity(0.2),
                                 ),
-                                shadowColor: MaterialStateProperty.resolveWith(
+                                shadowColor: WidgetStateProperty.resolveWith(
                                   (states) => Colors.transparent,
                                 ),
-                                shape: MaterialStateProperty.resolveWith(
+                                shape: WidgetStateProperty.resolveWith(
                                   (states) => RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -134,7 +134,7 @@ class _ReportPopupState extends State<ReportPopup> {
                                         : Colors.black.withOpacity(0.3)),
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 8,
                             ),
                           ],

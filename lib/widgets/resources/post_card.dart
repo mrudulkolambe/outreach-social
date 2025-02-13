@@ -11,7 +11,6 @@ import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/resource_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
-import 'package:outreach/screens/add_post.dart';
 import 'package:outreach/screens/resources/add_post.dart';
 import 'package:outreach/utils/report_reasons.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
@@ -26,7 +25,7 @@ class PostCard extends StatefulWidget {
   final UserData user;
 
   const PostCard(
-      {super.key, required this.post, required this.index, required this.user});
+      {super.key, required this.post, required this.index, required this.user,});
 
   @override
   _PostCardState createState() => _PostCardState();
@@ -59,6 +58,7 @@ class _PostCardState extends State<PostCard> {
         return CommentBottomSheet(
           postId: widget.post.id,
           user: widget.user,
+          isPrivate: false,
         );
       },
     );

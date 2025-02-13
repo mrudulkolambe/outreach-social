@@ -57,6 +57,7 @@ class _PostCardState extends State<PostCard> {
         return CommentBottomSheet(
           postId: widget.post.id,
           user: widget.user,
+          isPrivate: !widget.post.public,
         );
       },
     );

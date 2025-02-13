@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:outreach/api/services/feed_services.dart';
 import 'package:outreach/api/services/forum_services.dart';
 import 'package:outreach/api/services/resource_services.dart';
-import 'package:outreach/constants/colors.dart';
 import 'package:outreach/widgets/styled_button.dart';
 
 class DeleteConfirmPopup extends StatefulWidget {

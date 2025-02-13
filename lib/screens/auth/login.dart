@@ -12,7 +12,6 @@ import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/user_services.dart';
 import 'package:outreach/constants/colors.dart';
 import 'package:outreach/constants/spacing.dart';
-import 'package:outreach/constants/zego_config.dart';
 import 'package:outreach/main.dart';
 import 'package:outreach/screens/auth/create_account.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,8 +20,6 @@ import 'package:outreach/screens/main.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/styled_button.dart';
 import 'package:outreach/widgets/styled_textfield.dart';
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
-import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 import 'package:zego_zimkit/zego_zimkit.dart';
 
 class Login extends StatefulWidget {

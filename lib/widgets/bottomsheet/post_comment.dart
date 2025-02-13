@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:outreach/api/models/feed_comments.dart';
 import 'package:outreach/api/models/user.dart';
 import 'package:outreach/api/services/comment_feed_services.dart';
@@ -12,11 +11,13 @@ import 'package:outreach/widgets/CircularShimmerImage.dart';
 class CommentBottomSheet extends StatefulWidget {
   final String postId;
   final UserData user;
+  final bool isPrivate;
 
   const CommentBottomSheet({
     super.key,
     required this.postId,
     required this.user,
+    required this.isPrivate,
   });
 
   @override
@@ -47,7 +48,6 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     };
     final response =
         await feedCommentServices.createComment(widget.postId, body);
-    log(response.toString());
     if (response != null) {
       feedComments.add(response);
       feedComments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -178,16 +178,23 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                CircularShimmerImage(
-                                                  size: 40,
-                                                  imageUrl: feedComments
-                                                      .where((comment) =>
-                                                          comment.parentID ==
-                                                          null)
-                                                      .toList()[index]
-                                                      .author
-                                                      .imageUrl,
-                                                ),
+                                                widget.isPrivate
+                                                    ? SvgPicture.asset(
+                                                        "assets/icons/user-placeholder.svg",
+                                                        height: 40,
+                                                        width: 40,
+                                                      )
+                                                    : CircularShimmerImage(
+                                                        size: 40,
+                                                        imageUrl: feedComments
+                                                            .where((comment) =>
+                                                                comment
+                                                                    .parentID ==
+                                                                null)
+                                                            .toList()[index]
+                                                            .author
+                                                            .imageUrl,
+                                                      ),
                                                 const SizedBox(width: 15),
                                                 Column(
                                                   crossAxisAlignment:
@@ -196,7 +203,9 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                                     Row(
                                                       children: [
                                                         Text(
-                                                          "@${feedComments.where((comment) => comment.parentID == null).toList()[index].author.username}",
+                                                          widget.isPrivate
+                                                              ? "@anonymous"
+                                                              : "@${feedComments.where((comment) => comment.parentID == null).toList()[index].author.username}",
                                                           style:
                                                               const TextStyle(
                                                             fontWeight:
@@ -388,7 +397,9 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                                                     Row(
                                                                       children: [
                                                                         Text(
-                                                                          "@${feedComments.where((comment) => comment.parentID == feedComments.where((comment) => comment.parentID == null).toList()[index].id).toList()[nestedIndex].author.username}",
+                                                                          widget.isPrivate
+                                                                              ? "@anonymous"
+                                                                              : "@${feedComments.where((comment) => comment.parentID == feedComments.where((comment) => comment.parentID == null).toList()[index].id).toList()[nestedIndex].author.username}",
                                                                           style:
                                                                               const TextStyle(
                                                                             fontWeight:
@@ -507,7 +518,9 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "@${handleReplyStories(parentID, feedComments) == null ? "" : handleReplyStories(parentID, feedComments)!.author.username}",
+                                    widget.isPrivate
+                                        ? "@anonymous"
+                                        : "@${handleReplyStories(parentID, feedComments) == null ? "" : handleReplyStories(parentID, feedComments)!.author.username}",
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         color: Colors.grey),
@@ -555,10 +568,16 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                       ),
                       child: Row(
                         children: [
-                          CircularShimmerImage(
-                            size: 35,
-                            imageUrl: widget.user.imageUrl,
-                          ),
+                          widget.isPrivate
+                              ? SvgPicture.asset(
+                                  "assets/images/user-placeholder.svg",
+                                  height: 35,
+                                  width: 35,
+                                )
+                              : CircularShimmerImage(
+                                  size: 35,
+                                  imageUrl: widget.user.imageUrl,
+                                ),
                           const SizedBox(height: 8),
                           Expanded(
                             child: TextFormField(

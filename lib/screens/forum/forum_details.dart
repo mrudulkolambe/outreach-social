@@ -24,8 +24,6 @@ class ForumDetails extends StatefulWidget {
 }
 
 class _ForumDetailsState extends State<ForumDetails> {
-  final DraggableScrollableController _controller =
-      DraggableScrollableController();
   final UserController userController = Get.put(UserController());
 
   @override

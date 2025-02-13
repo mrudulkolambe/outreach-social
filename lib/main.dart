@@ -30,57 +30,119 @@ import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 import 'package:zego_zimkit/zego_zimkit.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  fireBaseCallingNoto().whenComplete(() {
-    FirebasemsgHandler.config();
-  });
 
-  ZIMKit().init(
+void main() async {
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    
+    // Initialize Firebase first
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    
+    // Request necessary permissions
+    await requestPermissions();
+    
+    // Initialize Firebase messaging and notifications
+    await fireBaseCallingNoto();
+    FirebasemsgHandler.config();
+
+    // Initialize ZIMKit with proper error handling
+    await initializeZIMKit();
+
+    // Initialize Zego UI Kit
+    await initializeZegoUIKit();
+
+    // Initialize local notifications
+    await NotificationManager().init();
+
+    runApp(MyApp(navigatorKey: navigatorKey));
+  } catch (e) {
+    log("Error in main: $e");
+    runApp(const ErrorApp());
+  }
+}
+
+Future<void> requestPermissions() async {
+  if (GetPlatform.isAndroid) {
+    // Request overlay permission first
+    if (!await Permission.systemAlertWindow.isGranted) {
+      await Permission.systemAlertWindow.request();
+    }
+    
+    // Request other necessary permissions
+    await [
+      Permission.storage,
+      Permission.camera,
+      Permission.microphone,
+      Permission.notification,
+    ].request();
+  }
+}
+
+Future<void> initializeZIMKit() async {
+  try {
+    await ZIMKit().init(
       appID: ZegoConfig.appId,
       appSign: ZegoConfig.appSign,
       notificationConfig: ZegoZIMKitNotificationConfig(
         resourceID: 'outreach-zim',
         supportOfflineMessage: true,
         androidNotificationConfig: ZegoZIMKitAndroidNotificationConfig(
-          channelID: 'outreach-zim', //  'ZIM Message'
-          channelName: "outreach", //  'Message'
+          channelID: 'outreach-zim',
+          channelName: "outreach",
         ),
-      ));
-
-  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
-
-  ZegoUIKit().initLog().then((value) {
-    ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
-      [ZegoUIKitSignalingPlugin()],
+      ),
     );
-
-    runApp(MyApp(navigatorKey: navigatorKey));
-  });
-
-  NotificationManager().init();
-}
-
-Future fireBaseCallingNoto() async {
-  FirebaseMessaging.onBackgroundMessage(
-    FirebasemsgHandler.firebaseMessagingBackground,
-  );
-  if (GetPlatform.isAndroid) {
-    await FirebasemsgHandler.flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()!
-        .createNotificationChannel(FirebasemsgHandler.channel_call);
+    log("ZIMKit initialized successfully");
+  } catch (e) {
+    log("Error initializing ZIMKit: $e");
+    rethrow;
   }
 }
 
-Future<bool> checkStoragePermission() async {
-  var status = await [
-    Permission.storage,
-    Permission.camera,
-    Permission.microphone
-  ].request();
-  return status.values.every((element) => element.isGranted);
+Future<void> initializeZegoUIKit() async {
+  try {
+    ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
+    await ZegoUIKit().initLog();
+    ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
+      [ZegoUIKitSignalingPlugin()],
+    );
+    log("Zego UI Kit initialized successfully");
+  } catch (e) {
+    log("Error initializing Zego UI Kit: $e");
+    rethrow;
+  }
+}
+
+Future<void> fireBaseCallingNoto() async {
+  try {
+    FirebaseMessaging.onBackgroundMessage(
+      FirebasemsgHandler.firebaseMessagingBackground,
+    );
+    if (GetPlatform.isAndroid) {
+      await FirebasemsgHandler.flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(FirebasemsgHandler.channel_call);
+    }
+  } catch (e) {
+    log("Error in fireBaseCallingNoto: $e");
+    rethrow;
+  }
+}
+
+class ErrorApp extends StatelessWidget {
+  const ErrorApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Text('Error initializing app. Please restart.'),
+        ),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -118,25 +180,28 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
   final PostController postController = Get.put(PostController());
   final userService = UserService();
   UserController userController = Get.put(UserController());
   StreamSubscription<User?>? _authSubscription;
 
   Future<void> saveFcmToken() async {
-    final fcmToken = await FirebaseMessaging.instance.getToken();
-    if (fcmToken != null && fcmToken.isNotEmpty) {
-      final Map<String, String> body = {'fcmToken': fcmToken};
-      final status = await userService.updateUser({"updateData": body});
-      if (status == 200) {
-        log("FCM token saved: $fcmToken");
+    try {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null && fcmToken.isNotEmpty) {
+        final Map<String, String> body = {'fcmToken': fcmToken};
+        final status = await userService.updateUser({"updateData": body});
+        if (status == 200) {
+          log("FCM token saved: $fcmToken");
+        } else {
+          log("FCM token not saved");
+        }
       } else {
-        log("FCM token not saved");
+        log("FCM token is null or empty");
       }
-    } else {
-      log("FCM token is null or empty");
+    } catch (e) {
+      log("Error saving FCM token: $e");
     }
   }
 
@@ -145,34 +210,43 @@ class _SplashScreenState extends State<SplashScreen>
       _authSubscription =
           FirebaseAuth.instance.authStateChanges().listen((User? user) async {
         if (!mounted) return;
+        
         if (user != null) {
-          final UserData? userData = await userService.currentUser();
-          print(userData);
-          if (!mounted) return;
+          try {
+            final UserData? userData = await userService.currentUser();
+            if (!mounted) return;
 
-          if (userData == null) {
-            userService.blockedUser();
-          } else if (userData.username == null ||
-              userData.username!.isEmpty ||
-              userData.name == null ||
-              userData.name!.isEmpty) {
-            ToastManager.showToast("Please fill the form first", context);
-            Get.offAll(() => const Username());
-          } else if (userData.username != null) {
-            await ZIMKit()
-                .connectUser(id: userData.id, name: userData.username!)
-                .then((value) async {
-              log(value.toString());
-            });
-
-            ZegoUIKitPrebuiltCallInvitationService().init(
-              appID: ZegoConfig.appId,
-              appSign: ZegoConfig.appSign,
-              userID: userData.id,
-              userName: userData.username!,
-              plugins: [ZegoUIKitSignalingPlugin()],
-            );
-            Get.offAll(() => const MainStack());
+            if (userData == null) {
+              await userService.blockedUser();
+            } else if (userData.username == null ||
+                userData.username!.isEmpty ||
+                userData.name == null ||
+                userData.name!.isEmpty) {
+              ToastManager.showToast("Please fill the form first", context);
+              Get.offAll(() => const Username());
+            } else if (userData.username != null) {
+              // Initialize ZIMKit user connection
+              try {
+                await ZIMKit().connectUser(id: userData.id, name: userData.username!);
+                
+                // Initialize Zego call service
+                await ZegoUIKitPrebuiltCallInvitationService().init(
+                  appID: ZegoConfig.appId,
+                  appSign: ZegoConfig.appSign,
+                  userID: userData.id,
+                  userName: userData.username!,
+                  plugins: [ZegoUIKitSignalingPlugin()],
+                );
+                
+                Get.offAll(() => const MainStack());
+              } catch (e) {
+                log("Error initializing chat services: $e");
+                ToastManager.showToast("Error initializing chat services", context);
+              }
+            }
+          } catch (e) {
+            log("Error processing user data: $e");
+            ToastManager.showToast("Error loading user data", context);
           }
         } else {
           Get.offAll(() => const OnBoarding());
@@ -193,15 +267,21 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _initialize() async {
-    await Future.delayed(const Duration(seconds: 4));
-    await _initializeServices();
-    await saveFcmToken();
+    try {
+      await Future.delayed(const Duration(seconds: 4));
+      await _initializeServices();
+      await saveFcmToken();
+    } catch (e) {
+      log("Error in _initialize: $e");
+      if (mounted) {
+        ToastManager.showToast("Error initializing app", context);
+      }
+    }
   }
 
   @override
   void dispose() {
     _authSubscription?.cancel();
-    // _agoraService.dispose();
     super.dispose();
   }
 
@@ -213,11 +293,9 @@ class _SplashScreenState extends State<SplashScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            GestureDetector(
-              child: Image.asset(
-                "assets/main.gif",
-                width: MediaQuery.of(context).size.width * 0.8,
-              ),
+            Image.asset(
+              "assets/main.gif",
+              width: MediaQuery.of(context).size.width * 0.8,
             ),
           ],
         ),

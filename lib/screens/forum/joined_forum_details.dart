@@ -8,7 +8,6 @@ import 'package:outreach/screens/forum/forum.dart';
 import 'package:outreach/screens/forum/forum_all_posts.dart';
 import 'package:outreach/utils/toast_manager.dart';
 import 'package:outreach/widgets/CircularShimmerImage.dart';
-import 'package:outreach/widgets/navbar.dart';
 
 class JoinedForumDetails extends StatefulWidget {
   final Forum forum;

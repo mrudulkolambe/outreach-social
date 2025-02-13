@@ -6,7 +6,6 @@ import 'package:outreach/constants/spacing.dart';
 import 'package:outreach/controller/forum.dart';
 import 'package:outreach/controller/user.dart';
 import 'package:outreach/widgets/forum/forum_card_primary.dart';
-import 'package:outreach/widgets/navbar.dart';
 
 class JoinedForum extends StatefulWidget {
   const JoinedForum({super.key});
